@@ -11,7 +11,15 @@
     <PackageId>udp-cicd</PackageId>
     <Description>Project definition for Microsoft Unified Data Platform — declarative CI/CD for Microsoft Fabric.</Description>
     <PackageTags>microsoft-fabric;iac;infrastructure-as-code;ci-cd;devops;udp-cli;udp-cicd</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- Templates ship dotfiles (.gitignore) that the packer excludes by default. -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.8" />
