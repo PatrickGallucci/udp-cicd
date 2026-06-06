@@ -580,6 +580,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Deployment
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -596,6 +614,91 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-define-the-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Define the deployment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-create-the-notebook-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Create the notebook source
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-validate-and-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Validate and deploy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-happens-during-a-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What happens during a deploy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Next steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1521,6 +1624,80 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-define-the-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Define the deployment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-create-the-notebook-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Create the notebook source
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-validate-and-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Validate and deploy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-happens-during-a-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What happens during a deploy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Next steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1540,7 +1717,38 @@
 
 
 <h1 id="your-first-deployment">Your First Deployment<a class="headerlink" href="#your-first-deployment" title="Permanent link">&para;</a></h1>
-<p>A minimal <code>udp.yml</code>:</p>
+<p>This tutorial deploys a minimal hand-written <code>udp.yml</code> containing one lakehouse and one notebook. It walks through the file structure, the source files, and what the engine does during a deploy.</p>
+<hr />
+<h2 id="1-prerequisites">1. Prerequisites<a class="headerlink" href="#1-prerequisites" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>udp-cicd installed</td>
+<td><code>dotnet tool install --global udp-cicd</code> (see <a href="../installation/">Installation</a>)</td>
+</tr>
+<tr>
+<td>Authentication configured</td>
+<td><code>az login</code>, or service principal environment variables</td>
+</tr>
+<tr>
+<td>Fabric capacity</td>
+<td>An active capacity (F2 or higher) and its GUID</td>
+</tr>
+<tr>
+<td>Workspace permissions</td>
+<td>Admin or Contributor role, or permission to create workspaces</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-define-the-deployment">2. Define the deployment<a class="headerlink" href="#2-define-the-deployment" title="Permanent link">&para;</a></h2>
+<p>Create a minimal <code>udp.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">deployment</span><span class="p">:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-udp</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0.0&quot;</span>
@@ -1564,15 +1772,98 @@
 <a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="nt">workspace</span><span class="p">:</span>
 <a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-udp-dev</span>
 </code></pre></div>
-<p>Create the notebook:</p>
+<p>The top-level sections map to the configuration model in <code>UdpCicd.Core.Models</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Model class</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deployment</code></td>
+<td><code>DeploymentDefinition</code></td>
+<td>Name and version. Available in variables as <code>${deployment.name}</code> and <code>${deployment.version}</code>.</td>
+</tr>
+<tr>
+<td><code>workspace</code></td>
+<td><code>WorkspaceConfig</code></td>
+<td>Capacity assignment and workspace defaults.</td>
+</tr>
+<tr>
+<td><code>resources</code></td>
+<td><code>ResourcesConfig</code></td>
+<td>The Fabric items to deploy, grouped by type.</td>
+</tr>
+<tr>
+<td><code>targets</code></td>
+<td><code>TargetConfig</code></td>
+<td>Per-environment overrides such as the workspace name.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-create-the-notebook-source">3. Create the notebook source<a class="headerlink" href="#3-create-the-notebook-source" title="Permanent link">&para;</a></h2>
+<p>Fabric notebooks run Python, so the notebook source is a <code>.py</code> file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>notebooks
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;# Hello from Unified Data Platform Deployment</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="s1">print(&quot;It works!&quot;)&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>notebooks/hello.py
 </code></pre></div>
-<p>Deploy:</p>
+<hr />
+<h2 id="4-validate-and-deploy">4. Validate and deploy<a class="headerlink" href="#4-validate-and-deploy" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>udp-cicd<span class="w"> </span>validate
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
+<p><code>validate</code> checks the file locally without calling the Fabric API. <code>deploy</code> applies the desired state to the <code>dev</code> target.</p>
+<hr />
+<h2 id="5-what-happens-during-a-deploy">5. What happens during a deploy<a class="headerlink" href="#5-what-happens-during-a-deploy" title="Permanent link">&para;</a></h2>
+<p>The engine processes the definition in five stages:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Component</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Load</td>
+<td>Loader / YamlFactory</td>
+<td>Parses <code>udp.yml</code> with YamlDotNet, processes includes, substitutes variables, and validates against the schema.</td>
+</tr>
+<tr>
+<td>2. Resolve</td>
+<td>Resolver</td>
+<td>Sorts resources topologically by dependency so items deploy in the correct order.</td>
+</tr>
+<tr>
+<td>3. Plan</td>
+<td>Planner</td>
+<td>Diffs desired state against actual workspace state and classifies each resource as Create, Update, Delete, or No-op.</td>
+</tr>
+<tr>
+<td>4. Deploy</td>
+<td>Deployer</td>
+<td>Executes the planned actions through the Fabric REST API (<code>FabricClient</code>) and updates state as each action completes.</td>
+</tr>
+<tr>
+<td>5. Record</td>
+<td>StateManager</td>
+<td>Persists <code>deployment-state.json</code>, which enables drift detection and idempotent re-runs.</td>
+</tr>
+</tbody>
+</table>
+<p>Re-running <code>udp-cicd deploy --target dev</code> with no changes results in a no-op plan: the run is idempotent.</p>
+<hr />
+<h2 id="6-next-steps">6. Next steps<a class="headerlink" href="#6-next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../quickstart/">Quick start</a> -- Generate a full medallion project from a template.</li>
+<li><a href="../../guide/udp-yml/">udp.yml reference</a> -- Complete schema reference for deployment definitions.</li>
+<li><a href="../../reference/environment-variables/">Environment variables</a> -- Authentication and variable reference.</li>
+</ul>
 
 
 

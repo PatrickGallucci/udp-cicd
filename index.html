@@ -489,10 +489,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
+  <a href="#1-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why?
+        1. Overview
       
     </span>
   </a>
@@ -500,10 +500,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#2-scope-and-positioning" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Features
+        2. Scope and positioning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Features
       
     </span>
   </a>
@@ -1582,10 +1593,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
+  <a href="#1-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why?
+        1. Overview
       
     </span>
   </a>
@@ -1593,10 +1604,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#2-scope-and-positioning" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Features
+        2. Scope and positioning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Features
       
     </span>
   </a>
@@ -1623,39 +1645,102 @@
   
 
 
-<h1 id="unified-data-platform-deployment"><img src="assets/udp-icon.png" width="32" height="32" align="top" /> Unified Data Platform Deployment<a class="headerlink" href="#unified-data-platform-deployment" title="Permanent link">&para;</a></h1>
+<h1 id="unified-data-platform-deployment">Unified Data Platform Deployment<a class="headerlink" href="#unified-data-platform-deployment" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Public Preview</strong></p>
 </blockquote>
-<p><strong>Project definition for Microsoft Unified Data Platform.</strong></p>
-<p>Define your entire Fabric project in a single <code>udp.yml</code> — lakehouses, notebooks, pipelines, semantic models, Data Agents, security roles, and environment targets — then validate, plan, and deploy with a single command.</p>
-<p>You describe the <strong>desired state</strong> of your workspace. <code>udp-cicd</code> figures out what to create, update, or delete to make it so — in the right order, idempotently, with drift detection on every run. If you've used Terraform or Databricks Asset Deployments, you already know the model. → <a href="guide/declarative-model/">Read about the declarative model</a>.</p>
+<p>Unified Data Platform Deployment (<code>udp-cicd</code>) is a declarative deployment tool for Microsoft Fabric projects, distributed as a .NET global tool. This page describes the deployment model, the gap the tool fills relative to existing tooling, and its principal capabilities.</p>
+<hr />
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>Define an entire Fabric project in a single <code>udp.yml</code> file: lakehouses, notebooks, pipelines, semantic models, Data Agents, security roles, and environment targets. Validate, plan, and deploy with a single command.</p>
+<p>The <code>udp.yml</code> file describes the <strong>desired state</strong> of the workspace. <code>udp-cicd</code> determines what to create, update, or delete to reach that state, applies the changes in dependency order, runs idempotently, and detects drift on every run. The model will be familiar to users of Terraform or Databricks Asset Deployments. See <a href="guide/declarative-model/">the declarative model</a> for details.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>medallion<span class="w"> </span>--name<span class="w"> </span>udp-project
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
-<h2 id="why">Why?<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
-<p>Project definition for Microsoft Unified Data Platform. The Fabric CLI can export/import items, <code>fabric-cicd</code> can deploy across workspaces, and Terraform/Bicep can provision infrastructure — but none of them describe:</p>
-<ul>
-<li>What resources your project needs</li>
-<li>How those resources depend on each other</li>
-<li>How configuration varies across environments</li>
-<li>What security roles and permissions are required</li>
-<li>How to deploy everything in the correct order</li>
-</ul>
-<p><strong>Unified Data Platform Deployment fills that gap.</strong></p>
-<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>45 resource types</strong> — Every Fabric item type: Lakehouses, Notebooks, Pipelines, Warehouses, Semantic Models, Reports, Environments, Data Agents, KQL Databases, Eventhouses, dbt Jobs, and 34 more</li>
-<li><strong>Dependency resolution</strong> — automatic topological sort for deployment ordering</li>
-<li><strong>Multi-environment</strong> — dev, staging, prod targets with variable overrides</li>
-<li><strong>State management</strong> — tracks deployed resources, detects drift</li>
-<li><strong>Rollback support</strong> — deployment history with point-in-time rollback</li>
-<li><strong>Security</strong> — Entra ID group/user/SP role assignments with Graph API resolution</li>
-<li><strong>Secrets</strong> — Environment variables and Azure KeyVault integration</li>
-<li><strong>CI/CD ready</strong> — GitHub Actions and Azure DevOps templates included</li>
-<li><strong>Policy enforcement</strong> — configurable pre-deploy validation rules</li>
-</ul>
+<p>Installation requires the .NET SDK 9.0 or later. See <a href="getting-started/installation/">Installation</a> for prerequisites and authentication setup.</p>
+<hr />
+<h2 id="2-scope-and-positioning">2. Scope and positioning<a class="headerlink" href="#2-scope-and-positioning" title="Permanent link">&para;</a></h2>
+<p>Existing tools cover adjacent needs. The Fabric CLI can export and import items, <code>fabric-cicd</code> can deploy across workspaces, and Terraform or Bicep can provision infrastructure. None of them describe the project itself:</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource inventory</td>
+<td>Which resources the project requires</td>
+</tr>
+<tr>
+<td>Dependencies</td>
+<td>How those resources depend on each other</td>
+</tr>
+<tr>
+<td>Environment configuration</td>
+<td>How configuration varies across environments (dev, staging, prod)</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>Which security roles and permissions are required</td>
+</tr>
+<tr>
+<td>Ordering</td>
+<td>How to deploy everything in the correct order</td>
+</tr>
+</tbody>
+</table>
+<p>Unified Data Platform Deployment fills that gap.</p>
+<hr />
+<h2 id="3-features">3. Features<a class="headerlink" href="#3-features" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>45 resource types</td>
+<td>Every Fabric item type: Lakehouses, Notebooks, Pipelines, Warehouses, Semantic Models, Reports, Environments, Data Agents, KQL Databases, Eventhouses, dbt Jobs, and 34 more</td>
+</tr>
+<tr>
+<td>Dependency resolution</td>
+<td>Automatic topological sort for deployment ordering</td>
+</tr>
+<tr>
+<td>Multi-environment</td>
+<td>Dev, staging, and prod targets with variable overrides</td>
+</tr>
+<tr>
+<td>State management</td>
+<td>Tracks deployed resources and detects drift</td>
+</tr>
+<tr>
+<td>Rollback support</td>
+<td>Deployment history with point-in-time rollback</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>Entra ID group, user, and service principal role assignments with Graph API resolution</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>Environment variables and Azure Key Vault integration</td>
+</tr>
+<tr>
+<td>CI/CD ready</td>
+<td>GitHub Actions and Azure DevOps templates included</td>
+</tr>
+<tr>
+<td>Policy enforcement</td>
+<td>Configurable pre-deploy validation rules</td>
+</tr>
+</tbody>
+</table>
 
 
 

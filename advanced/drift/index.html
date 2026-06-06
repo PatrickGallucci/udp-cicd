@@ -1495,10 +1495,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-drift-detection-works" class="md-nav__link">
+  <a href="#1-how-drift-detection-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How drift detection works
+        1. How drift detection works
       
     </span>
   </a>
@@ -1506,22 +1506,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#types-of-drift" class="md-nav__link">
+  <a href="#2-types-of-drift" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Types of drift
+        2. Types of drift
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Types of drift">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-using-udp-cicd-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Using udp-cicd drift
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Using udp-cicd drift">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#31-basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Added
+        3.1 Basic usage
       
     </span>
   </a>
@@ -1529,10 +1540,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#removed" class="md-nav__link">
+  <a href="#32-example-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Removed
+        3.2 Example output
       
     </span>
   </a>
@@ -1540,10 +1551,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#modified" class="md-nav__link">
+  <a href="#33-machine-readable-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modified
+        3.3 Machine-readable output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Exit codes
       
     </span>
   </a>
@@ -1556,55 +1578,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-udp-cicd-drift" class="md-nav__link">
+  <a href="#4-automated-drift-checks-in-cicd" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using udp-cicd drift
+        4. Automated drift checks in CI/CD
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Using udp-cicd drift">
+    <nav class="md-nav" aria-label="4. Automated drift checks in CI/CD">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#41-github-actions-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example output
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#machine-readable-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Machine-readable output
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#exit-codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exit codes
+        4.1 GitHub Actions example
       
     </span>
   </a>
@@ -1617,22 +1606,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automated-drift-checks-in-cicd" class="md-nav__link">
+  <a href="#5-resolving-drift" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automated drift checks in CI/CD
+        5. Resolving drift
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Automated drift checks in CI/CD">
+    <nav class="md-nav" aria-label="5. Resolving drift">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#github-actions-example" class="md-nav__link">
+  <a href="#51-option-1-overwrite-the-workspace-deployment-wins" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GitHub Actions example
+        5.1 Option 1: Overwrite the workspace (deployment wins)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-option-2-update-the-deployment-to-match-the-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Option 2: Update the deployment to match the workspace
       
     </span>
   </a>
@@ -1645,49 +1645,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#resolving-drift" class="md-nav__link">
+  <a href="#6-integration-with-the-state-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Resolving drift
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resolving drift">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-overwrite-the-workspace-deployment-wins" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: Overwrite the workspace (deployment wins)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-update-the-deployment-to-match-the-workspace" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Update the deployment to match the workspace
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-with-the-state-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Integration with the state file
+        6. Integration with the state file
       
     </span>
   </a>
@@ -1765,10 +1726,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-drift-detection-works" class="md-nav__link">
+  <a href="#1-how-drift-detection-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How drift detection works
+        1. How drift detection works
       
     </span>
   </a>
@@ -1776,22 +1737,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#types-of-drift" class="md-nav__link">
+  <a href="#2-types-of-drift" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Types of drift
+        2. Types of drift
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Types of drift">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-using-udp-cicd-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Using udp-cicd drift
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Using udp-cicd drift">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#31-basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Added
+        3.1 Basic usage
       
     </span>
   </a>
@@ -1799,10 +1771,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#removed" class="md-nav__link">
+  <a href="#32-example-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Removed
+        3.2 Example output
       
     </span>
   </a>
@@ -1810,10 +1782,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#modified" class="md-nav__link">
+  <a href="#33-machine-readable-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modified
+        3.3 Machine-readable output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Exit codes
       
     </span>
   </a>
@@ -1826,55 +1809,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-udp-cicd-drift" class="md-nav__link">
+  <a href="#4-automated-drift-checks-in-cicd" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using udp-cicd drift
+        4. Automated drift checks in CI/CD
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Using udp-cicd drift">
+    <nav class="md-nav" aria-label="4. Automated drift checks in CI/CD">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#41-github-actions-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example output
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#machine-readable-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Machine-readable output
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#exit-codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exit codes
+        4.1 GitHub Actions example
       
     </span>
   </a>
@@ -1887,22 +1837,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automated-drift-checks-in-cicd" class="md-nav__link">
+  <a href="#5-resolving-drift" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automated drift checks in CI/CD
+        5. Resolving drift
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Automated drift checks in CI/CD">
+    <nav class="md-nav" aria-label="5. Resolving drift">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#github-actions-example" class="md-nav__link">
+  <a href="#51-option-1-overwrite-the-workspace-deployment-wins" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GitHub Actions example
+        5.1 Option 1: Overwrite the workspace (deployment wins)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-option-2-update-the-deployment-to-match-the-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Option 2: Update the deployment to match the workspace
       
     </span>
   </a>
@@ -1915,49 +1876,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#resolving-drift" class="md-nav__link">
+  <a href="#6-integration-with-the-state-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Resolving drift
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resolving drift">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-overwrite-the-workspace-deployment-wins" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: Overwrite the workspace (deployment wins)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-update-the-deployment-to-match-the-workspace" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Update the deployment to match the workspace
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-with-the-state-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Integration with the state file
+        6. Integration with the state file
       
     </span>
   </a>
@@ -1985,32 +1907,55 @@
 
 
 <h1 id="drift-detection">Drift Detection<a class="headerlink" href="#drift-detection" title="Permanent link">&para;</a></h1>
+<p>This page describes how <code>udp-cicd drift</code> detects differences between the recorded deployment state and the live Fabric workspace, and how to resolve them. Drift detection is a Stable feature.</p>
 <p>Drift occurs when the live state of a Fabric workspace diverges from what is defined in your <code>udp.yml</code>. This can happen when someone edits a resource through the Fabric portal, when an external tool modifies an item via the REST API, or when a teammate deploys a change that is not reflected in the deployment definition. Left unchecked, drift erodes the reliability of infrastructure-as-code: what you see in source control no longer matches what is running in production.</p>
-<p><code>udp-cicd drift</code> compares the deployment's recorded state against the actual workspace and reports every discrepancy.</p>
-<h2 id="how-drift-detection-works">How drift detection works<a class="headerlink" href="#how-drift-detection-works" title="Permanent link">&para;</a></h2>
-<p>Every time <code>udp-cicd deploy</code> runs, it writes a state file (<code>.udp-cicd/state-{target}.json</code>) that records every deployed resource along with a SHA-256 hash of its definition. When you run <code>udp-cicd drift</code>, the tool:</p>
+<hr />
+<h2 id="1-how-drift-detection-works">1. How drift detection works<a class="headerlink" href="#1-how-drift-detection-works" title="Permanent link">&para;</a></h2>
+<p>Every time <code>udp-cicd deploy</code> runs, the StateManager writes a per-target state file (<code>.udp-cicd/state-&lt;target&gt;.json</code>) that records every deployed resource along with a SHA-256 hash of its definition. When you run <code>udp-cicd drift</code>, the tool:</p>
 <ol>
-<li><strong>Reads the local state file</strong> to get the list of resources udp-cicd previously deployed, including their item IDs and definition hashes.</li>
+<li><strong>Reads the state file</strong> to get the list of resources udp-cicd previously deployed, including their item IDs and definition hashes.</li>
 <li><strong>Queries the Fabric workspace</strong> via the REST API to retrieve the current list of items and their definitions.</li>
 <li><strong>Compares the two</strong> and classifies each difference into one of three categories.</li>
 </ol>
 <p>No changes are made to the workspace or the state file during a drift check. It is a read-only operation.</p>
-<h2 id="types-of-drift">Types of drift<a class="headerlink" href="#types-of-drift" title="Permanent link">&para;</a></h2>
-<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
-<p>Items that exist in the workspace but are not tracked in the deployment state. These were created outside of udp-cicd, for example by a user in the Fabric portal or by another deployment tool.</p>
-<h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
-<p>Items that are recorded in the deployment state but no longer exist in the workspace. Someone deleted the item manually, or another process removed it.</p>
-<h3 id="modified">Modified<a class="headerlink" href="#modified" title="Permanent link">&para;</a></h3>
-<p>Items that exist in both the state and the workspace, but whose definition has changed. The definition hash in the state file no longer matches the hash of the live item's definition. This typically means someone edited the resource in the portal (for example, modifying a notebook's code or changing a pipeline's activities).</p>
-<h2 id="using-udp-cicd-drift">Using <code>udp-cicd drift</code><a class="headerlink" href="#using-udp-cicd-drift" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="2-types-of-drift">2. Types of drift<a class="headerlink" href="#2-types-of-drift" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Meaning</th>
+<th>Typical cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Added</td>
+<td>Items exist in the workspace but are not tracked in the deployment state.</td>
+<td>Created outside of udp-cicd, for example by a user in the Fabric portal or by another deployment tool.</td>
+</tr>
+<tr>
+<td>Removed</td>
+<td>Items are recorded in the deployment state but no longer exist in the workspace.</td>
+<td>Someone deleted the item manually, or another process removed it.</td>
+</tr>
+<tr>
+<td>Modified</td>
+<td>Items exist in both the state and the workspace, but the definition hash in the state file no longer matches the hash of the live item's definition.</td>
+<td>Someone edited the resource in the portal, for example modifying a notebook's code or changing a pipeline's activities.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-using-udp-cicd-drift">3. Using <code>udp-cicd drift</code><a class="headerlink" href="#3-using-udp-cicd-drift" title="Permanent link">&para;</a></h2>
+<h3 id="31-basic-usage">3.1 Basic usage<a class="headerlink" href="#31-basic-usage" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Check drift against the default target</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>udp-cicd<span class="w"> </span>drift
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Check drift against a specific target</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>udp-cicd<span class="w"> </span>drift<span class="w"> </span>--target<span class="w"> </span>prod
 </code></pre></div>
-<h3 id="example-output">Example output<a class="headerlink" href="#example-output" title="Permanent link">&para;</a></h3>
+<h3 id="32-example-output">3.2 Example output<a class="headerlink" href="#32-example-output" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$ udp-cicd drift --target dev
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Drift Report for target: dev
@@ -2031,7 +1976,7 @@
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>Summary: 4 resources drifted (2 added, 1 removed, 1 modified)
 </code></pre></div>
-<h3 id="machine-readable-output">Machine-readable output<a class="headerlink" href="#machine-readable-output" title="Permanent link">&para;</a></h3>
+<h3 id="33-machine-readable-output">3.3 Machine-readable output<a class="headerlink" href="#33-machine-readable-output" title="Permanent link">&para;</a></h3>
 <p>Use <code>--format json</code> to produce output suitable for scripts and CI/CD:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>udp-cicd<span class="w"> </span>drift<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>--format<span class="w"> </span>json
 </code></pre></div>
@@ -2052,7 +1997,7 @@
 <a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">  </span><span class="nt">&quot;drift_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
 <a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="p">}</span>
 </code></pre></div>
-<h3 id="exit-codes">Exit codes<a class="headerlink" href="#exit-codes" title="Permanent link">&para;</a></h3>
+<h3 id="34-exit-codes">3.4 Exit codes<a class="headerlink" href="#34-exit-codes" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2063,22 +2008,19 @@
 <tbody>
 <tr>
 <td><code>0</code></td>
-<td>No drift detected</td>
+<td>Check completed, with or without drift found</td>
 </tr>
 <tr>
 <td><code>1</code></td>
-<td>Drift detected</td>
-</tr>
-<tr>
-<td><code>2</code></td>
-<td>Error (authentication failure, state file not found, etc.)</td>
+<td>Error (deployment failed to load, workspace unreachable)</td>
 </tr>
 </tbody>
 </table>
-<p>The non-zero exit code on drift makes it straightforward to use in CI/CD pipelines where you want a job to fail when drift is present.</p>
-<h2 id="automated-drift-checks-in-cicd">Automated drift checks in CI/CD<a class="headerlink" href="#automated-drift-checks-in-cicd" title="Permanent link">&para;</a></h2>
+<p>Note that <code>drift</code> currently exits <code>0</code> even when drift is detected. To fail a CI/CD job on drift, parse the command output (for example, grep for <code>Drift detected</code>) rather than relying on the exit code.</p>
+<hr />
+<h2 id="4-automated-drift-checks-in-cicd">4. Automated drift checks in CI/CD<a class="headerlink" href="#4-automated-drift-checks-in-cicd" title="Permanent link">&para;</a></h2>
 <p>Scheduled drift checks catch configuration drift before it causes problems. A common pattern is to run a drift check on a cron schedule and notify the team when drift is found.</p>
-<h3 id="github-actions-example">GitHub Actions example<a class="headerlink" href="#github-actions-example" title="Permanent link">&para;</a></h3>
+<h3 id="41-github-actions-example">4.1 GitHub Actions example<a class="headerlink" href="#41-github-actions-example" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Drift Check</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">on</span><span class="p">:</span>
@@ -2095,9 +2037,9 @@
 <a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
 <a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
-<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-dotnet@v4</span>
 <a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
-<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">          </span><span class="nt">dotnet-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;9.0.x&#39;</span>
 <a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
 <a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install udp-cicd</span>
 <a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dotnet tool install --global udp-cicd</span>
@@ -2124,14 +2066,15 @@
 <a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">          </span><span class="no">echo &quot;::warning::Drift detected in ${{ matrix.target }} environment. Review drift-report artifact.&quot;</span>
 </code></pre></div>
-<h2 id="resolving-drift">Resolving drift<a class="headerlink" href="#resolving-drift" title="Permanent link">&para;</a></h2>
+<hr />
+<h2 id="5-resolving-drift">5. Resolving drift<a class="headerlink" href="#5-resolving-drift" title="Permanent link">&para;</a></h2>
 <p>Once drift is detected, you have two options depending on which version of the truth you want to keep.</p>
-<h3 id="option-1-overwrite-the-workspace-deployment-wins">Option 1: Overwrite the workspace (deployment wins)<a class="headerlink" href="#option-1-overwrite-the-workspace-deployment-wins" title="Permanent link">&para;</a></h3>
+<h3 id="51-option-1-overwrite-the-workspace-deployment-wins">5.1 Option 1: Overwrite the workspace (deployment wins)<a class="headerlink" href="#51-option-1-overwrite-the-workspace-deployment-wins" title="Permanent link">&para;</a></h3>
 <p>If the deployment definition is correct and the workspace should match it, redeploy:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-y
 </code></pre></div>
 <p>This pushes the deployment definitions to the workspace, overwriting any manual changes. Added items that are not in the deployment are left untouched (udp-cicd only manages resources it tracks).</p>
-<h3 id="option-2-update-the-deployment-to-match-the-workspace">Option 2: Update the deployment to match the workspace<a class="headerlink" href="#option-2-update-the-deployment-to-match-the-workspace" title="Permanent link">&para;</a></h3>
+<h3 id="52-option-2-update-the-deployment-to-match-the-workspace">5.2 Option 2: Update the deployment to match the workspace<a class="headerlink" href="#52-option-2-update-the-deployment-to-match-the-workspace" title="Permanent link">&para;</a></h3>
 <p>If the changes made in the workspace are intentional and should be preserved, update your <code>udp.yml</code> to reflect the new state:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Export the current workspace definitions to local files</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>udp-cicd<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--target<span class="w"> </span>dev
@@ -2143,12 +2086,13 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>udp-cicd<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>--item-id<span class="w"> </span>&lt;item-guid&gt;<span class="w"> </span>--resource-key<span class="w"> </span>new_notebook<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p>For items that were deleted from the workspace and should also be removed from the deployment, delete the resource entry from <code>udp.yml</code> and redeploy.</p>
-<h2 id="integration-with-the-state-file">Integration with the state file<a class="headerlink" href="#integration-with-the-state-file" title="Permanent link">&para;</a></h2>
+<hr />
+<h2 id="6-integration-with-the-state-file">6. Integration with the state file<a class="headerlink" href="#6-integration-with-the-state-file" title="Permanent link">&para;</a></h2>
 <p>Drift detection depends entirely on the state file. If no state file exists for a target (because you have never deployed to it), <code>udp-cicd drift</code> will return an error:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Error: No state file found for target &#39;prod&#39;.
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  Run &#39;udp-cicd deploy --target prod&#39; or &#39;udp-cicd import --target prod&#39; first.
 </code></pre></div>
-<p>When using a remote state backend (OneLake, Azure Blob, or ADLS), the drift command reads the remote state file so that any CI runner can check for drift without needing a local copy. See <a href="../state/">State Management</a> for backend configuration.</p>
+<p>When using a remote state backend (OneLake, Azure Blob, or ADLS Gen2), the drift command reads the remote state file so that any CI runner can check for drift without needing a local copy. See <a href="../state/">State Management</a> for backend configuration and stability status.</p>
 <p>The drift command never writes to the state file. Only <code>deploy</code>, <code>import</code>, <code>bind</code>, and <code>rollback</code> modify state.</p>
 
 
