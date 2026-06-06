@@ -1,14 +1,14 @@
 # Installation
 
-This topic describes how to install, configure, and verify Unified Data Platform Deployment on your local machine or CI/CD environment.
+This topic describes how to install, configure, and verify Unified Data Platform Deployment on a local machine or CI/CD environment.
 
 ---
 
-## Prerequisites
+## 1. Prerequisites
 
-Before you install Unified Data Platform Deployment, make sure your environment meets the following requirements.
+Before installing Unified Data Platform Deployment, confirm that the environment meets the following requirements.
 
-### System requirements
+### 1.1 System requirements
 
 | Requirement | Minimum version | Notes |
 |---|---|---|
@@ -16,12 +16,12 @@ Before you install Unified Data Platform Deployment, make sure your environment 
 | **Azure CLI** | 2.50+ | Required for interactive authentication. Install from [https://aka.ms/installazurecli](https://aka.ms/installazurecli). |
 | **Operating system** | Windows 10+, macOS 12+, Linux | Any OS supported by the .NET 9 runtime. |
 
-### Microsoft Fabric requirements
+### 1.2 Microsoft Fabric requirements
 
 | Requirement | Details |
 |---|---|
-| **Fabric capacity** | An active Fabric capacity (F2 or higher). You need the capacity GUID from the Fabric admin portal. |
-| **Workspace permissions** | Admin or Contributor role on the target workspace, or permissions to create new workspaces. |
+| **Fabric capacity** | An active Fabric capacity (F2 or higher). The capacity GUID is available in the Fabric admin portal. |
+| **Workspace permissions** | Admin or Contributor role on the target workspace, or permission to create new workspaces. |
 | **Entra ID (Azure AD) access** | The authenticated identity must have Fabric API permissions. |
 
 > **Important**
@@ -30,7 +30,7 @@ Before you install Unified Data Platform Deployment, make sure your environment 
 
 ---
 
-## Step 1: Install the tool
+## 2. Install the tool
 
 Unified Data Platform Deployment ships as a [.NET global tool](https://learn.microsoft.com/dotnet/core/tools/global-tools). Install it with the .NET SDK:
 
@@ -38,7 +38,7 @@ Unified Data Platform Deployment ships as a [.NET global tool](https://learn.mic
 dotnet tool install --global udp-cicd
 ```
 
-This installs the `udp-cicd` CLI. To use the MCP server (for AI-assisted authoring in Claude Code, Cursor, etc.), install the companion tool:
+This installs the `udp-cicd` CLI. To use the MCP server (for AI-assisted authoring in Claude Code, Cursor, and similar tools), install the companion tool:
 
 ```bash
 dotnet tool install --global udp-cicd-mcp
@@ -46,9 +46,9 @@ dotnet tool install --global udp-cicd-mcp
 
 > **Note**
 >
-> Global tools are installed to `~/.dotnet/tools` (Linux/macOS) or `%USERPROFILE%\.dotnet\tools` (Windows). Ensure this directory is on your `PATH` — the .NET SDK installer normally adds it for you.
+> Global tools are installed to `~/.dotnet/tools` (Linux/macOS) or `%USERPROFILE%\.dotnet\tools` (Windows). Ensure this directory is on your `PATH`. The .NET SDK installer normally adds it for you.
 
-### Install from source
+### 2.1 Install from source
 
 To build and install from the GitHub repository (for example, to use an unreleased feature):
 
@@ -59,19 +59,21 @@ dotnet pack -c Release
 dotnet tool install --global --add-source ./src/UdpCicd.Cli/bin/Release udp-cicd
 ```
 
+The repository contains the engine (`dotnet/src/UdpCicd.Core`), the CLI (`dotnet/src/UdpCicd.Cli`, built on System.CommandLine), the MCP server (`dotnet/src/UdpCicd.Mcp`), and the test suite (`dotnet/tests/UdpCicd.Core.Tests`).
+
 ---
 
-## Step 2: Verify the installation
+## 3. Verify the installation
 
-### Check the version
+### 3.1 Check the version
 
 ```bash
 udp-cicd --version
 ```
 
-### Run the diagnostic check
+### 3.2 Run the diagnostic check
 
-The `doctor` command validates your environment, authentication, and Fabric API connectivity in a single step:
+The `doctor` command validates the .NET runtime, Azure CLI status, authentication, and Fabric API connectivity in a single step:
 
 ```bash
 udp-cicd doctor
@@ -98,11 +100,17 @@ udp-cicd doctor
 
 ---
 
-## Step 3: Set up authentication
+## 4. Set up authentication
 
-Unified Data Platform Deployment uses the `Azure.Identity` library and supports two authentication methods: interactive login for development and service principal for CI/CD.
+Unified Data Platform Deployment uses the `Azure.Identity` library. The credential type is selected automatically from the environment:
 
-### Interactive login (development)
+| Condition | Credential used |
+|---|---|
+| `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET` all set | `ClientSecretCredential` (service principal) |
+| `FABRIC_USE_BROWSER=true` | `InteractiveBrowserCredential` (browser sign-in) |
+| Otherwise | `DefaultAzureCredential` (managed identity, environment, or `az login` session) |
+
+### 4.1 Interactive login (development)
 
 Use the Azure CLI to sign in interactively. This is the recommended method for local development.
 
@@ -110,7 +118,7 @@ Use the Azure CLI to sign in interactively. This is the recommended method for l
 az login
 ```
 
-Then run commands against your development environment:
+Then run commands against the development environment:
 
 ```bash
 udp-cicd plan --target dev
@@ -121,7 +129,7 @@ udp-cicd deploy --target dev
 >
 > If you have access to multiple Azure tenants, specify the tenant explicitly: `az login --tenant your-tenant-id`.
 
-### Service principal (CI/CD)
+### 4.2 Service principal (CI/CD)
 
 For automated pipelines, use a service principal with the following environment variables:
 
@@ -131,13 +139,13 @@ export AZURE_CLIENT_ID="your-client-id"
 export AZURE_CLIENT_SECRET="your-client-secret"
 ```
 
-Then run commands non-interactively using the `--auto-approve` flag:
+When all three variables are set, the tool authenticates with `ClientSecretCredential`. Run commands non-interactively using the `--auto-approve` flag:
 
 ```bash
 udp-cicd deploy --target prod --auto-approve
 ```
 
-**Setting up a service principal:**
+**To set up a service principal:**
 
 1. Register an application in Entra ID (Azure AD).
 2. Create a client secret or configure certificate-based auth.
@@ -148,7 +156,7 @@ udp-cicd deploy --target prod --auto-approve
 >
 > Never commit service principal credentials to source control. Use your CI/CD platform's secret management (for example, GitHub Actions secrets, Azure DevOps variable groups, or Azure Key Vault) to inject these values at runtime.
 
-### GitHub Actions example
+### 4.3 GitHub Actions example
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -180,39 +188,39 @@ See [GitHub Actions](../cicd/github-actions.md) and [Azure DevOps](../cicd/azure
 
 ---
 
-## Upgrading
+## 5. Upgrading
 
-### Check for updates
+### 5.1 Check for updates
 
 ```bash
 udp-cicd check-update
 ```
 
-### Upgrade to the latest version
+### 5.2 Upgrade to the latest version
 
 ```bash
 dotnet tool update --global udp-cicd
 ```
 
-### Pin a specific version
+### 5.3 Pin a specific version
 
 For reproducible CI/CD pipelines, pin the version when installing:
 
 ```bash
-dotnet tool install --global udp-cicd --version 1.0.1
+dotnet tool install --global udp-cicd --version 1.0.3
 ```
 
 Or commit a [tool manifest](https://learn.microsoft.com/dotnet/core/tools/local-tools) (`.config/dotnet-tools.json`) and run `dotnet tool restore`.
 
 ---
 
-## Troubleshooting installation issues
+## 6. Troubleshooting installation issues
 
-### `udp-cicd: command not found`
+### 6.1 `udp-cicd: command not found`
 
-**Cause:** The .NET global tools directory is not on your `PATH`.
+**Cause:** The .NET global tools directory is not on the `PATH`.
 
-**Solution:** Add it to your shell profile.
+**Resolution:** Add it to the shell profile.
 
 ```bash
 # macOS / Linux (~/.zshrc or ~/.bashrc)
@@ -224,11 +232,11 @@ export PATH="$PATH:$HOME/.dotnet/tools"
 $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
 ```
 
-### `az login` errors
+### 6.2 `az login` errors
 
 **Cause:** The Azure CLI is not installed or not authenticated.
 
-**Solution:**
+**Resolution:**
 
 ```bash
 az --version           # confirm the CLI is installed (see https://aka.ms/installazurecli)
@@ -236,7 +244,7 @@ az login               # sign in
 az account show --query '{name:name, tenantId:tenantId}' -o table
 ```
 
-### Proxy or firewall issues
+### 6.3 Proxy or firewall issues
 
 If you are behind a corporate proxy, configure NuGet and the Azure CLI:
 
@@ -250,7 +258,7 @@ If your firewall blocks nuget.org, install from a private NuGet feed with `--add
 
 ---
 
-## Next steps
+## 7. Next steps
 
 - [Quick start tutorial](../getting-started/quickstart.md) -- Create and deploy your first deployment.
 - [CLI commands reference](../cli/commands.md) -- Full reference for all `udp-cicd` commands.
