@@ -1,0 +1,19 @@
+<Project>
+  <!-- Shared settings for every project in the UdpCicd solution. -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- Package / assembly metadata (mirrors pyproject.toml) -->
+    <Version>1.0.1</Version>
+    <Authors>UDP</Authors>
+    <Company>Microsoft Unified Data Platform</Company>
+    <Product>UDP-CICD</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/PatrickGallucci/udp-cicd</RepositoryUrl>
+    <PackageProjectUrl>https://PatrickGallucci.github.io/udp-cicd/</PackageProjectUrl>
+  </PropertyGroup>
+</Project>

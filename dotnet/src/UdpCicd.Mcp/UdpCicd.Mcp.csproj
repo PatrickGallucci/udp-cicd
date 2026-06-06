@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>UdpCicd.Mcp</RootNamespace>
+    <AssemblyName>udp-cicd-mcp</AssemblyName>
+
+    <!-- Packaged and installed as a global .NET tool: `dotnet tool install -g udp-cicd-mcp` -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>udp-cicd-mcp</ToolCommandName>
+    <PackageId>udp-cicd-mcp</PackageId>
+    <Description>MCP server exposing UDP-CICD operations as tools for Claude Code, Cursor, and other MCP clients.</Description>
+    <PackageTags>microsoft-fabric;mcp;model-context-protocol;udp-cicd</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+    <PackageReference Include="ModelContextProtocol" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UdpCicd.Core\UdpCicd.Core.csproj" />
+  </ItemGroup>
+
+</Project>

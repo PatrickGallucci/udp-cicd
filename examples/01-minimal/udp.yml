@@ -1,0 +1,32 @@
+# Minimal example — one lakehouse, one notebook
+# Copy this folder, update capacity_id, and run:
+#   udp-cicd validate
+#   udp-cicd deploy -t dev
+
+deployment:
+  name: minimal-example
+  version: "1.0.0"
+  description: "Minimal Fabric deployment — one lakehouse and one notebook"
+
+resources:
+  lakehouses:
+    my_lakehouse:
+      description: "Single lakehouse for data storage"
+
+  notebooks:
+    hello_udp:
+      path: ./notebooks/hello.py
+      description: "Hello world notebook"
+      default_lakehouse: my_lakehouse
+
+targets:
+  dev:
+    default: true
+    workspace:
+      name: minimal-example-dev
+      capacity_id: "${var.capacity_id}"
+
+variables:
+  capacity_id:
+    description: "Your Fabric capacity GUID"
+    default: "REPLACE-WITH-YOUR-CAPACITY-GUID"

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>UdpCicd.Cli</RootNamespace>
+    <AssemblyName>udp-cicd</AssemblyName>
+
+    <!-- Packaged and installed as a global .NET tool: `dotnet tool install -g udp-cicd` -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>udp-cicd</ToolCommandName>
+    <PackageId>udp-cicd</PackageId>
+    <Description>Project definition for Microsoft Unified Data Platform — declarative CI/CD for Microsoft Fabric.</Description>
+    <PackageTags>microsoft-fabric;iac;infrastructure-as-code;ci-cd;devops;udp-cli;udp-cicd</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.8" />
+    <PackageReference Include="Spectre.Console" Version="0.56.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UdpCicd.Core\UdpCicd.Core.csproj" />
+  </ItemGroup>
+
+</Project>
