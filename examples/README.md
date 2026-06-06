@@ -24,6 +24,7 @@ Working examples you can copy and deploy to your Fabric tenant.
 | 05 | [Multi-Environment](05-multi-environment/) | Policies, secrets, canary deploy, notifications | Advanced |
 | 06 | [Shortcuts & Connections](06-shortcuts-and-connections/) | ADLS, S3, cross-workspace shortcuts | Intermediate |
 | 07 | [Shortcut Transformations](07-shortcut-transformations/) | CSV/JSON/Excel → Delta, AI summarize/translate/classify | Intermediate |
+| 08 | [All Resource Types](08-all-resource-types/) | Reference catalogue using all 45 supported item types | Reference |
 
 ## Finding Your Capacity GUID
 
