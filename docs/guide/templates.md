@@ -1,18 +1,27 @@
 # Templates
 
-Templates are starter projects that generate a complete `udp.yml`, directory structure, and sample definition files. They save you from writing boilerplate and give you a working project in seconds.
+This page documents project templates: starter projects that generate a complete `udp.yml`, directory structure, and sample definition files. Templates remove boilerplate and produce a working project in seconds.
 
-## Using templates
+---
+
+## 1. Using templates
 
 ```bash
 udp-cicd init --template <template_name> --name <project_name>
 ```
 
-This creates a new directory with the project name containing a fully configured deployment.
+This creates a new directory with the project name containing a fully configured deployment. Built-in templates ship with the tool in `Assets/templates/`.
 
-## Built-in templates
+---
 
-### `blank`
+## 2. Built-in templates
+
+| Template | Description |
+|----------|-------------|
+| `blank` | Minimal starting point: empty `udp.yml` plus the standard directory structure. |
+| `medallion` | Bronze/Silver/Gold lakehouse architecture with ETL notebooks, a data pipeline, and a Data Agent. |
+
+### 2.1 `blank`
 
 A minimal starting point with an empty `udp.yml` and the standard directory structure.
 
@@ -34,7 +43,7 @@ udp-project/
 
 The generated `udp.yml` contains the `deployment`, `workspace`, `variables`, `resources`, and `targets` sections with placeholder comments. Add your own resources and fill in the workspace details.
 
-### `medallion`
+### 2.2 `medallion`
 
 A Bronze/Silver/Gold lakehouse architecture with ETL notebooks, data pipelines, and a Data Agent. This is the most common pattern for data engineering projects on Fabric.
 
@@ -76,12 +85,13 @@ Resources defined in `udp.yml`:
 
 The template includes dev and prod targets with variable overrides for database connections.
 
+---
 
-## Creating custom templates
+## 3. Creating custom templates
 
-A custom template is a directory containing a `template.yml` manifest and a set of files that will be copied into the new project. File contents and names can include Jinja2 template variables.
+A custom template is a directory containing a `template.yml` manifest and a set of files that are copied into the new project. File contents can include `${{ variable }}` placeholders that are substituted at init time.
 
-### Directory structure
+### 3.1 Directory structure
 
 ```
 udp-custom-template/
@@ -94,7 +104,7 @@ udp-custom-template/
 └── .gitignore
 ```
 
-### `template.yml` format
+### 3.2 `template.yml` format
 
 ```yaml
 name: udp-custom-template
@@ -107,93 +117,92 @@ variables:
     description: "Project name (used in resource naming)"
     default: "udp-project"
 
-  lakehouse_count:
-    description: "Number of lakehouses to create"
-    type: number
-    default: 2
+  lakehouse_prefix:
+    description: "Prefix for lakehouse names"
+    default: "bronze"
 
-  include_agent:
-    description: "Include a Data Agent"
-    type: boolean
-    default: true
+  capacity_id:
+    description: "Fabric capacity GUID for the dev target"
+    default: ""
 ```
 
-When a user runs `udp-cicd init --template ./udp-custom-template`, they are prompted for each variable (or the default is used).
+When a user runs `udp-cicd init --template ./udp-custom-template`, the defaults from `template.yml` are applied unless overridden with `--var KEY=VALUE`.
 
-### Jinja2 variables in template files
+### 3.3 Placeholders in template files
 
-All files in the template directory are processed as Jinja2 templates. Use `{{ variable_name }}` for substitution and `{% if %}` / `{% for %}` for conditional and repeated blocks.
+Template files use simple `${{ variable }}` placeholder substitution. There is no conditional or loop syntax; a template renders the same structure every time, parameterized by variable values. A placeholder with no matching variable renders as an empty string.
+
+| Rule | Behavior |
+|------|----------|
+| Substitution syntax | `${{ variable_name }}` (whitespace inside the braces is allowed) |
+| Rendered file types | `.yml`, `.yaml`, `.py`, `.md`, `.txt`, `.json`, `.sql`, `.kql` |
+| Other file types | Copied verbatim, no substitution |
+| Unknown variables | Replaced with an empty string |
 
 In `udp.yml`:
 
 ```yaml
 deployment:
-  name: {{ project_name }}
+  name: ${{project_name}}
   version: "1.0.0"
 
 resources:
   lakehouses:
-    {% for i in range(lakehouse_count) %}
-    layer_{{ i }}:
-      display_name: "{{ project_name }}_layer_{{ i }}"
-      description: "Data layer {{ i }}"
-    {% endfor %}
+    ${{lakehouse_prefix}}_landing:
+      display_name: "${{project_name}}_landing"
+      description: "Raw data landing zone"
 
-  {% if include_agent %}
-  data_agents:
-    assistant:
-      display_name: "{{ project_name }}_agent"
-      description: "Data Agent for {{ project_name }}"
-      instruction_file: agent/assistant.yml
-  {% endif %}
+targets:
+  dev:
+    default: true
+    workspace:
+      name: ${{project_name}}-dev
+      capacity_id: "${{capacity_id}}"
 ```
 
-### Built-in template variables
+### 3.4 Built-in template variables
 
-These variables are always available in addition to the ones you define in `template.yml`:
+One variable is always available in addition to the ones defined in `template.yml`:
 
 | Variable | Description |
 |----------|-------------|
 | `project_name` | The `--name` value passed to `udp-cicd init` |
-| `timestamp` | ISO 8601 timestamp of project creation |
-| `udp_deployment_version` | Version of the installed udp-cicd package |
 
-## Remote templates
+---
+
+## 4. Remote templates
 
 Templates can be loaded from a URL or a GitHub repository. This allows teams to share standard templates without copying files.
 
-### URL-based templates
+### 4.1 URL-based templates
 
-Point to a `.tar.gz` or `.zip` archive containing the template directory:
+Point to a `.tar.gz` archive containing the template directory (`.zip` archives are not supported):
 
 ```bash
 udp-cicd init --template https://example.com/templates/data-mesh-v2.tar.gz --name udp-project
 ```
 
-### GitHub shorthand
+### 4.2 GitHub shorthand
 
-Use the `github:` prefix to reference a template in a GitHub repository:
+Use the `github:owner/repo` prefix to reference a template repository. The shorthand downloads the `main` branch as a tarball; subdirectory paths and branch/tag pins are not supported:
 
 ```bash
-# Uses the repository root as the template
 udp-cicd init --template github:contoso/udp-templates --name udp-project
-
-# Uses a subdirectory within the repository
-udp-cicd init --template github:contoso/udp-templates/medallion-v2 --name udp-project
-
-# Uses a specific branch or tag
-udp-cicd init --template github:contoso/udp-templates@v3.0 --name udp-project
 ```
 
-The repository must contain a `template.yml` at the root (or specified subdirectory). Public repositories are accessible without authentication. For private repositories, udp-cicd uses the `GITHUB_TOKEN` environment variable.
+The archive must contain a `template.yml`; the directory containing the first `template.yml` found is used as the template root. Only publicly accessible URLs and repositories are supported.
 
-## Template variables at init time
+Note: remote templates (URL and `github:`) are copied verbatim. `${{ variable }}` placeholder rendering currently applies to built-in and local directory templates only.
+
+---
+
+## 5. Template variables at init time
 
 When running `udp-cicd init`, variables are resolved in this order:
 
 1. **Command-line flags**: `--var project_name=udp-project`
-2. **Interactive prompt**: If a required variable has no default and was not provided on the command line, udp-cicd prompts for it.
-3. **Default values**: From `template.yml`.
+2. **Default values**: From the `variables` section of `template.yml`.
+3. **Unmatched placeholders**: Render as empty strings; `udp-cicd validate` will surface any resulting gaps.
 
 ```bash
 # Provide all variables on the command line (no prompts)

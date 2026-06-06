@@ -1,10 +1,12 @@
 # GitHub Actions
 
-This page provides complete, copy-ready workflow files for deploying Unified Data Platform Deployment with GitHub Actions.
+This page provides complete, copy-ready workflow files for deploying Unified Data Platform Deployment with GitHub Actions. These workflows have been proven end-to-end against live Fabric workspaces.
 
-For a working reference repository, see [github.com/PatrickGallucci/udp-udp-cicd-example](https://github.com/PatrickGallucci/udp-udp-cicd-example).
+For a working reference repository, see [github.com/PatrickGallucci/udp-cicd-example](https://github.com/PatrickGallucci/udp-cicd-example).
 
-## Setting up secrets
+---
+
+## 1. Setting up secrets
 
 Go to your repository on GitHub: **Settings > Secrets and variables > Actions**. Add the following repository secrets:
 
@@ -18,7 +20,9 @@ These secrets are referenced as `${{ secrets.AZURE_TENANT_ID }}`, etc., in the w
 
 See [Service Principal Setup](../guide/service-principal.md) for instructions on creating the service principal and granting it workspace access.
 
-## Setting up environments with approval gates
+---
+
+## 2. Setting up environments with approval gates
 
 Go to **Settings > Environments** in your repository. Create the following environments:
 
@@ -30,7 +34,9 @@ Go to **Settings > Environments** in your repository. Create the following envir
 
 You can also scope environment secrets. If dev and prod use different service principals, add the `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` secrets at the environment level instead of the repository level.
 
-## CI workflow: PR validation
+---
+
+## 3. CI workflow: PR validation
 
 This workflow runs on every pull request that touches the deployment definition. It validates the schema and policies, then runs a plan to show what would change.
 
@@ -55,9 +61,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -75,9 +81,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -90,7 +96,9 @@ jobs:
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 ```
 
-## CD workflow: deploy on merge
+---
+
+## 4. CD workflow: deploy on merge
 
 This workflow runs when changes are merged to `main`. It deploys sequentially through dev, staging, and production, with an approval gate before production.
 
@@ -118,9 +126,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -148,9 +156,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -178,9 +186,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -200,7 +208,9 @@ jobs:
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 ```
 
-## Drift check workflow (scheduled)
+---
+
+## 5. Drift check workflow (scheduled)
 
 This workflow runs on a schedule to detect changes made outside of the deployment pipeline. It reports drift as a workflow annotation and uploads the report as an artifact.
 
@@ -224,9 +234,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -256,7 +266,9 @@ jobs:
         run: exit 1
 ```
 
-## Destroy workflow (manual dispatch)
+---
+
+## 6. Destroy workflow (manual dispatch)
 
 This workflow tears down all deployment resources in a target workspace. It requires manual dispatch and confirmation to prevent accidental deletion.
 
@@ -295,9 +307,9 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -313,7 +325,9 @@ jobs:
 !!! warning "Production protection"
     The `prod` option is intentionally excluded from the destroy workflow's target choices. If you need to destroy production resources, do so through a separate process with additional safeguards.
 
-## Example of a working pipeline run
+---
+
+## 7. Example of a working pipeline run
 
 A successful CD run looks like this in the GitHub Actions UI:
 
@@ -321,7 +335,7 @@ A successful CD run looks like this in the GitHub Actions UI:
 Fabric CD                                    ✓ completed in 4m 32s
 ├── Deploy to Dev                            ✓ 1m 12s
 │   ├── Checkout                             ✓ 2s
-│   ├── Setup Python 3.12                    ✓ 8s
+│   ├── Setup .NET 9                         ✓ 8s
 │   ├── Install udp-cicd                   ✓ 15s
 │   ├── Deploy                               ✓ 42s
 │   │   Deploying to target: dev
@@ -338,8 +352,10 @@ Fabric CD                                    ✓ completed in 4m 32s
     └── PatrickGallucci approved               ✓ 2m 12s
 ```
 
-## Reference repository
+---
+
+## 8. Reference repository
 
 A complete working example with all four workflows, a multi-target `udp.yml`, and sample notebooks is available at:
 
-[github.com/PatrickGallucci/udp-udp-cicd-example](https://github.com/PatrickGallucci/udp-udp-cicd-example)
+[github.com/PatrickGallucci/udp-cicd-example](https://github.com/PatrickGallucci/udp-cicd-example)

@@ -1,14 +1,20 @@
 # Service Principal Setup
 
-A service principal (SP) is required for CI/CD deployments. It authenticates udp-cicd to the Fabric API without user interaction.
+This page describes how to create and configure the service principal (SP) required for CI/CD deployments. The service principal authenticates udp-cicd to the Fabric API without user interaction.
+
+When the environment variables `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET` are set, udp-cicd authenticates with a `ClientSecretCredential`. If they are not set, `DefaultAzureCredential` applies (managed identity, environment, or `az login`). Setting `FABRIC_USE_BROWSER=true` forces an `InteractiveBrowserCredential` for local interactive sign-in.
+
+---
 
 ## 1. Create the App Registration
 
 ```bash
-az ad app create --display-name "udp-cicd-cicd"
+az ad app create --display-name "sp-udp-cicd"
 ```
 
-Note the `appId` from the output — this is your `AZURE_CLIENT_ID`.
+Note the `appId` from the output. This is your `AZURE_CLIENT_ID`.
+
+---
 
 ## 2. Create a Client Secret
 
@@ -16,13 +22,17 @@ Note the `appId` from the output — this is your `AZURE_CLIENT_ID`.
 az ad app credential reset --id <appId> --append
 ```
 
-Copy the `password` — this is your `AZURE_CLIENT_SECRET`. You cannot retrieve it later.
+Copy the `password`. This is your `AZURE_CLIENT_SECRET`. You cannot retrieve it later.
+
+---
 
 ## 3. Create the Service Principal
 
 ```bash
 az ad sp create --id <appId>
 ```
+
+---
 
 ## 4. Get Your Tenant ID
 
@@ -32,18 +42,20 @@ az account show --query tenantId -o tsv
 
 This is your `AZURE_TENANT_ID`.
 
+---
+
 ## 5. Grant Fabric Workspace Access
 
-The service principal needs **Contributor** or **Admin** role on each workspace it deploys to.
+The service principal needs the **Contributor** or **Admin** role on each workspace it deploys to.
 
-### Option A: Grant via Fabric Portal
+### 5.1 Option A: Grant via Fabric Portal
 
-1. Open the workspace in app.udp.microsoft.com
-2. Settings → Manage access
+1. Open the workspace in app.fabric.microsoft.com
+2. Settings > Manage access
 3. Add the service principal by name or app ID
 4. Set role to **Contributor** (or **Admin** for security role management)
 
-### Option B: Grant via udp-cicd
+### 5.2 Option B: Grant via udp-cicd
 
 Add the SP to your udp.yml security roles:
 
@@ -57,7 +69,7 @@ security:
 
 Then deploy once with your personal account to grant the SP access.
 
-### Option C: Grant via API
+### 5.3 Option C: Grant via API
 
 ```bash
 # Get the SP object ID
@@ -70,11 +82,13 @@ az rest --method post \
   --body "{\"principal\": {\"id\": \"$SP_OBJECT_ID\", \"type\": \"ServicePrincipal\"}, \"role\": \"Admin\"}"
 ```
 
+---
+
 ## 6. Configure CI/CD
 
-### GitHub Actions
+### 6.1 GitHub Actions
 
-Go to repo Settings → Secrets and variables → Actions:
+Go to repo Settings > Secrets and variables > Actions:
 
 | Secret | Value |
 |--------|-------|
@@ -82,15 +96,17 @@ Go to repo Settings → Secrets and variables → Actions:
 | `AZURE_CLIENT_ID` | App ID |
 | `AZURE_CLIENT_SECRET` | Client secret |
 
-### Azure DevOps
+### 6.2 Azure DevOps
 
-Go to Pipelines → Library → create a variable group:
+Go to Pipelines > Library and create a variable group:
 
 | Variable | Value | Secret? |
 |----------|-------|---------|
 | `AZURE_TENANT_ID` | Tenant GUID | No |
 | `AZURE_CLIENT_ID` | App ID | No |
 | `AZURE_CLIENT_SECRET` | Client secret | Yes |
+
+---
 
 ## 7. Test Locally
 
@@ -101,17 +117,21 @@ export AZURE_CLIENT_SECRET="..."
 udp-cicd deploy --target dev
 ```
 
-## Minimum Permissions
+---
+
+## 8. Minimum Permissions
 
 The service principal needs:
 
 | Permission | Why |
 |-----------|-----|
 | Fabric workspace Contributor/Admin | Create, update, delete items |
-| Fabric API access | Authenticate to `api.udp.microsoft.com` |
+| Fabric API access | Authenticate to `api.fabric.microsoft.com` |
 | Microsoft Graph (optional) | Resolve Entra group display names to GUIDs |
 
-## Secret Rotation
+---
+
+## 9. Secret Rotation
 
 Client secrets expire. Set a reminder to rotate before expiry:
 
@@ -123,12 +143,14 @@ az ad app credential reset --id <appId> --append --end-date "2027-01-01"
 # Delete the old secret from Azure Portal
 ```
 
-## Managed Identity (Alternative)
+---
+
+## 10. Managed Identity (Alternative)
 
 For Azure-hosted runners, you can use managed identity instead of client secrets:
 
 1. Enable managed identity on your Azure VM / App Service / AKS
 2. Grant the managed identity workspace access (same as SP)
-3. `DefaultAzureCredential` will automatically use the managed identity — no env vars needed
+3. `DefaultAzureCredential` automatically uses the managed identity; no environment variables are needed
 
 This is the most secure option for production CI/CD.

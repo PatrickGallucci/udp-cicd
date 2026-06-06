@@ -1,12 +1,14 @@
 # Development Workflows
 
-There are three ways to develop with udp-cicd. Choose the one that fits your team.
+This page describes five development patterns for building Microsoft Fabric projects with udp-cicd, from fully local authoring to conversational MCP-driven development. Use the comparison in section 6 and the recommendations in section 7 to choose the pattern that fits your team.
 
-## Pattern 1: Write Local
+---
 
-Best for: New projects, small teams, developers comfortable with code editors.
+## 1. Pattern 1: Write Local
 
-You write notebooks and udp.yml locally, test via `udp-cicd deploy`, and iterate.
+Best for: new projects, small teams, developers comfortable with code editors.
+
+You write notebooks and `udp.yml` locally, test via `udp-cicd deploy`, and iterate.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -22,7 +24,7 @@ You write notebooks and udp.yml locally, test via `udp-cicd deploy`, and iterate
 └─────────────────────────────────────────────────┘
 ```
 
-### How it works
+### 1.1 How it works
 
 ```bash
 # Create project
@@ -46,24 +48,24 @@ git add -A && git commit -m "feat: add ETL pipeline"
 git push  # CI/CD deploys to test → prod
 ```
 
-### Limitations
+### 1.2 Limitations
 
-- Notebooks are uploaded as-is — no Spark intellisense while editing locally
-- You can't run notebooks locally (they need Fabric Spark)
-- Testing means deploying to dev and running in the portal
-- Best for simple notebooks; complex Spark code benefits from portal development
+- Notebooks are uploaded as-is; there is no Spark intellisense while editing locally.
+- You cannot run notebooks locally (they need Fabric Spark).
+- Testing means deploying to dev and running in the portal.
+- Best for simple notebooks; complex Spark code benefits from portal development.
 
-### When to use
+### 1.3 When to use
 
-- Greenfield projects (no existing workspace)
-- Teams that prefer code-first development
-- CI/CD-heavy workflows where everything is in git
+- Greenfield projects (no existing workspace).
+- Teams that prefer code-first development.
+- CI/CD-heavy workflows where everything is in git.
 
 ---
 
-## Pattern 2: Develop in Portal, Export to Git
+## 2. Pattern 2: Develop in Portal, Export to Git
 
-Best for: Most teams. Developers use the full Fabric portal experience, then capture state for CI/CD.
+Best for: most teams. Developers use the full Fabric portal experience, then capture state for CI/CD.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -82,7 +84,9 @@ Best for: Most teams. Developers use the full Fabric portal experience, then cap
 └─────────────────────────────────────────────────┘
 ```
 
-### How it works
+The export step uses reverse generation: `udp-cicd generate` scans the workspace through the Fabric REST API and emits `udp.yml` plus the source files for each item.
+
+### 2.1 How it works
 
 ```bash
 # Step 1: Develop in the Fabric portal
@@ -127,23 +131,23 @@ git add -A && git commit -m "feat: updated ETL logic"
 git push
 ```
 
-### Limitations
+### 2.2 Limitations
 
-- `udp-cicd generate` exports the current state — manual diff review needed
-- Portal edits aren't automatically captured in git (you must re-export)
-- Risk of forgetting to export after portal changes
+- `udp-cicd generate` exports the current state; manual diff review is needed.
+- Portal edits are not automatically captured in git (you must re-export).
+- Risk of forgetting to export after portal changes.
 
-### When to use
+### 2.3 When to use
 
-- Teams with existing Fabric workspaces
-- Developers who prefer the portal's notebook experience
-- Projects where you need real Spark + real data during development
+- Teams with existing Fabric workspaces.
+- Developers who prefer the portal's notebook experience.
+- Projects where you need real Spark and real data during development.
 
 ---
 
-## Pattern 3: Git Sync + udp-cicd
+## 3. Pattern 3: Git Sync + udp-cicd
 
-Best for: Enterprise teams. Fabric's built-in git sync handles notebook content, udp-cicd handles infrastructure and CI/CD deployment.
+Best for: enterprise teams. Fabric's built-in git sync handles notebook content; udp-cicd handles infrastructure and CI/CD deployment.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -163,7 +167,7 @@ Best for: Enterprise teams. Fabric's built-in git sync handles notebook content,
 └─────────────────────────────────────────────────┘
 ```
 
-### How it works
+### 3.1 How it works
 
 ```bash
 # Step 1: Set up dev workspace with git sync
@@ -205,42 +209,42 @@ git push
 udp-cicd deploy --target prod -y
 ```
 
-### What git sync handles vs what udp-cicd handles
+### 3.2 Responsibility split: git sync vs. udp-cicd
 
 | Component | Git Sync | udp-cicd |
 |-----------|----------|------------|
-| Notebook content (.py, .ipynb) | ✅ Auto-synced | ✅ Can also deploy |
-| Lakehouse creation | ❌ | ✅ |
-| Pipeline creation + schedules | ❌ | ✅ |
-| Environment + libraries | ❌ | ✅ |
-| Warehouse + SQL views | ❌ | ✅ |
-| Security roles | ❌ | ✅ |
-| OneLake data access roles | ❌ | ✅ |
-| Data agents | ❌ | ✅ |
-| Multi-environment promotion | ❌ | ✅ |
-| Drift detection | ❌ | ✅ |
+| Notebook content (.py, .ipynb) | Yes (auto-synced) | Yes (can also deploy) |
+| Lakehouse creation | No | Yes |
+| Pipeline creation + schedules | No | Yes |
+| Environment + libraries | No | Yes |
+| Warehouse + SQL views | No | Yes |
+| Security roles | No | Yes |
+| OneLake data access roles | No | Yes |
+| Data agents | No | Yes |
+| Multi-environment promotion | No | Yes |
+| Drift detection | No | Yes |
 
-### Limitations
+### 3.3 Limitations
 
-- Git sync is workspace-level — you can't sync individual items
-- Git sync only works with Azure DevOps or GitHub
-- Conflict resolution between git sync and udp-cicd deploy needs care
-- If both git sync and udp-cicd update the same notebook, last write wins
+- Git sync is workspace-level; you cannot sync individual items.
+- Git sync only works with Azure DevOps or GitHub.
+- Conflict resolution between git sync and `udp-cicd deploy` needs care.
+- If both git sync and udp-cicd update the same notebook, last write wins.
 
-### When to use
+### 3.4 When to use
 
-- Enterprise teams with established git workflows
-- Projects where notebook development happens in the portal
-- Teams that need infrastructure-as-code but don't want to manage notebook files manually
-- When you need security roles, schedules, and environments deployed consistently
+- Enterprise teams with established git workflows.
+- Projects where notebook development happens in the portal.
+- Teams that need infrastructure-as-code but do not want to manage notebook files manually.
+- When you need security roles, schedules, and environments deployed consistently.
 
 ---
 
-## Pattern 4: VS Code + Fabric Extension + udp-cicd
+## 4. Pattern 4: VS Code + Fabric Extension + udp-cicd
 
-Best for: Developers who want the full VS Code experience (Claude Code, GitHub Copilot, extensions) while running notebooks on real Fabric Spark compute.
+Best for: developers who want the full VS Code experience (Claude Code, GitHub Copilot, extensions) while running notebooks on real Fabric Spark compute.
 
-The [Fabric Data Engineering VS Code Extension](https://learn.microsoft.com/en-us/udp/data-engineering/setup-vs-code-extension) lets you author notebooks in VS Code and execute them on remote Fabric Spark — no portal needed.
+The [Fabric Data Engineering VS Code Extension](https://learn.microsoft.com/en-us/fabric/data-engineering/setup-vs-code-extension) lets you author notebooks in VS Code and execute them on remote Fabric Spark without using the portal.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -259,12 +263,12 @@ The [Fabric Data Engineering VS Code Extension](https://learn.microsoft.com/en-u
 └─────────────────────────────────────────────────┘
 ```
 
-### Setup
+### 4.1 Setup
 
 ```bash
 # 1. Install the Fabric VS Code extension
 #    VS Code → Extensions → search "Fabric Data Engineering" → Install
-#    Or: code --install-extension ms-udp.udpdataengineering
+#    Or: code --install-extension SynapseVSCode.synapse
 
 # 2. Sign in to Fabric
 #    Click the Fabric icon in VS Code sidebar → Sign in
@@ -279,7 +283,6 @@ The [Fabric Data Engineering VS Code Extension](https://learn.microsoft.com/en-u
 # 5. Use AI assistance
 #    Claude Code: ask it to write Spark code, fix errors, optimize queries
 #    Copilot: inline completions while writing PySpark
-#    Fabric AI Agent: context-aware notebook assistance (March 2026)
 
 # 6. udp-cicd manages infrastructure
 udp-cicd init --name udp-project
@@ -291,17 +294,17 @@ git add -A && git commit -m "feat: new ETL pipeline"
 git push  # CI/CD deploys to test → prod
 ```
 
-### What each tool handles
+### 4.2 Responsibility split by tool
 
 | Tool | Responsibility |
 |------|----------------|
-| **Fabric VS Code Extension** | Notebook editing + remote Spark execution |
-| **Claude Code / Copilot** | AI-assisted code writing + debugging |
-| **udp-cicd** | Infrastructure (lakehouses, pipelines, security, environments) |
-| **udp-cicd deploy** | Promotion to test/prod |
-| **Git** | Version control + CI/CD trigger |
+| Fabric VS Code Extension | Notebook editing + remote Spark execution |
+| Claude Code / Copilot | AI-assisted code writing + debugging |
+| udp-cicd | Infrastructure (lakehouses, pipelines, security, environments) |
+| `udp-cicd deploy` | Promotion to test/prod |
+| Git | Version control + CI/CD trigger |
 
-### The AI-assisted development loop
+### 4.3 The AI-assisted development loop
 
 ```bash
 # In VS Code with Claude Code + Fabric Extension:
@@ -324,27 +327,27 @@ git push  # CI/CD deploys to test → prod
 # 6. Commit and push → CI/CD handles test/prod
 ```
 
-### Limitations
+### 4.4 Limitations
 
-- Fabric VS Code Extension requires sign-in (can't work fully offline)
-- Remote Spark execution has startup latency (~30s for first cell)
-- Some Fabric features (pipeline designer, semantic model editor) are portal-only
-- The extension is GA but some features (AI agent) are still preview
+- The Fabric VS Code Extension requires sign-in (it cannot work fully offline).
+- Remote Spark execution has startup latency (about 30 seconds for the first cell).
+- Some Fabric features (pipeline designer, semantic model editor) are portal-only.
+- The extension is GA but some features (AI agent) are still preview.
 
-### When to use
+### 4.5 When to use
 
-- Teams that live in VS Code
-- Developers using Claude Code or GitHub Copilot for AI assistance
-- When you want real Spark execution without leaving your editor
-- Best of both worlds: local editing + remote compute + AI + CI/CD
+- Teams that live in VS Code.
+- Developers using Claude Code or GitHub Copilot for AI assistance.
+- When you want real Spark execution without leaving your editor.
+- When you want local editing, remote compute, AI assistance, and CI/CD in one workflow.
 
 ---
 
-## Pattern 5: MCP-Driven Development (Conversational)
+## 5. Pattern 5: MCP-Driven Development (Conversational)
 
-Best for: Developers using GitHub Copilot or Claude Code who want to manage Fabric entirely through conversation.
+Best for: developers using GitHub Copilot or Claude Code who want to manage Fabric entirely through conversation.
 
-With the udp-cicd MCP server + [Microsoft Fabric MCP Server](https://github.com/microsoft/mcp), you can scaffold, deploy, run, and monitor Fabric projects without typing CLI commands.
+With the udp-cicd MCP server and the [Microsoft Fabric MCP Server](https://github.com/microsoft/mcp), you can scaffold, deploy, run, and monitor Fabric projects without typing CLI commands.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -365,7 +368,7 @@ With the udp-cicd MCP server + [Microsoft Fabric MCP Server](https://github.com/
 └─────────────────────────────────────────────────┘
 ```
 
-### Setup
+### 5.1 Setup
 
 ```bash
 # 1. Install udp-cicd with MCP support
@@ -389,7 +392,7 @@ az login
 # See: https://github.com/microsoft/mcp
 ```
 
-### Example conversation
+### 5.2 Example conversation
 
 ```
 You: "Set up a new Fabric project for our sales analytics"
@@ -440,16 +443,18 @@ Claude: [calls udp_deploy --target prod]
         Deployed 12 resources to sales-analytics-prod.
 ```
 
-### Two MCP servers, two purposes
+### 5.3 Two MCP servers, two purposes
 
 | MCP Server | What it does | Install |
 |------------|-------------|---------|
-| **udp-cicd-mcp** | Deploy, plan, status, run, drift, destroy — manages your Fabric project | `dotnet tool install --global udp-cicd-mcp` |
-| **[Microsoft Fabric MCP](https://github.com/microsoft/mcp)** | Fabric API docs, item definitions, best practices — gives AI context about Fabric | VS Code extension or npm |
+| udp-cicd-mcp | Deploy, plan, status, run, drift, destroy; manages your Fabric project | `dotnet tool install --global udp-cicd-mcp` |
+| [Microsoft Fabric MCP](https://github.com/microsoft/mcp) | Fabric API docs, item definitions, best practices; gives AI context about Fabric | VS Code extension or npm |
 
-Use them together: Microsoft's MCP gives the AI knowledge about Fabric APIs, udp-cicd MCP gives it the ability to act on your workspace.
+Use them together: Microsoft's MCP gives the AI knowledge about Fabric APIs, and the udp-cicd MCP gives it the ability to act on your workspace.
 
-### Available udp-cicd MCP tools
+### 5.4 Available udp-cicd MCP tools
+
+The MCP server exposes 14 tools:
 
 | Tool | What you'd say |
 |------|---------------|
@@ -465,38 +470,44 @@ Use them together: Microsoft's MCP gives the AI knowledge about Fabric APIs, udp
 | `udp_list_templates` | "What templates are available?" |
 | `udp_list_workspaces` | "Show me all my workspaces" |
 | `udp_list_capacities` | "What capacities do I have?" |
+| `udp_export` | "Export the prod workspace items" |
+| `udp_generate` | "Generate a udp.yml from my existing workspace" |
 
-### Limitations
+### 5.5 Limitations
 
-- MCP tools can't edit notebook content (use Fabric VS Code Extension for that)
-- Deploy operations require Azure auth (`az login` or service principal env vars)
-- udp-cicd MCP server is in beta
+- MCP tools cannot edit notebook content (use the Fabric VS Code Extension for that).
+- Deploy operations require Azure authentication (`az login` or service principal environment variables).
+- The udp-cicd MCP server is in beta.
 
-### When to use
+### 5.6 When to use
 
-- You already use GitHub Copilot or Claude Code
-- You prefer conversational development over CLI commands
-- Quick operations: "deploy to dev", "check drift", "what's deployed"
-- Demos and onboarding — show new team members how Fabric works
+- You already use GitHub Copilot or Claude Code.
+- You prefer conversational development over CLI commands.
+- Quick operations: "deploy to dev", "check drift", "what's deployed".
+- Demos and onboarding; show new team members how Fabric works.
 
 ---
 
-## Comparison
+## 6. Comparison
 
 | | Write Local | Portal + Export | Git Sync | VS Code + Fabric Ext | MCP-Driven |
 |---|---|---|---|---|---|
-| **Notebook editing** | VS Code (no Spark) | Fabric portal | Fabric portal | VS Code (with Spark) | AI writes code |
-| **Testing** | Deploy, then portal | Run in portal | Run in portal | Run from VS Code | "Run the notebook" |
-| **AI assistance** | Claude / Copilot | Fabric Copilot | Fabric Copilot | Claude + Copilot | Full conversation |
-| **Infrastructure** | udp.yml | generated | udp.yml | udp.yml | AI creates it |
-| **Deploy** | `udp-cicd deploy` | `udp-cicd deploy` | `udp-cicd deploy` | `udp-cicd deploy` | "Deploy to dev" |
-| **Best for** | Code-first | Existing workspaces | Enterprise | AI + Spark | Conversational |
-| **Complexity** | Low | Medium | Medium-High | Medium | Low |
+| Notebook editing | VS Code (no Spark) | Fabric portal | Fabric portal | VS Code (with Spark) | AI writes code |
+| Testing | Deploy, then portal | Run in portal | Run in portal | Run from VS Code | "Run the notebook" |
+| AI assistance | Claude / Copilot | Fabric Copilot | Fabric Copilot | Claude + Copilot | Full conversation |
+| Infrastructure | udp.yml | generated | udp.yml | udp.yml | AI creates it |
+| Deploy | `udp-cicd deploy` | `udp-cicd deploy` | `udp-cicd deploy` | `udp-cicd deploy` | "Deploy to dev" |
+| Best for | Code-first | Existing workspaces | Enterprise | AI + Spark | Conversational |
+| Complexity | Low | Medium | Medium-High | Medium | Low |
 
-## Recommended Starting Point
+---
 
-1. **New project?** → Pattern 1 (Write Local). Run `udp-cicd init` and start coding.
-2. **Existing workspace?** → Pattern 2 (Portal + Export). Run `udp-cicd generate` to capture what you have.
-3. **Enterprise with git sync?** → Pattern 3. Use git sync for notebooks, udp-cicd for everything else.
-4. **Want AI + real Spark in VS Code?** → Pattern 4. Install the Fabric VS Code Extension + Claude Code/Copilot.
-5. **Want to talk to your infrastructure?** → Pattern 5. Add udp-cicd MCP server to GitHub Copilot or Claude Code.
+## 7. Recommended starting point
+
+| Situation | Recommended pattern |
+|---|---|
+| New project | Pattern 1 (Write Local). Run `udp-cicd init` and start coding. |
+| Existing workspace | Pattern 2 (Portal + Export). Run `udp-cicd generate` to capture what you have. |
+| Enterprise with git sync | Pattern 3. Use git sync for notebooks, udp-cicd for everything else. |
+| AI plus real Spark in VS Code | Pattern 4. Install the Fabric VS Code Extension plus Claude Code or Copilot. |
+| Conversational operations | Pattern 5. Add the udp-cicd MCP server to GitHub Copilot or Claude Code. |

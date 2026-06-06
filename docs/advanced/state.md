@@ -1,30 +1,34 @@
 # State Management
 
-udp-cicd tracks what's deployed using a state file, similar to Terraform's `terraform.tfstate` or Databricks Asset Deployments' internal state. The state enables incremental deploys, drift detection, and rollback.
+This page describes how udp-cicd records what it has deployed, where the state file lives, and how to configure remote state backends for team and CI/CD use. udp-cicd tracks deployments in a state file, similar to Terraform's `terraform.tfstate` or the internal state of Databricks Asset Bundles; the state enables incremental deploys, drift detection, and rollback.
 
-## How It Works
+---
 
-Every time you run `udp-cicd deploy`, the state file is updated with:
+## 1. How it works
 
-- **What resources exist** — name, item ID, type
-- **Definition hashes** — SHA-256 of each resource's definition (for incremental deploy)
-- **Workspace ID** — which workspace was deployed to
-- **Timestamp** — when the deployment happened
+Every time you run `udp-cicd deploy`, the StateManager updates the state file with:
 
-On the next deploy, udp-cicd compares local definitions against stored hashes. **Unchanged resources are skipped** — only modified resources are re-uploaded.
+| Recorded data | Description |
+|---|---|
+| Deployed resources | Name, item ID, and type of every resource the deployment manages |
+| Definition hashes | SHA-256 of each resource's definition, used for incremental deploy |
+| Workspace ID | Which workspace was deployed to |
+| Timestamp | When the deployment happened |
 
-## State File Location
+On the next deploy, udp-cicd compares local definitions against stored hashes. **Unchanged resources are skipped.** Only modified resources are re-uploaded.
 
-By default, state is stored locally:
+---
+
+## 2. State file location
+
+By default, state is stored locally in one file per target, `state-<target>.json`, inside the `.udp-cicd/` state directory:
 
 ```
 udp-project/
 ├── udp.yml
-├── .udp-cicd/                    # State directory
-│   ├── state-dev.json              # State for dev target
-│   ├── state-staging.json          # State for staging target
-│   ├── state-prod.json             # State for prod target
-│   ├── lock-dev.json               # Deployment lock (temporary)
+├── .udp-cicd/                      # State directory
+│   ├── state-dev.json              # Deployment state (one per target)
+│   ├── lock-dev.lock               # Deployment lock (temporary)
 │   ├── history/                    # Deployment history
 │   │   ├── 1774451090-dev.json
 │   │   └── 1774451200-dev.json
@@ -34,9 +38,11 @@ udp-project/
 ```
 
 !!! warning "Don't commit state files"
-    Add `.udp-cicd/` to your `.gitignore`. State is environment-specific — each developer and CI runner has their own.
+    Add `.udp-cicd/` to your `.gitignore`. State is environment-specific: each developer and CI runner has their own.
 
-## State File Format
+---
+
+## 3. State file format
 
 ```json
 {
@@ -66,13 +72,44 @@ udp-project/
 }
 ```
 
-## Remote State Backends
+---
 
-For teams and CI/CD, local state doesn't work — each runner gets its own copy. Use a remote backend to share state across machines.
+## 4. State backends
 
-### OneLake (Recommended)
+For teams and CI/CD, local state does not work because each runner gets its own copy. Use a remote backend to share state across machines. The Azure SDK ships inside the .NET tool; no additional installation is required for any backend.
 
-Store state in a Fabric lakehouse — state lives alongside your data.
+| Backend | Status | Locking | Notes |
+|---------|--------|---------|-------|
+| Local (default) | Stable | File lock | `state-<target>.json` in `.udp-cicd/` |
+| Azure Blob Storage | Beta | Blob lease | Comparable to Terraform's `azurerm` backend |
+| OneLake | Beta | Blob lease | State lives alongside your data in a Fabric lakehouse |
+| ADLS Gen2 | Beta | Blob lease | Azure Data Lake Storage Gen2 filesystem |
+
+### 4.1 Local (default)
+
+No configuration needed. State is stored in `.udp-cicd/`.
+
+```yaml
+# No state config = local
+```
+
+### 4.2 Azure Blob Storage
+
+```yaml
+state:
+  backend: azureblob
+  config:
+    account_name: mystorageaccount
+    container_name: udp-cicd-state
+    # Recommended: omit account_key so DefaultAzureCredential is used
+    # account_key: "${secret.STORAGE_KEY}"
+```
+
+Prefer omitting the account key. When no key is provided, udp-cicd authenticates with `DefaultAzureCredential`, so the same service principal or managed identity used for Fabric also covers state access.
+
+### 4.3 OneLake
+
+Store state in a Fabric lakehouse so that state lives alongside your data.
 
 ```yaml
 state:
@@ -83,27 +120,9 @@ state:
     path: ".udp-cicd-state"   # Optional, default: .udp-cicd-state
 ```
 
-State files are stored in `Files/.udp-cicd-state/` in the lakehouse. Uses the OneLake ADLS-compatible endpoint (`onelake.dfs.udp.microsoft.com`).
+State files are stored in `Files/.udp-cicd-state/` in the lakehouse. Uses the OneLake ADLS-compatible endpoint (`onelake.dfs.fabric.microsoft.com`).
 
-Requires: `pip install azure-storage-file-datalake`
-
-### Azure Blob Storage
-
-Like Terraform's `azurerm` backend.
-
-```yaml
-state:
-  backend: azureblob
-  config:
-    account_name: mystorageaccount
-    container_name: udp-cicd-state
-    # Optional: uses DefaultAzureCredential if no key provided
-    account_key: "${secret.STORAGE_KEY}"
-```
-
-Requires: `dotnet tool install --global udp-cicd`
-
-### Azure Data Lake Storage Gen2
+### 4.4 Azure Data Lake Storage Gen2
 
 ```yaml
 state:
@@ -113,31 +132,27 @@ state:
     filesystem: udp-cicd-state
 ```
 
-Requires: `dotnet tool install --global udp-cicd`
+As with the Blob backend, omit account keys where possible so `DefaultAzureCredential` is used.
 
-### Local (Default)
+---
 
-No configuration needed. State stored in `.udp-cicd/`.
+## 5. Comparison with other tools
 
-```yaml
-# No state config = local
-```
-
-## Comparison with Other Tools
-
-| | Terraform | Databricks (DABs) | udp-cicd |
+| | Terraform | Databricks Asset Bundles (DABs) | udp-cicd |
 |---|-----------|-------------------|-----------|
-| State file | `terraform.tfstate` | `.databricks/deployment/{target}/terraform.tfstate` | `.udp-cicd/state-{target}.json` |
-| Remote backends | S3, Azure Blob, GCS, etc. | Managed by Databricks | **OneLake**, Azure Blob, ADLS |
+| State file | `terraform.tfstate` | `.databricks/bundle/{target}/terraform.tfstate` | `.udp-cicd/state-{target}.json` |
+| Remote backends | S3, Azure Blob, GCS, etc. | Managed by Databricks | **OneLake**, Azure Blob, ADLS Gen2 |
 | Locking | DynamoDB / Blob lease | Terraform under the hood | Blob lease / file lock |
 | Incremental | Yes (hash comparison) | Yes | Yes (definition hash) |
 | Drift detection | `terraform plan` | No | `udp-cicd drift` |
 | Rollback | Manual state manipulation | No | `udp-cicd rollback` |
 | History | No (state is overwritten) | No | Yes (timestamped snapshots) |
 
-## Distributed Locking
+---
 
-When using a remote backend, udp-cicd uses **Azure Blob leases** to prevent concurrent deployments. If two CI runners try to deploy to the same target simultaneously, the second one will see:
+## 6. Deployment locking
+
+Deployment locking is Stable for both local state (file lock) and remote backends (Azure Blob lease). When using a remote backend, udp-cicd takes an **Azure Blob lease** to prevent concurrent deployments. If two CI runners try to deploy to the same target simultaneously, the second one will see:
 
 ```
 Deployment locked by runner@github-actions (CI: 12345678)
@@ -146,7 +161,9 @@ Deployment locked by runner@github-actions (CI: 12345678)
 
 Locks automatically expire after 30 minutes (stale lock protection).
 
-## Commands
+---
+
+## 7. Commands
 
 ```bash
 # View current state
@@ -165,7 +182,9 @@ udp-cicd rollback --last --target dev
 udp-cicd deploy --target dev --force
 ```
 
-## Importing Existing Resources
+---
+
+## 8. Importing existing resources
 
 If you have resources already deployed (by Terraform, fabric-cicd, or manually), import them into udp-cicd state:
 
@@ -177,4 +196,4 @@ udp-cicd import --workspace "udp-existing-workspace" --target dev
 udp-cicd import --from-terraform terraform.tfstate --target dev
 ```
 
-This creates the state file without redeploying — udp-cicd will manage the resources going forward.
+This creates the state file without redeploying. udp-cicd will manage the resources going forward.

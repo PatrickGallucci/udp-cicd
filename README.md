@@ -1,4 +1,4 @@
-# <img src="docs/assets/udp-icon.png" width="32" height="32" align="top" /> Unified Data Platform Deployment
+# Unified Data Platform Deployment
 
 [![NuGet](https://img.shields.io/nuget/v/udp-cicd?color=teal)](https://www.nuget.org/packages/udp-cicd/)
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/)
@@ -6,11 +6,13 @@
 [![Tests](https://img.shields.io/github/actions/workflow/status/PatrickGallucci/udp-cicd/ci.yml?label=tests)](https://github.com/PatrickGallucci/udp-cicd/actions)
 [![Docs](https://img.shields.io/badge/docs-PatrickGallucci.github.io-teal)](https://PatrickGallucci.github.io/udp-cicd/)
 
-> **Public Preview** — 30 item types verified against live Fabric API. Core workflows are production-ready. [See what's tested.](#tested-item-types)
+> **Public Preview** — 30 item types verified against the live Fabric API. Core workflows are production-ready. See [8.2 Tested Item Types](#82-tested-item-types).
 
-**Project definition for Microsoft Unified Data Platform.** [Read the docs →](https://PatrickGallucci.github.io/udp-cicd/)
+---
 
-Define your entire Fabric project in a single `udp.yml` — lakehouses, notebooks, pipelines, semantic models, Data Agents, security roles, and environment targets — then validate, plan, and deploy with a single command.
+## 1. Overview
+
+Unified Data Platform Deployment (`udp-cicd`) is a declarative, Infrastructure-as-Code toolset for managing Microsoft Fabric projects. It allows data engineers to define their entire Fabric estate — lakehouses, notebooks, pipelines, semantic models, Data Agents, security roles, and environment targets — in a single manifest file (`udp.yml`), then validate, plan, and deploy with one command, ensuring reproducible deployments across development, staging, and production.
 
 ```bash
 udp-cicd init --template medallion --name udp-project
@@ -19,11 +21,11 @@ udp-cicd plan
 udp-cicd deploy --target prod
 ```
 
-> **CLI naming:** The standalone CLI is `udp-cicd`. 
+[Read the full documentation →](https://PatrickGallucci.github.io/udp-cicd/)
 
-## The Problem
+### 1.1 Purpose and Scope
 
-Project definition for Microsoft Unified Data Platform. The Fabric CLI can export and import items, `fabric-cicd` can deploy across workspaces, and Terraform/Bicep can provision infrastructure — but none of them describe:
+The project exists to close the **orchestration gap** in Microsoft Fabric. The Fabric CLI can export and import items, `fabric-cicd` can deploy across workspaces, and Terraform/Bicep can provision infrastructure — but none of them describe:
 
 - What resources your project needs (lakehouses, notebooks, pipelines, semantic models, Data Agents)
 - How those resources depend on each other
@@ -31,17 +33,87 @@ Project definition for Microsoft Unified Data Platform. The Fabric CLI can expor
 - What security roles and permissions are required
 - How to deploy everything in the correct order
 
-**Unified Data Platform Deployment fills that gap.**
+`udp-cicd` provides a unified model that understands the dependencies between Fabric items and manages their lifecycle as a single project.
 
-## Quick Start
+### 1.2 Key Capabilities
 
-### Install
+| Capability | Description |
+|------------|-------------|
+| Declarative manifests | Define desired state in `udp.yml`; the engine reconciles the workspace to match |
+| Dependency management | Automatic topological sorting of resources for correct deployment order |
+| State and drift | Tracks deployed resources in `deployment-state.json`; detects out-of-band portal changes |
+| Multi-targeting | Environment-specific configuration (capacities, workspace names, variables) for dev/staging/prod |
+| Resource coverage | 45 Fabric item types across all workloads, plus OneLake shortcuts |
+| Reverse generation | Scan an existing workspace and produce a `udp.yml` you can customize |
+| AI agent integration | MCP server exposes 12 deployment tools to Claude Code and GitHub Copilot |
+
+### 1.3 System Architecture
+
+The solution is built on **.NET 9** and divided into three functional areas:
+
+| Project | Path | Responsibility |
+|---------|------|----------------|
+| **Core Engine** | `dotnet/src/UdpCicd.Core` | YAML parsing, dependency resolution, planning, state, Fabric API communication |
+| **CLI Tool** | `dotnet/src/UdpCicd.Cli` | Command-line interface built with `System.CommandLine` for manual and automated execution |
+| **MCP Server** | `dotnet/src/UdpCicd.Mcp` | Model Context Protocol server exposing deployment tools to AI agents |
+| **Tests** | `dotnet/tests/UdpCicd.Core.Tests` | Unit and integration testing suite |
+
+> **CLI naming:** The standalone CLI is `udp-cicd`. The MCP companion is `udp-cicd-mcp`.
+
+---
+
+## 2. Getting Started
+
+### 2.1 Prerequisites
+
+| Category | Requirement | Minimum Version / Details |
+|----------|-------------|---------------------------|
+| System | .NET SDK | 9.0+ |
+| System | Azure CLI | 2.50+ (required for interactive auth) |
+| Fabric | Capacity | Active Fabric capacity (F2 or higher) |
+| Fabric | Permissions | Admin or Contributor role on target workspace |
+
+### 2.2 Installation
+
+`udp-cicd` is distributed as a .NET global tool:
 
 ```bash
+# CLI
 dotnet tool install --global udp-cicd
+
+# MCP server (optional, for AI-assisted authoring)
+dotnet tool install --global udp-cicd-mcp
 ```
 
-### Create a New Project
+Verify the installation with `doctor`, which checks the .NET runtime, Azure CLI status, and Fabric API connectivity:
+
+```bash
+udp-cicd doctor
+```
+
+### 2.3 Authentication
+
+The tool uses the Azure Identity library (`Azure.Identity`) to resolve credentials. Resolution order:
+
+1. If `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET` are all present → `ClientSecretCredential` (service principal)
+2. Otherwise → `DefaultAzureCredential` (managed identity, environment, or active `az login` session)
+3. `FABRIC_USE_BROWSER=true` forces `InteractiveBrowserCredential`
+
+```bash
+# Local development (interactive)
+az login
+udp-cicd deploy --target dev
+
+# CI/CD (service principal)
+export AZURE_TENANT_ID=...
+export AZURE_CLIENT_ID=...
+export AZURE_CLIENT_SECRET=...
+udp-cicd deploy --target prod -y
+```
+
+### 2.4 Quickstart: Template Project
+
+The fastest start is the `medallion` template, which scaffolds a Bronze/Silver/Gold architecture:
 
 ```bash
 # Interactive wizard — pick a template, name, and capacity
@@ -51,21 +123,31 @@ udp-cicd init
 udp-cicd init --template medallion --name udp-analytics
 ```
 
-Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse)
+Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse).
 
-### Or Generate from an Existing Workspace
+Retrieve your Fabric capacity GUID and update the `workspace` section of the generated `udp.yml`, then run the standard lifecycle:
+
+```bash
+udp-cicd validate
+udp-cicd plan --target dev
+udp-cicd deploy --target dev
+```
+
+### 2.5 Quickstart: Existing Workspace
 
 ```bash
 udp-cicd generate --workspace "My Existing Workspace"
 ```
 
-### Or Start from Scratch
+This scans the workspace and produces a `udp.yml` you can customize — the fastest on-ramp for existing projects.
+
+### 2.6 Quickstart: From Scratch
 
 ```bash
 mkdir udp-project && cd udp-project
 ```
 
-Create a `udp.yml`:
+Create a minimal `udp.yml`:
 
 ```yaml
 deployment:
@@ -90,23 +172,9 @@ udp-cicd validate
 udp-cicd deploy --target dev
 ```
 
-This scans the workspace and produces a `udp.yml` you can customize — the fastest on-ramp for existing projects.
+### 2.7 Plan Output (Dry-Run)
 
-### Validate
-
-```bash
-udp-cicd validate
-```
-
-Validates all resource references, dependency chains, and target configurations.
-
-### Plan (Dry-Run)
-
-```bash
-udp-cicd plan --target dev
-```
-
-Shows exactly what would change:
+`udp-cicd plan --target dev` connects to Fabric and diffs desired state against actual state:
 
 ```
 Deployment Plan: udp-analytics
@@ -125,27 +193,36 @@ Deployment Plan: udp-analytics
   Summary: 7 to create, 1 to update
 ```
 
-### Deploy
+---
 
-```bash
-udp-cicd deploy --target dev        # Deploy to dev (default)
-udp-cicd deploy --target staging    # Deploy to staging
-udp-cicd deploy --target prod -y   # Deploy to prod (skip confirmation)
-```
+## 3. CLI Reference
 
-### Destroy
+### 3.1 Commands
 
-```bash
-udp-cicd destroy --target dev       # Tear down dev environment
-```
+| Command | Description |
+|---------|-------------|
+| `udp-cicd init` | Create a new project from a template |
+| `udp-cicd validate` | Validate the deployment definition (schema, references, dependency chains, targets) |
+| `udp-cicd plan` | Preview changes (dry-run diff against workspace state) |
+| `udp-cicd deploy` | Deploy to a target workspace |
+| `udp-cicd destroy` | Tear down deployment resources |
+| `udp-cicd generate` | Generate `udp.yml` from an existing workspace |
+| `udp-cicd run <resource>` | Run a notebook or pipeline |
+| `udp-cicd drift` | Detect drift between deployed state and live workspace |
+| `udp-cicd bind` | Bind an existing workspace item |
+| `udp-cicd list` | List available templates |
+| `udp-cicd doctor` | Diagnose environment, auth, and connectivity |
 
-### Try the CI/CD Pipeline
+### 3.2 Common Flags
 
-[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Use_Template-238636?style=for-the-badge&logo=github)](https://github.com/PatrickGallucci/udp-udp-cicd-example/generate) [![Azure DevOps](https://img.shields.io/badge/Azure_DevOps-Use_Template-0078D7?style=for-the-badge&logo=azuredevops)](https://github.com/PatrickGallucci/udp-udp-cicd-ado-example/generate)
+| Flag | Description |
+|------|-------------|
+| `-f, --file` | Path to `udp.yml` (default: auto-detect) |
+| `-t, --target` | Target environment (dev, staging, prod) |
+| `-y, --auto-approve` | Skip confirmation prompts |
+| `--dry-run` | Preview without making changes |
 
-Click to create your own repo with a working dev → test → prod pipeline. Add 5 secrets and push. Setup guides: [GitHub Actions](https://github.com/PatrickGallucci/udp-udp-cicd-example#setup) | [Azure DevOps](https://github.com/PatrickGallucci/udp-udp-cicd-ado-example#setup)
-
-### Use with GitHub Copilot or Claude Code (MCP)
+### 3.3 MCP Server (GitHub Copilot / Claude Code)
 
 ```bash
 dotnet tool install --global udp-cicd-mcp
@@ -175,9 +252,9 @@ dotnet tool install --global udp-cicd-mcp
 }
 ```
 
-Then just talk: *"Deploy to dev"*, *"Check for drift in prod"*, *"Run the ETL pipeline"*
+Then just talk: *"Deploy to dev"*, *"Check for drift in prod"*, *"Run the ETL pipeline"*.
 
-12 MCP tools: validate, plan, deploy, destroy, status, drift, run, history, doctor, list-templates, list-workspaces, list-capacities.
+**14 MCP tools:** validate, plan, deploy, destroy, status, drift, run, history, doctor, list-templates, list-workspaces, list-capacities, export, generate.
 
 Copy the AI instructions file for your IDE to your project root:
 
@@ -186,9 +263,13 @@ Copy the AI instructions file for your IDE to your project root:
 | GitHub Copilot | [`examples/.github/copilot-instructions.md`](examples/.github/copilot-instructions.md) | `.github/copilot-instructions.md` |
 | Claude Code | [`examples/CLAUDE.md`](examples/CLAUDE.md) | `CLAUDE.md` |
 
-See the [MCP Server guide](https://PatrickGallucci.github.io/udp-cicd/guide/mcp-server/) and [Development Workflows](https://PatrickGallucci.github.io/udp-cicd/guide/development-workflows/) for details.
+See the [MCP Server guide](https://PatrickGallucci.github.io/udp-cicd/guide/mcp-server/) and [Development Workflows](https://PatrickGallucci.github.io/udp-cicd/guide/development-workflows/).
 
-## The `udp.yml` Format
+---
+
+## 4. Configuration Guide
+
+### 4.1 The `udp.yml` Manifest
 
 ```yaml
 deployment:
@@ -263,22 +344,9 @@ targets:
       service_principal: sp-udp-prod
 ```
 
-## How It Works
+### 4.2 Variable Substitution
 
-### Dependency Resolution
-
-Unified Data Platform Deployment automatically determines deployment order using topological sorting. You never have to think about what goes first:
-
-```
-environments → lakehouses → notebooks → pipelines
-                          → warehouses
-                          → semantic_models → reports
-                          → data_agents
-```
-
-### Variable Substitution
-
-Use `${var.name}` in any string value:
+Use `${var.name}` in any string value, with per-target overrides:
 
 ```yaml
 variables:
@@ -292,7 +360,25 @@ targets:
       adme_endpoint: "https://prod.energy.azure.com"
 ```
 
-### Include Files
+Built-in deployment metadata is also available:
+
+| Variable | Source |
+|----------|--------|
+| `${deployment.name}` | The `name` field in the `deployment` section |
+| `${deployment.version}` | The `version` field in the `deployment` section |
+
+### 4.3 Secrets Injection
+
+The `SecretsResolver` replaces placeholders recursively across the manifest. Two patterns are supported:
+
+| Pattern | Resolution |
+|---------|-----------|
+| `${secret.NAME}` | Resolved from the local environment (`Environment.GetEnvironmentVariable`) |
+| `${keyvault.VAULT.SECRET}` | Resolved via Azure Key Vault `SecretClient`; results cached to minimize API calls |
+
+Key Vault lookups authenticate with the same credential chain as the Fabric API (see [2.3](#23-authentication)).
+
+### 4.4 Include Files
 
 Split large deployments across multiple files:
 
@@ -303,11 +389,115 @@ include:
   - security.yml
 ```
 
-## Developer Workflow & CI/CD Architecture
+### 4.5 Templates
+
+**`medallion`** — Bronze/Silver/Gold lakehouse architecture with:
+
+- Three lakehouses with ETL notebooks
+- Data pipeline with dependency chaining
+- Semantic model and dashboard
+- Data Agent with few-shot examples
+- Security roles for engineers and analysts
+- Dev/Staging/Prod targets
+
+**`blank`** — minimal structure for new projects.
+
+**Custom templates** — add a directory with a `template.yml` and a `udp.yml`. The template engine uses Scriban for scaffolding.
+
+### 4.6 VS Code Integration
+
+Get autocomplete and validation for `udp.yml` via the bundled JSON schema. Add `.vscode/settings.json`:
+
+```json
+{
+    "yaml.schemas": {
+        "./udp.schema.json": "udp.yml"
+    }
+}
+```
+
+Requires the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml).
+
+---
+
+## 5. Core Architecture
+
+### 5.1 Deployment Engine Pipeline
+
+The engine is a linear five-stage pipeline. Each stage owns one aspect of the lifecycle:
+
+| Stage | Component | Responsibility |
+|-------|-----------|----------------|
+| 1. Load | `Loader` / `YamlFactory` | Parse `udp.yml` (YamlDotNet) into a `DeploymentDefinition`; handle includes, variable substitution, schema validation |
+| 2. Resolve | `Resolver` | Analyze resource relationships (e.g., a Notebook referencing a Lakehouse); topological sort for creation order |
+| 3. Plan | `Planner` | Compare desired state (YAML) against current state to compute actions: Create, Update, Delete, No-op |
+| 4. Deploy | `Deployer` | Execute the plan via `FabricClient`; update state after each successful operation |
+| 5. State | `StateManager` | Maintain `deployment-state.json` — the record of truth for what has been deployed; powers drift detection and idempotency |
+
+Dependency order is resolved automatically — you never have to think about what goes first:
+
+```
+environments → lakehouses → notebooks → pipelines
+                          → warehouses
+                          → semantic_models → reports
+                          → data_agents
+```
+
+### 5.2 Core Data Models
+
+Every element in `udp.yml` maps to a strongly typed C# class in `UdpCicd.Core.Models`:
+
+| Entity | Code Identifier | Description |
+|--------|-----------------|-------------|
+| Root definition | `DeploymentDefinition` | Top-level container for a `udp.yml` file |
+| Resource map | `ResourcesConfig` | Collection of all Fabric items (notebooks, lakehouses, etc.) |
+| Target | `TargetConfig` | Environment-specific overrides (`prod` vs `dev`) |
+| Workspace | `WorkspaceConfig` | Fabric workspace settings (ID, capacity, name) |
+| State | `StateConfig` | State backend selection and settings |
+
+### 5.3 State Backends
+
+The `StateManager` keeps the engine idempotent and supports multiple backends:
+
+| Backend | Use Case | Status |
+|---------|----------|--------|
+| Local JSON | Single developer, local iteration | Stable |
+| Azure Blob | Team collaboration, remote locking (blob lease) | Beta |
+| OneLake / ADLS Gen2 | State stored inside the Fabric ecosystem | Beta |
+
+### 5.4 Generators
+
+| Generator | Component | Function |
+|-----------|-----------|----------|
+| Reverse | `ReverseGenerator` | Scans an existing workspace via `FabricClient`; emits `udp.yml` plus source files (e.g., `.py` for notebooks) |
+| Template | `TemplateEngine` (Scriban) | Scaffolds new projects from templates in `Assets/templates/` |
+
+### 5.5 Repository Layout
+
+```
+dotnet/
+├── src/
+│   ├── UdpCicd.Core/
+│   │   ├── Models/            # DeploymentDefinition + typed udp.yml schema
+│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver
+│   │   ├── Providers/         # FabricClient, FabricAuth (Fabric REST API)
+│   │   ├── Generators/        # ReverseGenerator, TemplateEngine
+│   │   └── Assets/templates/  # medallion/, blank/
+│   ├── UdpCicd.Cli/           # System.CommandLine entry point
+│   └── UdpCicd.Mcp/           # MCP server (14 tools)
+└── tests/
+    └── UdpCicd.Core.Tests/    # Unit + integration tests
+```
+
+---
+
+## 6. CI/CD Integration
+
+### 6.1 Developer Workflow
 
 ```mermaid
 flowchart TB
-    subgraph local["🖥️ Local Development"]
+    subgraph local["Local Development"]
         A["Author udp.yml\n+ notebooks, SQL, etc."] --> B["udp-cicd validate"]
         B --> C["udp-cicd plan --target dev"]
         C --> D["udp-cicd deploy --target dev"]
@@ -316,7 +506,7 @@ flowchart TB
         D --> F["git commit + push"]
     end
 
-    subgraph cicd["⚙️ CI/CD Pipeline"]
+    subgraph cicd["CI/CD Pipeline"]
         G["PR Opened"] --> H["udp-cicd validate"]
         H --> I["udp-cicd plan --target staging"]
         I --> J{Merge to main}
@@ -325,27 +515,20 @@ flowchart TB
         L --> M["udp-cicd deploy --target prod -y"]
     end
 
-    subgraph udp["☁️ Microsoft Fabric"]
+    subgraph udp["Microsoft Fabric"]
         direction LR
-        DEV["Dev Workspace\n─────────────\nLakehouses\nNotebooks\nPipelines\nWarehouses\nSemantic Models\nReports\nData Agents"]
-        STG["Staging Workspace\n─────────────\nLakehouses\nNotebooks\nPipelines\nWarehouses\nSemantic Models\nReports\nData Agents"]
-        PRD["Prod Workspace\n─────────────\nLakehouses\nNotebooks\nPipelines\nWarehouses\nSemantic Models\nReports\nData Agents"]
+        DEV["Dev Workspace"]
+        STG["Staging Workspace"]
+        PRD["Prod Workspace"]
     end
 
     F --> G
     D -.->|"Fabric REST API"| DEV
     K -.->|"Service Principal"| STG
     M -.->|"Service Principal"| PRD
-
-    style local fill:#1a1a2e,stroke:#16213e,color:#e0e0e0
-    style cicd fill:#0f3460,stroke:#16213e,color:#e0e0e0
-    style udp fill:#533483,stroke:#16213e,color:#e0e0e0
-    style DEV fill:#2d6a4f,stroke:#1b4332,color:#e0e0e0
-    style STG fill:#e9c46a,stroke:#f4a261,color:#1a1a2e
-    style PRD fill:#e76f51,stroke:#f4a261,color:#1a1a2e
 ```
 
-### How `udp-cicd` fits in the pipeline
+### 6.2 Pipeline Stage Reference
 
 | Stage | Command | What happens |
 |-------|---------|--------------|
@@ -358,7 +541,7 @@ flowchart TB
 | CI deploy | `udp-cicd deploy --target staging -y` | Auto-deploys on merge, service principal auth |
 | CI deploy | `udp-cicd deploy --target prod -y` | Deploys after manual approval gate |
 
-### GitHub Actions
+### 6.3 GitHub Actions
 
 Copy `cicd/github-actions.yml` to `.github/workflows/udp-cicd.yml`:
 
@@ -373,51 +556,19 @@ Copy `cicd/github-actions.yml` to `.github/workflows/udp-cicd.yml`:
     AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 ```
 
-### Azure DevOps
+### 6.4 Azure DevOps
 
 Copy `cicd/azure-devops.yml` to your repo as a YAML pipeline — includes validate, staging, and production stages with approval gates.
 
-## CLI Reference
+### 6.5 Pipeline Templates
 
-| Command | Description |
-|---------|-------------|
-| `udp-cicd init` | Create a new project from a template |
-| `udp-cicd validate` | Validate the deployment definition |
-| `udp-cicd plan` | Preview changes (dry-run) |
-| `udp-cicd deploy` | Deploy to a target workspace |
-| `udp-cicd destroy` | Tear down deployment resources |
-| `udp-cicd generate` | Generate udp.yml from existing workspace |
-| `udp-cicd run <resource>` | Run a notebook or pipeline |
-| `udp-cicd list` | List available templates |
-| `udp-cicd bind` | Bind an existing workspace item |
-| `udp-cicd drift` | Detect drift between deployed state and live workspace |
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Use_Template-238636?style=for-the-badge&logo=github)](https://github.com/PatrickGallucci/udp-udp-cicd-example/generate) [![Azure DevOps](https://img.shields.io/badge/Azure_DevOps-Use_Template-0078D7?style=for-the-badge&logo=azuredevops)](https://github.com/PatrickGallucci/udp-udp-cicd-ado-example/generate)
 
-### Common Flags
+Click to create your own repo with a working dev → test → prod pipeline. Add 5 secrets and push. Setup guides: [GitHub Actions](https://github.com/PatrickGallucci/udp-udp-cicd-example#setup) | [Azure DevOps](https://github.com/PatrickGallucci/udp-udp-cicd-ado-example#setup)
 
-| Flag | Description |
-|------|-------------|
-| `-f, --file` | Path to udp.yml (default: auto-detect) |
-| `-t, --target` | Target environment (dev, staging, prod) |
-| `-y, --auto-approve` | Skip confirmation prompts |
-| `--dry-run` | Preview without making changes |
+---
 
-## Templates
-
-### `medallion`
-Bronze/Silver/Gold lakehouse architecture with:
-- Three lakehouses with ETL notebooks
-- Data pipeline with dependency chaining
-- Semantic model and dashboard
-- Data Agent with few-shot examples
-- Security roles for engineers and analysts
-- Dev/Staging/Prod targets
-
-
-### Custom Templates
-
-Create your own templates by adding a directory to `udp_deployment/templates/` with a `template.yml` and a `udp.yml`.
-
-## Supported Resource Types
+## 7. Supported Resource Types
 
 **45 item types** across all Fabric workloads:
 
@@ -436,72 +587,24 @@ Plus **OneLake Shortcuts** (ADLS, S3, cross-workspace) as lakehouse sub-resource
 
 See the [Resource Types Guide](https://PatrickGallucci.github.io/udp-cicd/guide/resource-types/) for full details.
 
-## Authentication
+---
 
-Unified Data Platform Deployment uses `azure-identity` for authentication:
+## 8. Reference
 
-```bash
-# Interactive (development)
-az login
-udp-cicd deploy --target dev
+### 8.1 Environment Variables
 
-# Service Principal (CI/CD)
-export AZURE_TENANT_ID=...
-export AZURE_CLIENT_ID=...
-export AZURE_CLIENT_SECRET=...
-udp-cicd deploy --target prod -y
-```
+| Variable | Purpose |
+|----------|---------|
+| `AZURE_TENANT_ID` | Azure AD tenant GUID (service principal auth) |
+| `AZURE_CLIENT_ID` | Service principal application ID |
+| `AZURE_CLIENT_SECRET` | Service principal client secret |
+| `FABRIC_USE_BROWSER` | `true` forces interactive browser login |
+| `FABRIC_CAPACITY_ID` | Capacity GUID for workspace creation during `deploy`/`init` |
+| `AZURE_STORAGE_ACCOUNT_NAME` | Used with `azureblob` or `adls` state backends |
 
-## VS Code Integration
+For Blob/ADLS state backends, omit the account key where possible — the system falls back to `DefaultAzureCredential` for storage access.
 
-Get autocomplete and validation for `udp.yml` by adding a `.vscode/settings.json`:
-
-```json
-{
-    "yaml.schemas": {
-        "./udp.schema.json": "udp.yml"
-    }
-}
-```
-
-Requires the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml).
-
-## Architecture
-
-```
-udp_deployment/
-├── cli.py                 # Click CLI (init, validate, plan, deploy, destroy, generate, run, drift)
-├── models/
-│   └── deployment.py          # 30+ Pydantic models for udp.yml schema
-├── engine/
-│   ├── loader.py          # YAML parser with includes + variable substitution
-│   ├── resolver.py        # Topological dependency sort
-│   ├── planner.py         # Diff engine (desired state vs workspace state)
-│   ├── deployer.py        # Executes plans via Fabric REST API
-│   ├── state.py           # Deployment state tracking + drift detection
-│   └── secrets.py         # Secrets resolution (env vars + Azure KeyVault)
-├── providers/
-│   └── udp_api.py      # Fabric REST API client (workspace, items, git, connections, jobs)
-├── generators/
-│   ├── reverse.py         # Generate udp.yml from existing workspace
-│   └── templates.py       # Template engine with Jinja2
-└── templates/
-    ├── medallion/          # Bronze/Silver/Gold template
-    └── blank/              # Empty
-```
-
-## Contributing
-
-Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-```bash
-git clone https://github.com/PatrickGallucci/udp-cicd.git
-cd udp-cicd/dotnet
-dotnet build
-dotnet test
-```
-
-## Tested Item Types
+### 8.2 Tested Item Types
 
 30 item types verified against a live Fabric workspace:
 
@@ -513,7 +616,7 @@ dotnet test
 | **List-only** (5) | Datamart, Dashboard, MirroredWarehouse, PaginatedReport, Dataflow |
 | **Needs definition files** (4) | SemanticModel (TMDL), Report (PBIR), MirroredDatabase, MountedDataFactory |
 
-## Feature Stability
+### 8.3 Feature Stability
 
 | Feature | Status | Notes |
 |---------|--------|-------|
@@ -525,7 +628,7 @@ dotnet test
 | Deployment locking | **Stable** | Local + remote (blob lease) |
 | CI/CD (GitHub Actions) | **Stable** | [Proven end-to-end](https://github.com/PatrickGallucci/udp-udp-cicd-example) |
 | Remote state (OneLake, Blob, ADLS) | **Beta** | Built, not yet tested live |
-| MCP server | **Beta** | 12 tools verified locally |
+| MCP server | **Beta** | 14 tools verified locally |
 | OneLake data access roles | **Beta** | Built, not yet tested live |
 | Environment publish (libraries) | **Beta** | Fire-and-forget, can't track completion |
 | watch, promote, canary | **Experimental** | Built, untested |
@@ -533,6 +636,19 @@ dotnet test
 | Policy enforcement | **Experimental** | Built, untested |
 | Shortcut transformations | **Experimental** | Model defined, API untested |
 
-## License
+---
+
+## 9. Contributing
+
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+```bash
+git clone https://github.com/PatrickGallucci/udp-cicd.git
+cd udp-cicd/dotnet
+dotnet build
+dotnet test
+```
+
+## 10. License
 
 MIT

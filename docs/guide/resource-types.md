@@ -1,8 +1,30 @@
 # Resource Types
 
-## Supported Types
+This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in `udp.yml`, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 45 item types, of which 30 are verified against live Fabric workspaces.
 
-### Data Engineering
+---
+
+## 1. Coverage and deployment order
+
+udp-cicd supports 45 Fabric item types. 30 of these are verified live; the remainder are defined against the published Fabric REST API and pending live verification. A small number of types are list-only because the Fabric API does not support creating them.
+
+Resources deploy in dependency order, resolved automatically by the engine:
+
+| Order | Rule |
+|---|---|
+| 1 | Environments deploy before lakehouses |
+| 2 | Lakehouses deploy before notebooks, warehouses, and semantic models |
+| 3 | Notebooks deploy before pipelines |
+| 4 | Semantic models deploy before reports and data agents |
+
+You do not declare this ordering in `udp.yml`; the Resolver derives it from resource references (for example, a notebook's `default_lakehouse` or a report's `semantic_model`).
+
+---
+
+## 2. Supported types
+
+### 2.1 Data Engineering
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Lakehouse | `lakehouses` | Lakehouse | Shortcuts, tables, schemas |
@@ -12,7 +34,8 @@
 | GraphQL API | `graphql_apis` | GraphQLApi | Schema file |
 | Snowflake Database | `snowflake_databases` | SnowflakeDatabase | Connection-based |
 
-### Data Factory
+### 2.2 Data Factory
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Data Pipeline | `pipelines` | DataPipeline | YAML activities or JSON |
@@ -21,33 +44,37 @@
 | Apache Airflow Job | `airflow_jobs` | ApacheAirflowJob | DAG file |
 | dbt Job | `dbt_jobs` | DataBuildToolJob | dbt project |
 
-### Data Warehouse
+### 2.3 Data Warehouse
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Warehouse | `warehouses` | Warehouse | SQL scripts |
 | SQL Database | `sql_databases` | SQLDatabase | SQL scripts |
 | Mirrored Database | `mirrored_databases` | MirroredDatabase | Connection-based |
-| Mirrored Warehouse | `mirrored_warehouses` | MirroredWarehouse | List-only — cannot be created via API |
+| Mirrored Warehouse | `mirrored_warehouses` | MirroredWarehouse | List-only; cannot be created via API |
 | Mirrored Databricks Catalog | `mirrored_databricks_catalogs` | MirroredAzureDatabricksCatalog | Connection-based |
 | Cosmos DB Database | `cosmosdb_databases` | CosmosDBDatabase | Connection-based |
-| Datamart | `datamarts` | Datamart | List-only — cannot be created via API |
+| Datamart | `datamarts` | Datamart | List-only; cannot be created via API |
 
-### Power BI
+### 2.4 Power BI
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Semantic Model | `semantic_models` | SemanticModel | TMDL or TMSL |
 | Report | `reports` | Report | PBIR format |
-| Paginated Report | `paginated_reports` | PaginatedReport | List-only — cannot be created via API |
-| Dashboard | `dashboards` | Dashboard | List-only — cannot be created via API |
+| Paginated Report | `paginated_reports` | PaginatedReport | List-only; cannot be created via API |
+| Dashboard | `dashboards` | Dashboard | List-only; cannot be created via API |
 | Dataflow | `dataflows` | Dataflow | Not supported by Fabric API |
 
-### Data Science
+### 2.5 Data Science
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | ML Model | `ml_models` | MLModel | MLflow model |
 | ML Experiment | `ml_experiments` | MLExperiment | Metadata |
 
-### Real-Time Intelligence
+### 2.6 Real-Time Intelligence
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Eventhouse | `eventhouses` | Eventhouse | KQL scripts |
@@ -61,7 +88,8 @@
 | Event Schema Set | `event_schema_sets` | EventSchemaSet | Definition file |
 | Graph Query Set | `graph_query_sets` | GraphQuerySet | Definition file |
 
-### AI & Knowledge
+### 2.7 AI & Knowledge
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Data Agent | `data_agents` | DataAgent | Instructions + examples |
@@ -69,7 +97,8 @@
 | Anomaly Detector | `anomaly_detectors` | AnomalyDetector | Configuration |
 | Ontology | `ontologies` | Ontology | Definition file |
 
-### Other
+### 2.8 Other
+
 | Resource | Type Key | API Type | Definitions |
 |----------|----------|----------|-------------|
 | Variable Library | `variable_libraries` | VariableLibrary | Key-value pairs |
@@ -79,9 +108,11 @@
 | Map | `map_items` | Map | Definition file |
 | HLS Cohort | `hls_cohorts` | HLSCohort | Definition file |
 
-### OneLake Shortcuts
+---
 
-Shortcuts are not a separate item type — they are sub-resources of Lakehouses:
+## 3. OneLake shortcuts
+
+Shortcuts are not a separate item type; they are sub-resources of lakehouses.
 
 ```yaml
 lakehouses:
@@ -99,13 +130,15 @@ lakehouses:
 
 Supported shortcut targets:
 
-- `adls://` — Azure Data Lake Storage Gen2
-- `s3://` — Amazon S3
-- `onelake://` — Cross-workspace OneLake reference
+| Scheme | Target |
+|---|---|
+| `adls://` | Azure Data Lake Storage Gen2 |
+| `s3://` | Amazon S3 |
+| `onelake://` | Cross-workspace OneLake reference |
 
-### Shortcut Transformations
+### 3.1 Shortcut transformations
 
-Auto-convert source files to managed Delta tables — always in sync, no pipelines required.
+Transformations auto-convert source files to managed Delta tables that stay in sync with the source, without pipelines.
 
 **File transformations** convert CSV, Parquet, JSON, or Excel files into Delta tables:
 
@@ -177,9 +210,9 @@ lakehouses:
 
 ---
 
-## YAML Reference — All Resource Types
+## 4. YAML reference: all resource types
 
-### Data Engineering
+### 4.1 Data Engineering
 
 #### Lakehouse
 
@@ -267,7 +300,7 @@ snowflake_databases:
     connection: snowflake_conn
 ```
 
-### Data Factory
+### 4.2 Data Factory
 
 #### Data Pipeline
 
@@ -327,7 +360,7 @@ dbt_jobs:
     environment: spark_env
 ```
 
-### Data Warehouse
+### 4.3 Data Warehouse
 
 #### Warehouse
 
@@ -397,7 +430,7 @@ datamarts:
     path: ./datamarts/sales_definition.json
 ```
 
-### Power BI
+### 4.4 Power BI
 
 #### Semantic Model
 
@@ -450,7 +483,7 @@ dataflows:
     path: ./dataflows/customer_transform.json
 ```
 
-### Data Science
+### 4.5 Data Science
 
 #### ML Model
 
@@ -470,7 +503,7 @@ ml_experiments:
     description: "Churn prediction experiment tracking"
 ```
 
-### Real-Time Intelligence
+### 4.6 Real-Time Intelligence
 
 #### Eventhouse
 
@@ -578,7 +611,7 @@ graph_query_sets:
     data_source: telemetry_db
 ```
 
-### AI & Knowledge
+### 4.7 AI & Knowledge
 
 #### Data Agent
 
@@ -629,7 +662,7 @@ ontologies:
       - analytics_warehouse
 ```
 
-### Other
+### 4.8 Other
 
 #### Variable Library
 

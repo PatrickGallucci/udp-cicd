@@ -1,6 +1,19 @@
 # Azure DevOps
 
-## Pipeline Setup
+This page provides a complete `azure-pipelines.yml` for deploying Unified Data Platform Deployment with Azure DevOps, along with the variable group and environment setup it requires. The pipeline covers validate, staging, and production stages with approval gates.
+
+---
+
+## 1. Pipeline definition
+
+The pipeline runs the following stages:
+
+| Stage | Environment | Trigger condition | Approval |
+|-------|-------------|-------------------|----------|
+| Validate | (none) | Every PR and push | None |
+| DeployDev | `dev` | Merge to `main`, after Validate | None |
+| DeployStaging | `staging` | After DeployDev succeeds | None |
+| DeployProd | `production` | After DeployStaging succeeds | Required approvers |
 
 Create `azure-pipelines.yml` in your repo root:
 
@@ -20,7 +33,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  pythonVersion: '3.12'
+  - group: udp-credentials
 
 stages:
   # ──────────────────────────────────────────
@@ -31,9 +44,10 @@ stages:
     jobs:
       - job: Validate
         steps:
-          - task: UsePythonVersion@0
+          - task: UseDotNet@2
             inputs:
-              versionSpec: '$(pythonVersion)'
+              packageType: 'sdk'
+              version: '9.x'
 
           - script: dotnet tool install --global udp-cicd
             displayName: 'Install udp-cicd'
@@ -64,9 +78,10 @@ stages:
               steps:
                 - checkout: self
 
-                - task: UsePythonVersion@0
+                - task: UseDotNet@2
                   inputs:
-                    versionSpec: '$(pythonVersion)'
+                    packageType: 'sdk'
+                    version: '9.x'
 
                 - script: dotnet tool install --global udp-cicd
                   displayName: 'Install udp-cicd'
@@ -86,29 +101,30 @@ stages:
                     AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
 
   # ──────────────────────────────────────────
-  # Deploy to Test (with quality gate)
+  # Deploy to Staging (with quality gate)
   # ──────────────────────────────────────────
-  - stage: DeployTest
-    displayName: 'Deploy to Test'
+  - stage: DeployStaging
+    displayName: 'Deploy to Staging'
     dependsOn: DeployDev
     jobs:
-      - deployment: DeployTest
-        environment: 'test'
+      - deployment: DeployStaging
+        environment: 'staging'
         strategy:
           runOnce:
             deploy:
               steps:
                 - checkout: self
 
-                - task: UsePythonVersion@0
+                - task: UseDotNet@2
                   inputs:
-                    versionSpec: '$(pythonVersion)'
+                    packageType: 'sdk'
+                    version: '9.x'
 
                 - script: dotnet tool install --global udp-cicd
                   displayName: 'Install udp-cicd'
 
-                - script: udp-cicd deploy --target test -y
-                  displayName: 'Deploy to test'
+                - script: udp-cicd deploy --target staging -y
+                  displayName: 'Deploy to staging'
                   env:
                     AZURE_TENANT_ID: $(AZURE_TENANT_ID)
                     AZURE_CLIENT_ID: $(AZURE_CLIENT_ID)
@@ -119,7 +135,7 @@ stages:
   # ──────────────────────────────────────────
   - stage: DeployProd
     displayName: 'Deploy to Production'
-    dependsOn: DeployTest
+    dependsOn: DeployStaging
     jobs:
       - deployment: DeployProd
         environment: 'production'  # Configure approval in ADO Environments
@@ -129,9 +145,10 @@ stages:
               steps:
                 - checkout: self
 
-                - task: UsePythonVersion@0
+                - task: UseDotNet@2
                   inputs:
-                    versionSpec: '$(pythonVersion)'
+                    packageType: 'sdk'
+                    version: '9.x'
 
                 - script: dotnet tool install --global udp-cicd
                   displayName: 'Install udp-cicd'
@@ -151,11 +168,13 @@ stages:
                     AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
 ```
 
-## Setup
+---
 
-### 1. Create a Variable Group
+## 2. Setup
 
-Go to Pipelines → Library → create a variable group named `udp-credentials`:
+### 2.1 Create a variable group
+
+Go to Pipelines > Library and create a variable group named `udp-credentials`:
 
 | Variable | Value | Secret? |
 |----------|-------|---------|
@@ -163,14 +182,18 @@ Go to Pipelines → Library → create a variable group named `udp-credentials`:
 | `AZURE_CLIENT_ID` | Service principal app ID | No |
 | `AZURE_CLIENT_SECRET` | Service principal secret | Yes |
 
-### 2. Create Environments
+The pipeline references this group in its `variables` block. See [Service Principal Setup](../guide/service-principal.md) for creating the service principal.
 
-Go to Pipelines → Environments → create:
+### 2.2 Create environments
 
-- **dev** — no approvals
-- **test** — no approvals
-- **production** — add required approvers
+Go to Pipelines > Environments and create:
 
-### 3. Create the Pipeline
+| Environment | Approvals |
+|-------------|-----------|
+| `dev` | None |
+| `staging` | None |
+| `production` | Required approvers |
 
-Go to Pipelines → New Pipeline → select your repo → choose "Existing Azure Pipelines YAML file" → select `azure-pipelines.yml`.
+### 2.3 Create the pipeline
+
+Go to Pipelines > New Pipeline, select your repo, choose "Existing Azure Pipelines YAML file", and select `azure-pipelines.yml`.

@@ -1,8 +1,23 @@
 # Secrets Management
 
-Secrets such as database passwords, API keys, and connection strings should never appear in plain text in `udp.yml` or be committed to source control. udp-cicd supports two mechanisms for injecting secrets at deploy time: environment variable references and Azure Key Vault integration.
+This page describes how udp-cicd injects secrets such as database passwords, API keys, and connection strings into a deployment at deploy time. Secrets never appear in plain text in `udp.yml` and are never committed to source control.
 
-## Environment variable secrets
+---
+
+## 1. Resolution mechanisms
+
+udp-cicd supports two secret reference syntaxes, resolved by the `SecretsResolver` class in `UdpCicd.Core`. Resolution is recursive across the entire manifest: any string value in the resolved configuration may contain a reference.
+
+| Syntax | Source | Notes |
+|--------|--------|-------|
+| `${secret.NAME}` | Environment variable `NAME` | Read at deploy time. Deployment fails if the variable is not set. |
+| `${keyvault.VAULT_NAME.SECRET_NAME}` | Azure Key Vault | Retrieved through the Azure Key Vault `SecretClient`. Results are cached for the duration of the run. |
+
+In addition to secret references, two built-in variables are always available: `${deployment.name}` and `${deployment.version}`.
+
+---
+
+## 2. Environment variable secrets
 
 Use the `${secret.NAME}` syntax to reference an environment variable. At deploy time, udp-cicd reads the value from the environment and substitutes it into the configuration.
 
@@ -16,7 +31,7 @@ connections:
       password: "${secret.DB_PASSWORD}"
 
   my_api:
-    type: rest_api
+    type: http
     endpoint: "https://api.example.com"
     properties:
       api_key: "${secret.API_KEY}"
@@ -33,16 +48,18 @@ export API_KEY="sk-abc123..."
 udp-cicd deploy --target prod -y
 ```
 
-If a referenced secret is missing from the environment, udp-cicd will fail with a clear error before making any API calls:
+If a referenced secret is missing from the environment, udp-cicd fails with a clear error before making any API calls:
 
 ```
 Error: Secret 'DB_PASSWORD' is not set.
   Set the environment variable DB_PASSWORD or use a KeyVault reference.
 ```
 
-## Azure Key Vault integration
+---
 
-For teams that manage secrets centrally in Azure Key Vault, use the `${keyvault.VAULT_NAME.SECRET_NAME}` syntax. udp-cicd retrieves the secret value from Key Vault at deploy time using `DefaultAzureCredential`.
+## 3. Azure Key Vault integration
+
+For teams that manage secrets centrally in Azure Key Vault, use the `${keyvault.VAULT_NAME.SECRET_NAME}` syntax. udp-cicd retrieves the secret value from Key Vault at deploy time using the Azure Key Vault `SecretClient` and caches the result for the remainder of the run.
 
 ```yaml
 connections:
@@ -54,15 +71,15 @@ connections:
       password: "${keyvault.contoso-kv.db-password}"
 
   my_api:
-    type: rest_api
+    type: http
     endpoint: "https://api.example.com"
     properties:
       api_key: "${keyvault.contoso-kv.api-key}"
 ```
 
-### Prerequisites
+### 3.1 Prerequisites
 
-1. Install the Key Vault extra:
+1. Install udp-cicd as a .NET global tool. Key Vault support is included; no additional component is required:
 
     ```bash
     dotnet tool install --global udp-cicd
@@ -72,28 +89,26 @@ connections:
 
 3. The Key Vault must be network-accessible from the machine running `udp-cicd`. If the vault uses private endpoints, ensure the CI/CD runner can reach it.
 
-### Versioned secrets
+Key Vault access uses `DefaultAzureCredential` from `Azure.Identity`, which honors the service principal environment variables (`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`), managed identity, or an active `az login` session.
 
-To reference a specific version of a Key Vault secret, append the version ID:
+Secret references always resolve to the current (latest) version of the secret. Pinning a specific secret version is not supported; to roll back a secret, restore the previous value in Key Vault.
 
-```yaml
-password: "${keyvault.contoso-kv.db-password.a1b2c3d4e5f6}"
-```
+---
 
-If no version is specified, the current (latest) version is used.
-
-## How secrets are resolved at deploy time
+## 4. Resolution at deploy time
 
 Secret resolution happens during the plan and deploy phases, after the YAML is parsed but before any API calls are made.
 
-1. udp-cicd scans all string values in the resolved configuration for `${secret.*}` and `${keyvault.*}` patterns.
+1. The `SecretsResolver` scans all string values in the resolved configuration for `${secret.*}` and `${keyvault.*}` patterns. Resolution is recursive, so references inside resolved values are also processed.
 2. For `${secret.NAME}`, it reads the environment variable `NAME`. If the variable is not set, deployment fails.
-3. For `${keyvault.VAULT.SECRET}`, it calls the Azure Key Vault API to retrieve the secret value. If the vault or secret does not exist, or if the identity lacks permission, deployment fails.
+3. For `${keyvault.VAULT.SECRET}`, it calls the Azure Key Vault API to retrieve the secret value and caches the result. If the vault or secret does not exist, or if the identity lacks permission, deployment fails.
 4. The resolved values are used in the Fabric API calls but are never written to the state file, logs, or plan output. udp-cicd redacts secret values in all output.
 
-## Secrets in CI/CD
+---
 
-### GitHub Actions
+## 5. Secrets in CI/CD
+
+### 5.1 GitHub Actions
 
 Store secrets in your repository settings (**Settings > Secrets and variables > Actions**) or at the environment level. Reference them as environment variables in your workflow:
 
@@ -110,11 +125,11 @@ Store secrets in your repository settings (**Settings > Secrets and variables > 
     API_KEY: ${{ secrets.API_KEY }}
 ```
 
-GitHub Actions automatically masks secret values in logs. Combined with udp-cicd's own redaction, secrets will not appear in workflow output.
+GitHub Actions automatically masks secret values in logs. Combined with udp-cicd's own redaction, secrets do not appear in workflow output.
 
-If you use Key Vault references instead of environment variable secrets, you only need the three Azure authentication secrets. udp-cicd will retrieve everything else from Key Vault.
+If you use Key Vault references instead of environment variable secrets, only the three Azure authentication secrets are required. udp-cicd retrieves everything else from Key Vault.
 
-### Azure DevOps
+### 5.2 Azure DevOps
 
 Store secrets in a variable group (**Pipelines > Library**). Link the variable group to your pipeline and mark sensitive values as secret:
 
@@ -136,11 +151,19 @@ steps:
 
 Azure DevOps variable groups can be linked directly to an Azure Key Vault, which provides automatic secret rotation without updating pipeline variables.
 
-## Best practices
+---
 
-**Never commit secrets to source control.** Even if you remove them later, they remain in git history.
+## 6. Best practices
 
-**Use `.gitignore` to prevent accidental commits.** The `udp-cicd init` command creates a `.gitignore` that includes common patterns:
+| Practice | Rationale |
+|----------|-----------|
+| Never commit secrets to source control. | Even if removed later, secrets remain in git history. |
+| Use `.gitignore` to prevent accidental commits. | The `udp-cicd init` command generates a `.gitignore` with the common patterns shown below. |
+| Prefer Key Vault over environment variables for production. | Key Vault provides audit logging, access policies, automatic rotation, and centralized management. Environment variables are simpler for development but harder to audit and rotate. |
+| Use separate secrets per environment. | Do not share database credentials between dev and prod. Use per-target variables that reference different secrets. |
+| Rotate secrets regularly. | Set calendar reminders for service principal client secret expiry. Key Vault secrets can be configured with expiry dates and rotation policies. |
+
+The generated `.gitignore` includes:
 
 ```gitignore
 # udp-cicd state (contains workspace IDs, item IDs)
@@ -155,9 +178,7 @@ Azure DevOps variable groups can be linked directly to an Azure Key Vault, which
 *.key
 ```
 
-**Prefer Key Vault over environment variables for production.** Key Vault provides audit logging, access policies, automatic rotation, and centralized management. Environment variables are simpler for development but harder to audit and rotate.
-
-**Use separate secrets per environment.** Do not share database credentials between dev and prod. Use per-target variables that reference different secrets:
+Per-target secret references look like this:
 
 ```yaml
 targets:
@@ -169,9 +190,9 @@ targets:
       db_password: "${secret.PROD_DB_PASSWORD}"
 ```
 
-**Rotate secrets regularly.** Set calendar reminders for service principal client secret expiry. Key Vault secrets can be configured with expiry dates and rotation policies.
+---
 
-## Full YAML example
+## 7. Full YAML example
 
 ```yaml
 deployment:
@@ -192,7 +213,7 @@ connections:
       password: "${var.db_password}"
 
   external_api:
-    type: rest_api
+    type: http
     endpoint: "https://api.partner.com/v2"
     properties:
       api_key: "${keyvault.contoso-kv.partner-api-key}"

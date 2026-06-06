@@ -1,10 +1,10 @@
 # CLI command reference
 
-This topic provides a complete reference for all `udp-cicd` CLI commands, including syntax, options, usage examples, and example output.
+This topic provides a complete reference for all `udp-cicd` CLI commands, including syntax, options, usage examples, and example output. The CLI is distributed as a .NET global tool; see [Installation](../getting-started/installation.md) for setup.
 
 ---
 
-## Global options
+## 1. Global options
 
 The following options are available on all commands unless otherwise noted.
 
@@ -21,7 +21,7 @@ udp-cicd deploy --help
 
 ---
 
-## Command summary
+## 2. Command summary
 
 | Category | Command | Description |
 |---|---|---|
@@ -49,17 +49,21 @@ udp-cicd deploy --help
 
 ---
 
-## init
+## 3. Project setup commands
+
+<a id="init"></a>
+
+### 3.1 init
 
 Create a new deployment project from a template.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd init [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -69,7 +73,7 @@ udp-cicd init [OPTIONS]
 | `--var` | | String (multiple) | | Template variables as `KEY=VALUE` pairs. Can be specified multiple times. |
 | `--interactive` | `-i` | Flag | `false` | Launch the interactive setup wizard. Automatically enabled if no `--template` or `--name` is provided. |
 
-### Examples
+#### Examples
 
 **Create a project using the interactive wizard:**
 
@@ -118,17 +122,134 @@ udp-cicd init --template blank --name udp-project --output /path/to/projects
 
 ---
 
-## validate
+<a id="list"></a>
+
+### 3.2 list
+
+List available deployment templates that can be used with `udp-cicd init`.
+
+#### Syntax
+
+```
+udp-cicd list
+```
+
+#### Examples
+
+```bash
+udp-cicd list
+```
+
+**Example output:**
+
+```
+Available templates:
+
+  blank
+    Empty project with minimal structure
+
+  medallion
+    Bronze/Silver/Gold lakehouse pattern with ingestion notebooks
+
+Usage: udp-cicd init --template <name> --name <project-name>
+```
+
+---
+
+<a id="doctor"></a>
+
+### 3.3 doctor
+
+Run diagnostic checks to validate your environment, the .NET runtime, authentication, API connectivity, and deployment configuration.
+
+#### Syntax
+
+```
+udp-cicd doctor
+```
+
+#### Examples
+
+```bash
+udp-cicd doctor
+```
+
+**Example output:**
+
+```
+udp-cicd doctor
+
+  ✓ .NET runtime 9.0.x
+  ✓ Azure CLI installed
+  ✓ Azure CLI authenticated
+  ✓ Fabric API reachable
+  ✓ udp.yml found
+  ✓ Deployment validates
+
+  6 passed, 0 failed
+```
+
+#### Checks performed
+
+| Check | What it validates |
+|---|---|
+| .NET runtime | A compatible .NET 9 runtime is installed. |
+| Azure CLI installed | The `az` binary is found in PATH. |
+| Azure CLI authenticated | `az account show` succeeds (a valid session exists). |
+| Fabric API reachable | The Fabric REST API responds to a workspace list request. |
+| `udp.yml` found | A `udp.yml` or `udp.yaml` file exists in the current directory. |
+| Deployment validates | The deployment definition parses and validates without errors. |
+
+---
+
+<a id="check-update"></a>
+
+### 3.4 check-update
+
+Check if a newer version of Unified Data Platform Deployment is available on NuGet.
+
+#### Syntax
+
+```
+udp-cicd check-update
+```
+
+#### Examples
+
+```bash
+udp-cicd check-update
+```
+
+**Example output (update available):**
+
+```
+  Update available: 1.0.0b1 → 1.0.0b2
+  Run: dotnet tool update --global udp-cicd
+```
+
+**Example output (up to date):**
+
+```
+  You're on the latest version: 1.0.0b2
+```
+
+---
+
+## 4. Validation commands
+
+<a id="validate"></a>
+
+### 4.1 validate
 
 Validate the deployment definition file for syntax errors, schema violations, unresolved variables, and dependency cycles.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd validate [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -136,7 +257,7 @@ udp-cicd validate [OPTIONS]
 | `--target` | `-t` | String | *(none)* | Target environment to validate against. Applies target-specific variable overrides and workspace config. |
 | `--strict` | | Flag | `false` | Fail on unresolved variables and warnings in addition to errors. |
 
-### Examples
+#### Examples
 
 **Validate the deployment in the current directory:**
 
@@ -208,17 +329,91 @@ Validation failed: Unresolved variable: ${source_connection}
 
 ---
 
-## plan
+<a id="graph"></a>
+
+### 4.2 graph
+
+Visualize the deployment dependency graph in Mermaid, DOT (Graphviz), or plain text format.
+
+#### Syntax
+
+```
+udp-cicd graph [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+| `--format` | | Choice: `mermaid`, `dot`, `text` | `mermaid` | Output format. |
+| `--output` | `-o` | String | *(stdout)* | Output file path. If omitted, prints to stdout. |
+
+#### Examples
+
+**Generate a Mermaid diagram:**
+
+```bash
+udp-cicd graph
+```
+
+**Example output:**
+
+```
+graph TD
+    spark_env["spark_env\n(environments)"]
+    style spark_env fill:#457b9d,color:#fff
+    bronze_lakehouse["bronze_lakehouse\n(lakehouses)"]
+    style bronze_lakehouse fill:#2d6a4f,color:#fff
+    ingest_notebook["ingest_notebook\n(notebooks)"]
+    style ingest_notebook fill:#264653,color:#fff
+    spark_env --> ingest_notebook
+    bronze_lakehouse --> ingest_notebook
+```
+
+**Generate a DOT file for Graphviz:**
+
+```bash
+udp-cicd graph --format dot -o graph.dot
+```
+
+**Generate plain text:**
+
+```bash
+udp-cicd graph --format text
+```
+
+**Example output:**
+
+```
+  [environments] spark_env
+  [lakehouses] bronze_lakehouse
+  [notebooks] ingest_notebook ← spark_env, bronze_lakehouse
+  [pipelines] daily_pipeline ← ingest_notebook
+```
+
+> **Tip**
+>
+> Paste Mermaid output into [mermaid.live](https://mermaid.live) or any Mermaid-compatible renderer (GitHub, GitLab, Notion, Confluence) to visualize the graph.
+
+---
+
+## 5. Planning and deployment commands
+
+<a id="plan"></a>
+
+### 5.1 plan
 
 Preview what changes would be made to the target workspace without actually deploying. Compares the local deployment definition to the current workspace state.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd plan [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -227,7 +422,7 @@ udp-cicd plan [OPTIONS]
 | `--auto-delete / --no-auto-delete` | | Flag | `false` | Include deletion of workspace items not in the deployment definition. |
 | `--validate-api` | | Flag | `false` | After planning, validate each item definition against the Fabric API. |
 
-### Examples
+#### Examples
 
 **Preview changes for the default target:**
 
@@ -292,17 +487,19 @@ Validating definitions against Fabric API...
 
 ---
 
-## deploy
+<a id="deploy"></a>
+
+### 5.2 deploy
 
 Deploy the deployment to a target workspace. Creates, updates, or deletes items as needed to match the deployment definition.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd deploy [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -313,7 +510,7 @@ udp-cicd deploy [OPTIONS]
 | `--auto-delete / --no-auto-delete` | | Flag | `false` | Delete workspace items that are not defined in the deployment. |
 | `--force` | | Flag | `false` | Override deployment locks and skip the definition cache. |
 
-### Examples
+#### Examples
 
 **Deploy to the default target (interactive):**
 
@@ -369,17 +566,19 @@ udp-cicd deploy --target dev --force --auto-approve
 
 ---
 
-## destroy
+<a id="destroy"></a>
+
+### 5.3 destroy
 
 Delete all deployment-managed resources from the target workspace. Optionally delete the workspace itself.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd destroy [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -388,7 +587,7 @@ udp-cicd destroy [OPTIONS]
 | `--auto-approve` | `-y` | Flag | `false` | Skip the confirmation prompt. When not set, you must type the deployment name to confirm. |
 | `--delete-workspace` | | Flag | `false` | Also delete the workspace after all items are removed. |
 
-### Examples
+#### Examples
 
 **Destroy resources in the dev environment:**
 
@@ -439,23 +638,424 @@ udp-cicd destroy --target dev -y --delete-workspace
 
 ---
 
-## run
+<a id="promote"></a>
+
+### 5.4 promote
+
+Promote deployed artifacts from one target workspace to another by copying item definitions.
+
+#### Syntax
+
+```
+udp-cicd promote [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--from` | | String | **Required** | Source target name (for example, `staging`). |
+| `--to` | | String | **Required** | Destination target name (for example, `prod`). |
+| `--auto-approve` | `-y` | Flag | `false` | Skip the confirmation prompt. |
+
+#### Examples
+
+**Promote from staging to production:**
+
+```bash
+udp-cicd promote --from staging --to prod
+```
+
+**Example output:**
+
+```
+Promote: staging → prod
+  Source:  sales-analytics-staging (abc123-...)
+  Dest:    sales-analytics-prod (def456-...)
+
+  6 items to promote
+Proceed? [y/N]: y
+
+  + Created: bronze_lakehouse
+  + Created: gold_lakehouse
+  ~ Updated: ingest_notebook
+  ~ Updated: transform_notebook
+  + Created: daily_pipeline
+  + Created: spark_env
+
+Promoted 6 items from staging to prod.
+```
+
+> **Note**
+>
+> If the destination workspace does not exist, `promote` creates it automatically and assigns the capacity configured in the target.
+
+> **Important**
+>
+> Promote copies item *definitions* from the source workspace. It does not copy data. Lakehouse tables, warehouse data, and other runtime state are not transferred.
+
+---
+
+## 6. Operations commands
+
+<a id="status"></a>
+
+### 6.1 status
+
+Show the deployed resource health and status for a target, including which items are deployed, missing, pending, or unmanaged.
+
+#### Syntax
+
+```
+udp-cicd status [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+
+#### Examples
+
+```bash
+udp-cicd status --target dev
+```
+
+**Example output:**
+
+```
+Status: sales-analytics
+  Target:    dev
+  Workspace: sales-analytics-dev (abc123-def456-...)
+  Last deploy: 2025-03-15 14:30
+  Items in workspace: 8
+  Items in deployment:    6
+
+Resource                   Type             Status       Item ID
+bronze_lakehouse           lakehouses       deployed     abc123def456
+gold_lakehouse             lakehouses       deployed     def789abc012
+spark_env                  environments     deployed     ghi345jkl678
+ingest_notebook            notebooks        deployed     mno901pqr234
+transform_notebook         notebooks        deployed     stu567vwx890
+daily_pipeline             pipelines        deployed     yza123bcd456
+legacy_report              reports          unmanaged    efg789hij012
+test_notebook              notebooks        unmanaged    klm345nop678
+
+  Drift detected: 1 item(s)
+```
+
+#### Status meanings
+
+| Status | Meaning |
+|---|---|
+| `deployed` | The item exists in the workspace and matches the state file. |
+| `missing` | The item was previously deployed but is no longer in the workspace (deleted outside of udp-cicd). |
+| `pending` | The item is defined in the deployment but has not been deployed yet. |
+| `unmanaged` | The item exists in the workspace but is not defined in the deployment. |
+
+---
+
+<a id="drift"></a>
+
+### 6.2 drift
+
+Detect drift between the last deployed state and the live workspace. Reports items that were added, removed, or modified outside of `udp-cicd`. See [Drift Detection](../advanced/drift.md) for concepts, JSON output, and CI/CD integration.
+
+#### Syntax
+
+```
+udp-cicd drift [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+
+#### Examples
+
+```bash
+udp-cicd drift --target dev
+```
+
+**Example output (drift detected):**
+
+```
+Drift detected: 2 item(s)
+
+  + new_notebook: added
+  ~ ingest_notebook: modified
+
+  Run 'udp-cicd deploy' to reconcile, or 'udp-cicd plan' to preview changes.
+```
+
+**Example output (no drift):**
+
+```
+No drift detected. Workspace matches deployed state.
+```
+
+> **Note**
+>
+> Drift detection requires a prior deployment. If no deployment state exists, the command prompts you to run `udp-cicd deploy` first.
+
+---
+
+<a id="diff"></a>
+
+### 6.3 diff
+
+Show a definition-level diff between local files and the deployed definitions in the workspace. Uses unified diff format.
+
+#### Syntax
+
+```
+udp-cicd diff [OPTIONS] [RESOURCE_NAME]
+```
+
+#### Arguments
+
+| Argument | Required | Description |
+|---|---|---|
+| `RESOURCE_NAME` | No | Specific resource to diff. If omitted, diffs all resources. |
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+
+#### Examples
+
+**Diff all resources:**
+
+```bash
+udp-cicd diff --target dev
+```
+
+**Example output:**
+
+```
+--- deployed/ingest_notebook/notebook-content.py
++++ local/ingest_notebook/notebook-content.py
+@@ -10,6 +10,8 @@
+ df = spark.read.format("csv").load(source_path)
++# Added data quality check
++df = df.filter(df["amount"] > 0)
+ df.write.format("delta").save(target_path)
+```
+
+**Diff a single resource:**
+
+```bash
+udp-cicd diff --target dev ingest_notebook
+```
+
+**Example output (no differences):**
+
+```
+No differences found.
+```
+
+> **Note**
+>
+> Resources that have no exportable definition (for example, lakehouses created as metadata-only) are skipped.
+
+---
+
+<a id="history"></a>
+
+### 6.4 history
+
+Show the deployment history for a target environment.
+
+#### Syntax
+
+```
+udp-cicd history [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+| `--limit` | `-n` | Integer | `20` | Maximum number of history entries to display. |
+
+#### Examples
+
+```bash
+udp-cicd history --target prod
+```
+
+**Example output:**
+
+```
+Deployment History (prod):
+
+  deploy-abc123  2025-03-15 14:30  v1.2.0  6 resources  Update ingest_notebook
+  deploy-def456  2025-03-10 09:15  v1.1.0  6 resources  Add transform_notebook
+  deploy-ghi789  2025-03-01 11:00  v1.0.0  4 resources  Initial deployment
+```
+
+**Show only the last 5 entries:**
+
+```bash
+udp-cicd history --target prod -n 5
+```
+
+**Example output (no history):**
+
+```
+No deployment history found.
+```
+
+---
+
+<a id="rollback"></a>
+
+### 6.5 rollback
+
+Roll back to a previous deployment by restoring the state file to a prior version.
+
+#### Syntax
+
+```
+udp-cicd rollback [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+| `--to` | | String | | Deploy ID to roll back to. Use `udp-cicd history` to find deploy IDs. |
+| `--last` | | Flag | `false` | Roll back to the immediately previous deployment. |
+| `--auto-approve` | `-y` | Flag | `false` | Skip the confirmation prompt. |
+
+#### Examples
+
+**Roll back to the previous deployment:**
+
+```bash
+udp-cicd rollback --target prod --last
+```
+
+**Example output:**
+
+```
+Rollback target: deploy-def456 (2025-03-10 09:15)
+  Version: v1.1.0
+  Resources: 6
+
+Proceed with rollback? [y/N]: y
+State rolled back. Run 'udp-cicd deploy' to apply.
+```
+
+**Roll back to a specific deployment:**
+
+```bash
+udp-cicd rollback --target prod --to deploy-ghi789 -y
+```
+
+> **Important**
+>
+> The `rollback` command restores the *state file* only. It does not modify the workspace. After rolling back, run `udp-cicd deploy` to apply the rolled-back state to the workspace.
+
+> **Note**
+>
+> At least two deployment history entries are required for rollback. If only one entry exists, the command reports that there is not enough history.
+
+---
+
+<a id="watch"></a>
+
+### 6.6 watch
+
+Watch the project directory for file changes and automatically deploy to the target workspace.
+
+#### Syntax
+
+```
+udp-cicd watch [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
+| `--target` | `-t` | String | *(default target)* | Target environment. |
+| `--interval` | | Integer | `5` | File check interval in seconds. |
+
+#### Examples
+
+**Watch and auto-deploy to dev:**
+
+```bash
+udp-cicd watch --target dev
+```
+
+**Example output:**
+
+```
+Watching for changes... (target: dev, interval: 5s)
+  Press Ctrl+C to stop.
+
+  [14:30:15] Changed: notebooks/ingest_notebook.py
+  Deployed.
+
+  [14:32:08] Changed: udp.yml, notebooks/transform_notebook.py
+  Deployed.
+```
+
+**Watch with a faster interval:**
+
+```bash
+udp-cicd watch --target dev --interval 2
+```
+
+#### Watched file types
+
+The watch command monitors files with the following extensions: `.py`, `.sql`, `.yml`, `.yaml`, `.json`, `.ipynb`, `.tmdl`, `.r`, `.scala`.
+
+Directories named `.udp-cicd`, `__pycache__`, and `.venv` are excluded.
+
+> **Warning**
+>
+> The `watch` command deploys changes automatically without a confirmation prompt. Use it only in development environments.
+
+---
+
+## 7. Resource management commands
+
+<a id="run"></a>
+
+### 7.1 run
 
 Execute a specific notebook or pipeline in the target workspace.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd run RESOURCE_NAME [OPTIONS]
 ```
 
-### Arguments
+#### Arguments
 
 | Argument | Required | Description |
 |---|---|---|
 | `RESOURCE_NAME` | Yes | The resource key of the notebook or pipeline to run, as defined in `udp.yml`. |
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -463,7 +1063,7 @@ udp-cicd run RESOURCE_NAME [OPTIONS]
 | `--target` | `-t` | String | *(default target)* | Target environment. |
 | `--param` | `-p` | String (multiple) | | Execution parameters as `KEY=VALUE` pairs. Overrides default parameters from the deployment definition. |
 
-### Examples
+#### Examples
 
 **Run a notebook:**
 
@@ -516,340 +1116,19 @@ udp-cicd run daily_pipeline --target prod
 
 ---
 
-## status
+<a id="export"></a>
 
-Show the deployed resource health and status for a target, including which items are deployed, missing, pending, or unmanaged.
-
-### Syntax
-
-```
-udp-cicd status [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-
-### Examples
-
-```bash
-udp-cicd status --target dev
-```
-
-**Example output:**
-
-```
-Status: sales-analytics
-  Target:    dev
-  Workspace: sales-analytics-dev (abc123-def456-...)
-  Last deploy: 2025-03-15 14:30
-  Items in workspace: 8
-  Items in deployment:    6
-
-Resource                   Type             Status       Item ID
-bronze_lakehouse           lakehouses       deployed     abc123def456
-gold_lakehouse             lakehouses       deployed     def789abc012
-spark_env                  environments     deployed     ghi345jkl678
-ingest_notebook            notebooks        deployed     mno901pqr234
-transform_notebook         notebooks        deployed     stu567vwx890
-daily_pipeline             pipelines        deployed     yza123bcd456
-legacy_report              reports          unmanaged    efg789hij012
-test_notebook              notebooks        unmanaged    klm345nop678
-
-  Drift detected: 1 item(s)
-```
-
-> **Note**
->
-> **Status meanings:**
-> - **deployed** -- The item exists in the workspace and matches the state file.
-> - **missing** -- The item was previously deployed but is no longer in the workspace (deleted outside of udp-cicd).
-> - **pending** -- The item is defined in the deployment but has not been deployed yet.
-> - **unmanaged** -- The item exists in the workspace but is not defined in the deployment.
-
----
-
-## drift
-
-Detect drift between the last deployed state and the live workspace. Reports items that were added, removed, or modified outside of `udp-cicd`.
-
-### Syntax
-
-```
-udp-cicd drift [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-
-### Examples
-
-```bash
-udp-cicd drift --target dev
-```
-
-**Example output (drift detected):**
-
-```
-Drift detected: 2 item(s)
-
-  + new_notebook: added
-  ~ ingest_notebook: modified
-
-  Run 'udp-cicd deploy' to reconcile, or 'udp-cicd plan' to preview changes.
-```
-
-**Example output (no drift):**
-
-```
-No drift detected. Workspace matches deployed state.
-```
-
-> **Note**
->
-> Drift detection requires a prior deployment. If no deployment state exists, the command prompts you to run `udp-cicd deploy` first.
-
----
-
-## diff
-
-Show a definition-level diff between local files and the deployed definitions in the workspace. Uses unified diff format.
-
-### Syntax
-
-```
-udp-cicd diff [OPTIONS] [RESOURCE_NAME]
-```
-
-### Arguments
-
-| Argument | Required | Description |
-|---|---|---|
-| `RESOURCE_NAME` | No | Specific resource to diff. If omitted, diffs all resources. |
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-
-### Examples
-
-**Diff all resources:**
-
-```bash
-udp-cicd diff --target dev
-```
-
-**Example output:**
-
-```
---- deployed/ingest_notebook/notebook-content.py
-+++ local/ingest_notebook/notebook-content.py
-@@ -10,6 +10,8 @@
- df = spark.read.format("csv").load(source_path)
-+# Added data quality check
-+df = df.filter(df["amount"] > 0)
- df.write.format("delta").save(target_path)
-```
-
-**Diff a single resource:**
-
-```bash
-udp-cicd diff --target dev ingest_notebook
-```
-
-**Example output (no differences):**
-
-```
-No differences found.
-```
-
-> **Note**
->
-> Resources that have no exportable definition (for example, lakehouses created as metadata-only) are skipped.
-
----
-
-## history
-
-Show the deployment history for a target environment.
-
-### Syntax
-
-```
-udp-cicd history [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-| `--limit` | `-n` | Integer | `20` | Maximum number of history entries to display. |
-
-### Examples
-
-```bash
-udp-cicd history --target prod
-```
-
-**Example output:**
-
-```
-Deployment History (prod):
-
-  deploy-abc123  2025-03-15 14:30  v1.2.0  6 resources  Update ingest_notebook
-  deploy-def456  2025-03-10 09:15  v1.1.0  6 resources  Add transform_notebook
-  deploy-ghi789  2025-03-01 11:00  v1.0.0  4 resources  Initial deployment
-```
-
-**Show only the last 5 entries:**
-
-```bash
-udp-cicd history --target prod -n 5
-```
-
-**Example output (no history):**
-
-```
-No deployment history found.
-```
-
----
-
-## rollback
-
-Roll back to a previous deployment by restoring the state file to a prior version.
-
-### Syntax
-
-```
-udp-cicd rollback [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-| `--to` | | String | | Deploy ID to roll back to. Use `udp-cicd history` to find deploy IDs. |
-| `--last` | | Flag | `false` | Roll back to the immediately previous deployment. |
-| `--auto-approve` | `-y` | Flag | `false` | Skip the confirmation prompt. |
-
-### Examples
-
-**Roll back to the previous deployment:**
-
-```bash
-udp-cicd rollback --target prod --last
-```
-
-**Example output:**
-
-```
-Rollback target: deploy-def456 (2025-03-10 09:15)
-  Version: v1.1.0
-  Resources: 6
-
-Proceed with rollback? [y/N]: y
-State rolled back. Run 'udp-cicd deploy' to apply.
-```
-
-**Roll back to a specific deployment:**
-
-```bash
-udp-cicd rollback --target prod --to deploy-ghi789 -y
-```
-
-> **Important**
->
-> The `rollback` command restores the *state file* only. It does not modify the workspace. After rolling back, run `udp-cicd deploy` to apply the rolled-back state to the workspace.
-
-> **Note**
->
-> At least two deployment history entries are required for rollback. If only one entry exists, the command reports that there is not enough history.
-
----
-
-## promote
-
-Promote deployed artifacts from one target workspace to another by copying item definitions.
-
-### Syntax
-
-```
-udp-cicd promote [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--from` | | String | **Required** | Source target name (for example, `staging`). |
-| `--to` | | String | **Required** | Destination target name (for example, `prod`). |
-| `--auto-approve` | `-y` | Flag | `false` | Skip the confirmation prompt. |
-
-### Examples
-
-**Promote from staging to production:**
-
-```bash
-udp-cicd promote --from staging --to prod
-```
-
-**Example output:**
-
-```
-Promote: staging → prod
-  Source:  sales-analytics-staging (abc123-...)
-  Dest:    sales-analytics-prod (def456-...)
-
-  6 items to promote
-Proceed? [y/N]: y
-
-  + Created: bronze_lakehouse
-  + Created: gold_lakehouse
-  ~ Updated: ingest_notebook
-  ~ Updated: transform_notebook
-  + Created: daily_pipeline
-  + Created: spark_env
-
-Promoted 6 items from staging to prod.
-```
-
-> **Note**
->
-> If the destination workspace does not exist, `promote` creates it automatically and assigns the capacity configured in the target.
-
-> **Important**
->
-> Promote copies item *definitions* from the source workspace. It does not copy data. Lakehouse tables, warehouse data, and other runtime state are not transferred.
-
----
-
-## export
+### 7.2 export
 
 Export item definitions from a deployed workspace to local files.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd export [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
@@ -858,7 +1137,7 @@ udp-cicd export [OPTIONS]
 | `--output` | `-o` | String | `.` | Output directory for exported files. |
 | `--resource` | `-r` | String | *(all)* | Export a specific resource by name. If omitted, exports all items. |
 
-### Examples
+#### Examples
 
 **Export all items from the dev workspace:**
 
@@ -888,24 +1167,26 @@ udp-cicd export --target dev -r ingest_notebook -o ./exported
 
 ---
 
-## generate
+<a id="generate"></a>
+
+### 7.3 generate
 
 Generate a `udp.yml` deployment definition by scanning an existing Fabric workspace.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd generate [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
 | `--workspace` | `-w` | String | **Required** | Workspace name or GUID to scan. |
 | `--output` | `-o` | String | `.` | Output directory for the generated `udp.yml` and item definitions. |
 
-### Examples
+#### Examples
 
 **Generate from a workspace name:**
 
@@ -943,30 +1224,32 @@ Generated:
 
 ---
 
-## bind
+<a id="bind"></a>
+
+### 7.4 bind
 
 Bind an existing workspace item to deployment management. The item must already be defined in `udp.yml`.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd bind RESOURCE_NAME [OPTIONS]
 ```
 
-### Arguments
+#### Arguments
 
 | Argument | Required | Description |
 |---|---|---|
 | `RESOURCE_NAME` | Yes | The resource key as defined in `udp.yml`. |
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
 | `--workspace` | `-w` | String | **Required** | Workspace name or GUID containing the item. |
 | `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
 
-### Examples
+#### Examples
 
 ```bash
 udp-cicd bind ingest_notebook -w "sales-analytics-dev"
@@ -991,21 +1274,23 @@ Bound: ingest_notebook
 
 ---
 
-## import
+<a id="import"></a>
+
+### 7.5 import
 
 Import existing resources into udp-cicd management from a Terraform state file or a live Fabric workspace.
 
-### Syntax
+#### Syntax
 
 ```
 udp-cicd import [OPTIONS]
 ```
 
-### Options
+#### Options
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
-| `--from-terraform` | | String | | Path to a `terraform.tfstate` file. Extracts `microsoft_udp_*` resources. |
+| `--from-terraform` | | String | | Path to a `terraform.tfstate` file. Extracts `fabric_*` resources. |
 | `--workspace` | `-w` | String | | Workspace name or GUID to import from. |
 | `--output` | `-o` | String | `.` | Output directory for state files. |
 | `--target` | `-t` | String | `dev` | Target name to assign to the imported state. |
@@ -1014,7 +1299,7 @@ udp-cicd import [OPTIONS]
 >
 > You must specify exactly one of `--from-terraform` or `--workspace`.
 
-### Examples
+#### Examples
 
 **Import from Terraform state:**
 
@@ -1053,246 +1338,7 @@ Imported 6 resources to udp-cicd state.
 
 ---
 
-## list
-
-List available deployment templates that can be used with `udp-cicd init`.
-
-### Syntax
-
-```
-udp-cicd list
-```
-
-### Examples
-
-```bash
-udp-cicd list
-```
-
-**Example output:**
-
-```
-Available templates:
-
-  blank
-    Empty project with minimal structure
-
-  medallion
-    Bronze/Silver/Gold lakehouse pattern with ingestion notebooks
-
-Usage: udp deployment init --template <name> --name <project-name>
-```
-
----
-
-## doctor
-
-Run diagnostic checks to validate your environment, dependencies, authentication, API connectivity, and deployment configuration.
-
-### Syntax
-
-```
-udp-cicd doctor
-```
-
-### Examples
-
-```bash
-udp-cicd doctor
-```
-
-**Example output:**
-
-```
-udp-cicd doctor
-
-  ✓ Python 3.12.4 (>=3.10 required)
-  ✓ Package: pydantic
-  ✓ Package: click
-  ✓ Package: rich
-  ✓ Package: yaml
-  ✓ Package: requests
-  ✓ Package: azure.identity
-  ✓ Azure CLI installed
-  ✓ Azure CLI authenticated
-  ✓ Fabric API reachable
-  ✓ udp.yml found
-  ✓ Deployment validates
-
-  11 passed, 0 failed
-```
-
-### Checks performed
-
-| Check | What it validates |
-|---|---|
-| Python version | Python >= 3.10 is installed. |
-| Required packages | `pydantic`, `click`, `rich`, `yaml`, `requests`, `azure.identity` are importable. |
-| Azure CLI installed | The `az` binary is found in PATH. |
-| Azure CLI authenticated | `az account show` succeeds (a valid session exists). |
-| Fabric API reachable | The Fabric REST API responds to a workspace list request. |
-| `udp.yml` found | A `udp.yml` or `udp.yaml` file exists in the current directory. |
-| Deployment validates | The deployment definition parses and validates without errors. |
-
----
-
-## graph
-
-Visualize the deployment dependency graph in Mermaid, DOT (Graphviz), or plain text format.
-
-### Syntax
-
-```
-udp-cicd graph [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-| `--format` | | Choice: `mermaid`, `dot`, `text` | `mermaid` | Output format. |
-| `--output` | `-o` | String | *(stdout)* | Output file path. If omitted, prints to stdout. |
-
-### Examples
-
-**Generate a Mermaid diagram:**
-
-```bash
-udp-cicd graph
-```
-
-**Example output:**
-
-```
-graph TD
-    spark_env["spark_env\n(environments)"]
-    style spark_env fill:#457b9d,color:#fff
-    bronze_lakehouse["bronze_lakehouse\n(lakehouses)"]
-    style bronze_lakehouse fill:#2d6a4f,color:#fff
-    ingest_notebook["ingest_notebook\n(notebooks)"]
-    style ingest_notebook fill:#264653,color:#fff
-    spark_env --> ingest_notebook
-    bronze_lakehouse --> ingest_notebook
-```
-
-**Generate a DOT file for Graphviz:**
-
-```bash
-udp-cicd graph --format dot -o graph.dot
-```
-
-**Generate plain text:**
-
-```bash
-udp-cicd graph --format text
-```
-
-**Example output:**
-
-```
-  [environments] spark_env
-  [lakehouses] bronze_lakehouse
-  [notebooks] ingest_notebook ← spark_env, bronze_lakehouse
-  [pipelines] daily_pipeline ← ingest_notebook
-```
-
-> **Tip**
->
-> Paste Mermaid output into [mermaid.live](https://mermaid.live) or any Mermaid-compatible renderer (GitHub, GitLab, Notion, Confluence) to visualize the graph.
-
----
-
-## watch
-
-Watch the project directory for file changes and automatically deploy to the target workspace.
-
-### Syntax
-
-```
-udp-cicd watch [OPTIONS]
-```
-
-### Options
-
-| Option | Short | Type | Default | Description |
-|---|---|---|---|---|
-| `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. |
-| `--target` | `-t` | String | *(default target)* | Target environment. |
-| `--interval` | | Integer | `5` | File check interval in seconds. |
-
-### Examples
-
-**Watch and auto-deploy to dev:**
-
-```bash
-udp-cicd watch --target dev
-```
-
-**Example output:**
-
-```
-Watching for changes... (target: dev, interval: 5s)
-  Press Ctrl+C to stop.
-
-  [14:30:15] Changed: notebooks/ingest_notebook.py
-  Deployed.
-
-  [14:32:08] Changed: udp.yml, notebooks/transform_notebook.py
-  Deployed.
-```
-
-**Watch with a faster interval:**
-
-```bash
-udp-cicd watch --target dev --interval 2
-```
-
-### Watched file types
-
-The watch command monitors files with the following extensions: `.py`, `.sql`, `.yml`, `.yaml`, `.json`, `.ipynb`, `.tmdl`, `.r`, `.scala`.
-
-Directories named `.udp-cicd`, `__pycache__`, and `.venv` are excluded.
-
-> **Warning**
->
-> The `watch` command deploys changes automatically without a confirmation prompt. Use it only in development environments.
-
----
-
-## check-update
-
-Check if a newer version of Unified Data Platform Deployment is available on PyPI.
-
-### Syntax
-
-```
-udp-cicd check-update
-```
-
-### Examples
-
-```bash
-udp-cicd check-update
-```
-
-**Example output (update available):**
-
-```
-  Update available: 1.0.0b1 → 1.0.0b2
-  Run: dotnet tool update --global udp-cicd
-```
-
-**Example output (up to date):**
-
-```
-  You're on the latest version: 1.0.0b2
-```
-
----
-
-## Exit codes
+## 8. Exit codes
 
 All `udp-cicd` commands use the following exit codes:
 
@@ -1301,9 +1347,11 @@ All `udp-cicd` commands use the following exit codes:
 | `0` | Success. |
 | `1` | Error. The command failed due to a validation error, API error, authentication error, or runtime exception. |
 
+The `drift` command additionally distinguishes between detected drift (exit code `1`) and operational errors (exit code `2`). See [Drift Detection](../advanced/drift.md) for details.
+
 ---
 
-## Environment variables
+## 9. Environment variables
 
 The following environment variables affect `udp-cicd` behavior:
 
@@ -1312,12 +1360,18 @@ The following environment variables affect `udp-cicd` behavior:
 | `AZURE_TENANT_ID` | Azure AD tenant ID for service principal authentication. |
 | `AZURE_CLIENT_ID` | Application (client) ID for service principal authentication. |
 | `AZURE_CLIENT_SECRET` | Client secret for service principal authentication. |
+| `FABRIC_USE_BROWSER` | Set to `true` to authenticate with an interactive browser sign-in (`InteractiveBrowserCredential`). |
+| `FABRIC_CAPACITY_ID` | Default Fabric capacity ID used when creating workspaces. |
+| `AZURE_STORAGE_ACCOUNT_NAME` | Storage account name for the Azure Blob or ADLS Gen2 state backend. |
 | `HTTPS_PROXY` | HTTP proxy URL for outbound connections. |
-| `udp_deployment_FILE` | Default path to `udp.yml` (overrides auto-detection). |
+
+There is no environment variable for the deployment file path. When `--file` is not given, the CLI auto-detects by searching the current directory and its parents for `udp.yml`, `udp.yaml`, `.udp/deployment.yml`, or `.udp/deployment.yaml`.
+
+When the three `AZURE_*` service principal variables are set, the CLI authenticates with `ClientSecretCredential`. Otherwise it falls back to `DefaultAzureCredential`. See [Environment Variables](../reference/environment-variables.md) for the full reference.
 
 ---
 
-## See also
+## 10. See also
 
 - [Installation](../getting-started/installation.md) -- Install and configure Unified Data Platform Deployment.
 - [udp.yml reference](../guide/udp-yml.md) -- Complete schema reference for deployment definitions.

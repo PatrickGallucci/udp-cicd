@@ -1,14 +1,12 @@
 # udp.yml reference
 
-The `udp.yml` file is the single declarative definition for a Microsoft Fabric project. It defines every resource, environment target, security role, connection, and policy for your project in one file (or split across multiple files using `include`).
+This topic is the complete reference for the `udp.yml` schema: every top-level key, field, type, default value, and validation rule. The `udp.yml` file is the single declarative definition for a Microsoft Fabric project, covering every resource, environment target, security role, connection, and policy in one file (or split across multiple files using `include`).
 
-`udp.yml` describes the **desired state** of your workspace — *what* you want, not *how* to build it. The CLI handles dependency ordering, diffing against actual state, and applying the changes. For the conceptual model behind that loop, see [The declarative model](declarative-model.md).
-
-This topic provides a complete reference for every top-level key, field, type, default value, and validation rule in the `udp.yml` schema.
+`udp.yml` describes the **desired state** of your workspace: *what* you want, not *how* to build it. The CLI handles dependency ordering, diffing against actual state, and applying the changes. For the conceptual model behind that loop, see [The declarative model](declarative-model.md).
 
 ---
 
-## File structure overview
+## 1. File structure overview
 
 ```yaml
 deployment:          # Required. Project metadata.
@@ -31,9 +29,11 @@ extends:         # Parent deployment to inherit from.
 
 ---
 
-## JSON Schema validation
+## 2. Schema validation and parsing
 
-A JSON Schema file is provided at the repository root for editor autocompletion and validation:
+udp-cicd parses `udp.yml` with YamlDotNet, constructed through the `YamlFactory`. The parsed document is bound to C# model classes in `UdpCicd.Core.Models`, including `DeploymentDefinition`, `ResourcesConfig`, `TargetConfig`, `WorkspaceConfig`, and `StateConfig`.
+
+A JSON Schema file, `udp.schema.json`, ships at the repository root for editor IntelliSense, autocompletion, and validation:
 
 ```yaml
 # yaml-language-server: $schema=../../udp.schema.json
@@ -43,11 +43,11 @@ deployment:
 
 ---
 
-## deployment
+## 3. deployment
 
 Project metadata and identity. This is the only required top-level key.
 
-### Fields
+### 3.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -56,7 +56,7 @@ Project metadata and identity. This is the only required top-level key.
 | `description` | String | No | | Human-readable description of the project. |
 | `depends_on` | List of strings | No | `[]` | Paths to other `udp.yml` files that this deployment depends on. Used for cross-deployment dependency resolution. |
 
-### Example
+### 3.2 Example
 
 ```yaml
 deployment:
@@ -74,11 +74,11 @@ deployment:
 
 ---
 
-## workspace
+## 4. workspace
 
 Default workspace configuration. Targets can override these values.
 
-### Fields
+### 4.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -87,9 +87,9 @@ Default workspace configuration. Targets can override these values.
 | `capacity_id` | String | No | | Fabric capacity GUID. Required when creating a new workspace. Must be a valid GUID format (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) or a variable reference (`${var.capacity_id}`). |
 | `capacity` | String | No | | **Deprecated.** Use `capacity_id` instead. |
 | `description` | String | No | | Workspace description. |
-| `git_integration` | Object | No | | Git integration settings for the workspace. See [git_integration](#git_integration). |
+| `git_integration` | Object | No | | Git integration settings for the workspace. See [git_integration](#43-git_integration). |
 
-### Example
+### 4.2 Example
 
 ```yaml
 workspace:
@@ -108,7 +108,7 @@ workspace:
 >
 > If you provide both `workspace_id` and `name`, the `workspace_id` takes precedence. The tool deploys to the workspace identified by the GUID, regardless of the `name` value.
 
-### git_integration
+### 4.3 git_integration
 
 Git integration settings that connect the workspace to a source control repository.
 
@@ -120,8 +120,6 @@ Git integration settings that connect the workspace to a source control reposito
 | `repository` | String | No | | Repository name. |
 | `branch` | String | No | `"main"` | Branch to sync with. |
 | `directory` | String | No | `"/"` | Root directory in the repository for Fabric items. |
-
-### Example
 
 ```yaml
 workspace:
@@ -136,13 +134,13 @@ workspace:
 
 ---
 
-## variables
+## 5. variables
 
-Variable definitions with optional descriptions and default values. Variables can be referenced anywhere in the deployment using `${var.variable_name}` syntax.
+Variable definitions with optional descriptions and default values. Variables can be referenced anywhere in the deployment using `${var.variable_name}` syntax. Substitution is resolved recursively across the manifest by the `SecretsResolver`.
 
-### Field formats
+### 5.1 Field formats
 
-Variables support two definition formats:
+Variables support two definition formats.
 
 **Short form** (string value as default):
 
@@ -171,16 +169,18 @@ variables:
     default: "dev"
 ```
 
-### Variable resolution order
+### 5.2 Variable resolution order
 
 Variables are resolved in the following order (highest priority first):
 
 1. Target-specific `variables` overrides.
 2. Variable `default` value from the top-level `variables` section.
-3. Environment variables (for `${env.VAR_NAME}` syntax).
-4. Azure Key Vault secrets (for `${secret.SECRET_NAME}` syntax, requires the `keyvault` extra).
+3. Environment variables (for `${env.VAR_NAME}` and `${secret.SECRET_NAME}` syntax).
+4. Azure Key Vault secrets (for `${keyvault.VAULT_NAME.SECRET_NAME}` syntax).
 
-### Examples
+The built-in variables `${deployment.name}` and `${deployment.version}` are always available.
+
+### 5.3 Examples
 
 **Referencing variables in the deployment:**
 
@@ -208,15 +208,15 @@ notifications:
 
 > **Important**
 >
-> Variables using `${secret.*}` syntax require the `keyvault` extra (`dotnet tool install --global udp-cicd`) and a configured Azure Key Vault.
+> `${secret.*}` values are read from environment variables at deploy time and are redacted in plan output and logs. For centrally managed secrets, use `${keyvault.VAULT_NAME.SECRET_NAME}`, which retrieves the value from Azure Key Vault. See [Secrets Management](secrets.md).
 
 ---
 
-## resources
+## 6. resources
 
 All Fabric resource definitions organized by type. Each resource type is a dictionary where keys are the resource display names and values define the resource configuration.
 
-### Supported resource types (45 types)
+### 6.1 Supported resource types (45 types)
 
 The following table lists every supported resource type. Click a type name for details in the [resource type reference](resource-types.md).
 
@@ -268,13 +268,9 @@ The following table lists every supported resource type. Click a type name for d
 | | `digital_twin_builder_flows` | Digital Twin Builder Flow resources. |
 | **Healthcare** | `hls_cohorts` | HLS Cohort (Healthcare) resources. |
 
-### Core resource types in detail
-
 The following sections document the most commonly used resource types.
 
----
-
-### lakehouses
+### 6.2 lakehouses
 
 Fabric Lakehouse resources with optional OneLake shortcuts and Delta table definitions.
 
@@ -336,9 +332,7 @@ resources:
 >
 > Lakehouse names support only letters, numbers, and underscores. Hyphens and spaces are not allowed by the Fabric API.
 
----
-
-### notebooks
+### 6.3 notebooks
 
 Spark notebooks deployed from local `.py` or `.ipynb` files.
 
@@ -382,9 +376,7 @@ resources:
 >
 > The `environment` and `default_lakehouse` fields must reference resource keys defined in the same deployment. Cross-references are validated at load time. Invalid references cause a validation error.
 
----
-
-### pipelines
+### 6.4 pipelines
 
 Data Pipelines with optional inline activities and schedules.
 
@@ -445,9 +437,7 @@ resources:
       description: "Ad-hoc data loading pipeline"
 ```
 
----
-
-### environments
+### 6.5 environments
 
 Spark runtime environments with Python library dependencies and Spark configuration.
 
@@ -476,9 +466,7 @@ resources:
         spark.databricks.delta.autoCompact.enabled: "true"
 ```
 
----
-
-### warehouses
+### 6.6 warehouses
 
 Fabric Warehouse resources with optional SQL scripts executed on deployment.
 
@@ -505,9 +493,7 @@ resources:
 >
 > Warehouse names support only letters, numbers, and underscores.
 
----
-
-### semantic_models
+### 6.7 semantic_models
 
 Semantic models (Power BI datasets) deployed from local TMDL or BIM definition directories.
 
@@ -536,9 +522,7 @@ resources:
       folder: "BI/Models"
 ```
 
----
-
-### reports
+### 6.8 reports
 
 Power BI reports deployed from local `.pbir` or report definition files.
 
@@ -566,9 +550,7 @@ resources:
       external_semantic_model: "workspace://shared-models/enterprise_model"
 ```
 
----
-
-### data_agents
+### 6.9 data_agents
 
 Data Agent (AI/NL2SQL) resources with grounding configuration.
 
@@ -598,9 +580,7 @@ resources:
         - products
 ```
 
----
-
-### eventhouses
+### 6.10 eventhouses
 
 Eventhouse (KQL database cluster) resources.
 
@@ -625,9 +605,7 @@ resources:
       cache_days: 30
 ```
 
----
-
-### eventstreams
+### 6.11 eventstreams
 
 Eventstream resources for real-time data ingestion.
 
@@ -650,17 +628,17 @@ resources:
 
 ---
 
-## security
+## 7. security
 
-Workspace and OneLake role assignments.
+Workspace and OneLake role assignments. Workspace security roles are a stable feature; OneLake data access roles are in beta. See [Security and Permissions](security.md) for the full guide.
 
-### Fields
+### 7.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `roles` | List of [SecurityRole](#securityrole) | No | `[]` | Role definitions. |
+| `roles` | List of [SecurityRole](#72-securityrole) | No | `[]` | Role definitions. |
 
-### SecurityRole
+### 7.2 SecurityRole
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -669,13 +647,13 @@ Workspace and OneLake role assignments.
 | `entra_user` | String | No | | Entra ID user UPN (for example, `user@contoso.com`). |
 | `service_principal` | String | No | | Service principal name or application ID. |
 | `workspace_role` | Enum | No | `"viewer"` | Workspace role: `admin`, `member`, `contributor`, `viewer`. |
-| `onelake_roles` | List of [OneLakeRoleBinding](#onelakerolebinding) | No | `[]` | Fine-grained OneLake data access roles. |
+| `onelake_roles` | List of [OneLakeRoleBinding](#73-onelakerolebinding) | No | `[]` | Fine-grained OneLake data access roles. |
 
 > **Note**
 >
 > Specify exactly one of `entra_group`, `entra_user`, or `service_principal` per role.
 
-### OneLakeRoleBinding
+### 7.3 OneLakeRoleBinding
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -683,7 +661,7 @@ Workspace and OneLake role assignments.
 | `folders` | List of strings | No | `[]` | Folder paths to grant access to. |
 | `permissions` | List of enum | No | `[]` | Permissions: `read`, `write`, `readwrite`. |
 
-### Example
+### 7.4 Example
 
 ```yaml
 security:
@@ -714,11 +692,11 @@ security:
 
 ---
 
-## connections
+## 8. connections
 
 Data source connection definitions.
 
-### Fields
+### 8.1 Fields
 
 Each connection is a named entry in the `connections` map.
 
@@ -731,7 +709,7 @@ Each connection is a named entry in the `connections` map.
 | `connection_string_var` | String | No | | Environment variable name containing the connection string. |
 | `properties` | Map of string to string | No | `{}` | Additional connection properties. |
 
-### Example
+### 8.2 Example
 
 ```yaml
 connections:
@@ -763,25 +741,25 @@ connections:
 
 > **Warning**
 >
-> Never put secrets (connection strings, API keys, passwords) directly in `udp.yml`. Use `${secret.KEY_NAME}` for Key Vault references, `${env.VAR_NAME}` for environment variables, or the `connection_string_var` field.
+> Never put secrets (connection strings, API keys, passwords) directly in `udp.yml`. Use `${keyvault.VAULT.SECRET}` for Key Vault references, `${secret.NAME}` or `${env.VAR_NAME}` for environment variables, or the `connection_string_var` field.
 
 ---
 
-## policies
+## 9. policies
 
 Validation and governance rules enforced during `udp-cicd validate` and `udp-cicd deploy`.
 
-### Fields
+### 9.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `rules` | List of [PolicyRule](#policyrule) | No | `[]` | Custom policy rules. |
+| `rules` | List of [PolicyRule](#92-policyrule) | No | `[]` | Custom policy rules. |
 | `require_description` | Boolean | No | `false` | Require a `description` field on every resource. |
 | `naming_convention` | String | No | | Naming convention to enforce: `snake_case`, `camelCase`, etc. |
 | `max_notebook_size_kb` | Integer | No | | Maximum allowed notebook file size in kilobytes. |
 | `blocked_libraries` | List of strings | No | `[]` | PyPI packages that are not allowed in environment definitions. |
 
-### PolicyRule
+### 9.2 PolicyRule
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -790,7 +768,7 @@ Validation and governance rules enforced during `udp-cicd validate` and `udp-cic
 | `value` | Any | No | | Check-specific value. |
 | `severity` | String | No | `"error"` | Severity level: `error` (blocks deploy) or `warning` (informational). |
 
-### Example
+### 9.3 Example
 
 ```yaml
 policies:
@@ -812,22 +790,22 @@ policies:
 
 > **Note**
 >
-> Policy violations with severity `error` cause `udp-cicd validate --strict` and `udp-cicd deploy` to fail. Violations with severity `warning` are reported but do not block deployment.
+> Only the four built-in options (`require_description`, `naming_convention`, `max_notebook_size_kb`, `blocked_libraries`) are enforced at validation time. Entries in `rules` are accepted by the schema but not yet evaluated; see [Policy Enforcement](../advanced/policies.md). The `blocked_libraries` match is by library name prefix, so list bare names rather than version specifiers.
 
 ---
 
-## notifications
+## 10. notifications
 
 Webhook notifications sent after deployment events.
 
-### Fields
+### 10.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `on_success` | List of [NotificationConfig](#notificationconfig) | No | `[]` | Notifications to send after a successful deployment. |
-| `on_failure` | List of [NotificationConfig](#notificationconfig) | No | `[]` | Notifications to send after a failed deployment. |
+| `on_success` | List of [NotificationConfig](#102-notificationconfig) | No | `[]` | Notifications to send after a successful deployment. |
+| `on_failure` | List of [NotificationConfig](#102-notificationconfig) | No | `[]` | Notifications to send after a failed deployment. |
 
-### NotificationConfig
+### 10.2 NotificationConfig
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -835,7 +813,7 @@ Webhook notifications sent after deployment events.
 | `webhook` | String | **Yes** | | Webhook URL. Use `${secret.WEBHOOK}` for secrets. |
 | `message` | String | No | `"Deployed {deployment.name} v{deployment.version} to {target}"` | Message template. Supports `{deployment.name}`, `{deployment.version}`, `{target}` placeholders. |
 
-### Example
+### 10.3 Example
 
 ```yaml
 notifications:
@@ -854,55 +832,74 @@ notifications:
 
 ---
 
-## state
+## 11. state
 
-Remote state backend configuration. By default, deployment state is stored locally in a `.udp-cicd/` directory.
+State backend configuration. By default, deployment state is stored locally as JSON in a `.udp-cicd/` directory.
 
-### Fields
+### 11.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `backend` | String | No | `"local"` | State backend type: `local`, `azureblob`, `adls`. |
+| `backend` | String | No | `"local"` | State backend type: `local`, `azureblob`, `onelake`, `adls`. |
 | `config` | Map of string to string | No | `{}` | Backend-specific configuration. |
 
-### Backend: local (default)
+Backend availability:
 
-State is stored in `.udp-cicd/state/<target>.json` in the project directory.
+| Backend | Storage | Status |
+|---|---|---|
+| `local` | JSON files in `.udp-cicd/` | Stable |
+| `azureblob` | Azure Blob Storage | Beta |
+| `onelake` | Fabric lakehouse Files area | Beta |
+| `adls` | Azure Data Lake Storage Gen2 | Beta |
+
+### 11.2 Backend: local (default)
+
+State is stored per target in `.udp-cicd/state-<target>.json` in the project directory.
 
 ```yaml
 state:
   backend: local
 ```
 
-### Backend: azureblob
+### 11.3 Backend: azureblob
 
-State is stored in Azure Blob Storage. Requires the `remote-state` extra.
+State is stored in Azure Blob Storage. This backend is in beta.
 
 ```yaml
 state:
   backend: azureblob
   config:
-    storage_account: "mystorageaccount"
-    container: "udp-cicd-state"
-    key: "sales-analytics.tfstate"
+    account_name: "mystorageaccount"
+    container_name: "udp-cicd-state"   # Optional, default: udp-cicd-state
+    prefix: "sales-analytics"          # Optional key prefix
+    # account_key: optional; omit so DefaultAzureCredential is used
 ```
 
-### Backend: adls
+### 11.4 Backend: onelake
 
-State is stored in Azure Data Lake Storage Gen2. Requires the `remote-state` extra.
+State is stored in the Files area of a Fabric lakehouse, alongside your data. This backend is in beta.
+
+```yaml
+state:
+  backend: onelake
+  config:
+    workspace_id: "your-workspace-guid"
+    lakehouse_id: "your-lakehouse-guid"
+    path: ".udp-cicd-state"   # Optional, default: .udp-cicd-state
+```
+
+### 11.5 Backend: adls
+
+State is stored in Azure Data Lake Storage Gen2. This backend is in beta.
 
 ```yaml
 state:
   backend: adls
   config:
-    storage_account: "mydatalake"
-    filesystem: "state"
-    path: "udp-cicd/sales-analytics"
+    account_name: "mydatalake"
+    filesystem: "udp-cicd-state"   # Optional, default: udp-cicd-state
+    prefix: "sales-analytics"      # Optional key prefix
 ```
-
-> **Important**
->
-> Remote state backends require the `remote-state` extra: `dotnet tool install --global udp-cicd`.
 
 > **Tip**
 >
@@ -910,31 +907,31 @@ state:
 
 ---
 
-## targets
+## 12. targets
 
 Environment-specific overrides. Each target defines a deployment context with its own workspace, variables, security, run identity, post-deploy checks, and deployment strategy.
 
-### Fields
+### 12.1 Fields
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `default` | Boolean | No | `false` | Whether this is the default target when `-t` is not specified. Only one target should be set as default. |
-| `workspace` | [WorkspaceConfig](#workspace) | No | | Workspace overrides for this target. Merges with the top-level `workspace`. |
+| `workspace` | [WorkspaceConfig](#4-workspace) | No | | Workspace overrides for this target. Merges with the top-level `workspace`. |
 | `variables` | Map of string to string | No | `{}` | Variable values for this target. Overrides the top-level `variables` defaults. |
-| `run_as` | [RunAsConfig](#runasconfig) | No | | Identity to use for deployment. |
-| `security` | [SecurityConfig](#security) | No | | Target-specific security role overrides. |
-| `resources` | [ResourceOverrides](#resourceoverrides) | No | | Per-resource property overrides for this target. |
-| `post_deploy` | List of [ValidationCheck](#validationcheck) | No | `[]` | Post-deployment validation checks. |
-| `deployment_strategy` | [DeploymentStrategy](#deploymentstrategy) | No | | Deployment strategy (all-at-once or canary). |
+| `run_as` | [RunAsConfig](#122-runasconfig) | No | | Identity to use for deployment. |
+| `security` | [SecurityConfig](#7-security) | No | | Target-specific security role overrides. |
+| `resources` | [ResourceOverrides](#125-resourceoverrides) | No | | Per-resource property overrides for this target. |
+| `post_deploy` | List of [ValidationCheck](#123-validationcheck) | No | `[]` | Post-deployment validation checks. |
+| `deployment_strategy` | [DeploymentStrategy](#124-deploymentstrategy) | No | | Deployment strategy (all-at-once or canary). |
 
-### RunAsConfig
+### 12.2 RunAsConfig
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `service_principal` | String | No | | Service principal name or app ID to deploy as. |
 | `user_name` | String | No | | User UPN to deploy as. |
 
-### ValidationCheck
+### 12.3 ValidationCheck
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -943,15 +940,15 @@ Environment-specific overrides. Each target defines a deployment context with it
 | `expect` | String | No | | Expected result (for example, `success`, `> 0`). |
 | `timeout` | Integer | No | `300` | Timeout in seconds. |
 
-### DeploymentStrategy
+### 12.4 DeploymentStrategy
 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `type` | String | No | `"all-at-once"` | Strategy type: `all-at-once` or `canary`. |
 | `canary_resources` | List of strings | No | `[]` | Resource keys to deploy first in a canary deployment. |
-| `validation` | [ValidationCheck](#validationcheck) | No | | Validation to run after canary resources are deployed, before proceeding with the rest. |
+| `validation` | [ValidationCheck](#123-validationcheck) | No | | Validation to run after canary resources are deployed, before proceeding with the rest. |
 
-### ResourceOverrides
+### 12.5 ResourceOverrides
 
 Per-target property overrides for specific resources. Each resource type key maps resource names to a dictionary of field overrides.
 
@@ -968,7 +965,7 @@ Per-target property overrides for specific resources. Each resource type key map
 | `eventhouses` | Map | Per-eventhouse overrides. |
 | `eventstreams` | Map | Per-eventstream overrides. |
 
-### Example
+### 12.6 Example
 
 ```yaml
 targets:
@@ -1037,17 +1034,17 @@ targets:
 
 ---
 
-## include
+## 13. include
 
 Merge additional YAML files into the deployment definition. Use `include` to split large deployments across multiple files.
 
-### Fields
+### 13.1 Fields
 
 | Type | Description |
 |---|---|
 | List of strings | File paths or glob patterns relative to the `udp.yml` location. |
 
-### Example
+### 13.2 Example
 
 **Main udp.yml:**
 
@@ -1090,17 +1087,17 @@ resources:
 
 ---
 
-## extends
+## 14. extends
 
 Inherit from a parent deployment definition. The child deployment inherits all settings from the parent and can override any field.
 
-### Fields
+### 14.1 Fields
 
 | Type | Description |
 |---|---|
 | String | Path to the parent `udp.yml` file, relative to the child deployment location. |
 
-### Example
+### 14.2 Example
 
 **Parent deployment (shared/udp.yml):**
 
@@ -1143,7 +1140,7 @@ resources:
 
 ---
 
-## Complete example
+## 15. Complete example
 
 The following `udp.yml` demonstrates most features:
 
@@ -1289,7 +1286,7 @@ targets:
 
 ---
 
-## See also
+## 16. See also
 
 - [CLI command reference](../cli/commands.md) -- Full reference for all `udp-cicd` commands.
 - [Installation](../getting-started/installation.md) -- Install and configure Unified Data Platform Deployment.

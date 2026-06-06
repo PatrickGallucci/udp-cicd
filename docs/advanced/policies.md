@@ -1,8 +1,13 @@
 # Policy Enforcement
 
-Policies are pre-deploy validation rules that catch problems before they reach a workspace. They are defined in the `policies` section of `udp.yml` and are evaluated every time you run `udp-cicd validate` or `udp-cicd deploy`. If any policy is violated, the command exits with a non-zero status and prints the violations, preventing a bad deployment from going through.
+This page describes pre-deploy validation rules (policies) that catch problems before they reach a workspace. Policies are defined in the `policies` section of `udp.yml` and are evaluated every time you run `udp-cicd validate` or `udp-cicd deploy`; if any policy is violated, the command exits with a non-zero status and prints the violations, preventing a bad deployment from going through.
 
-## Defining policies
+!!! warning "Experimental feature"
+    Policy enforcement is **Experimental**. The feature is built but has not been validated in production use. Behavior and configuration syntax may change in future releases.
+
+---
+
+## 1. Defining policies
 
 Add a `policies` block to your `udp.yml`:
 
@@ -18,9 +23,18 @@ policies:
 
 Policies apply to all resources in the deployment. They are checked during validation, before any API calls are made.
 
-## Built-in policy options
+---
 
-### `require_description`
+## 2. Built-in policy options
+
+| Policy | Type | Purpose |
+|--------|------|---------|
+| `require_description` | Boolean | Require a non-empty `description` on every resource |
+| `naming_convention` | String or object | Enforce a naming pattern for resource keys |
+| `max_notebook_size_kb` | Integer | Cap notebook definition file size |
+| `blocked_libraries` | List of specifiers | Block deployments that declare specific library versions |
+
+### 2.1 `require_description`
 
 Requires every resource to have a non-empty `description` field. This enforces documentation discipline across the project.
 
@@ -37,16 +51,9 @@ POLICY VIOLATION: require_description
   Resource 'silver' (Lakehouse) is missing a description.
 ```
 
-### `naming_convention`
+### 2.2 `naming_convention`
 
-Enforces a naming pattern for all resource keys. Supported values:
-
-| Value | Pattern | Example |
-|-------|---------|---------|
-| `snake_case` | lowercase with underscores | `ingest_to_bronze` |
-| `kebab-case` | lowercase with hyphens | `ingest-to-bronze` |
-| `camelCase` | camelCase | `ingestToBronze` |
-| `PascalCase` | PascalCase | `IngestToBronze` |
+Enforces a naming pattern for all resource keys. The only supported value is `snake_case` (pattern `^[a-z][a-z0-9_]*$`: lowercase, starts with a letter, underscores allowed):
 
 ```yaml
 policies:
@@ -61,16 +68,9 @@ POLICY VIOLATION: naming_convention (expected: snake_case)
   Resource 'udp-lakehouse' does not match snake_case.
 ```
 
-You can also provide a custom regex pattern:
+Other conventions (kebab-case, camelCase) and custom regex patterns are not supported.
 
-```yaml
-policies:
-  naming_convention:
-    pattern: "^[a-z][a-z0-9_]{2,48}$"
-    message: "Names must be lowercase, start with a letter, and be 3-49 characters."
-```
-
-### `max_notebook_size_kb`
+### 2.3 `max_notebook_size_kb`
 
 Sets a maximum file size for notebook definitions in kilobytes. This prevents accidentally committing notebooks with large embedded outputs or data.
 
@@ -86,56 +86,50 @@ POLICY VIOLATION: max_notebook_size_kb (limit: 500 KB)
   Notebook 'exploration' is 2,340 KB. Strip outputs before committing.
 ```
 
-### `blocked_libraries`
+### 2.4 `blocked_libraries`
 
-Prevents deployments that depend on specific library versions. Useful for blocking known-vulnerable or deprecated packages. Each entry is a pip-style version specifier.
+Prevents deployments whose Spark environments declare specific libraries (Fabric Spark environments declare Python library dependencies).
 
 ```yaml
 policies:
   blocked_libraries:
-    - "pandas<2.0"
-    - "numpy<1.24"
-    - "requests==2.28.0"
+    - pandas
+    - requests
 ```
 
-This policy inspects `environment` resources that declare library dependencies. If any declared library matches a blocked specifier, validation fails.
+This policy inspects `environment` resources that declare library dependencies. Matching is by **library name prefix**: any version-specifier suffix (`<`, `>`, `=`) in the blocked entry is stripped, and any declared library whose name starts with the result fails validation. Writing `pandas<2.0` therefore blocks every pandas version, not just versions below 2.0 — list bare library names to avoid confusion.
 
 **Violation example:**
 
 ```
 POLICY VIOLATION: blocked_libraries
-  Environment 'spark_env' declares 'pandas==1.5.3', which matches blocked specifier 'pandas<2.0'.
+  Environment 'spark_env' uses blocked library 'pandas==1.5.3'.
 ```
 
-## Custom policy rules
+---
 
-For project-specific requirements that go beyond the built-in options, define custom rules:
+## 3. Custom policy rules
+
+The `policies` schema accepts a `rules` list for project-specific requirements:
 
 ```yaml
 policies:
-  custom:
-    - name: no_hardcoded_connections
-      description: "Connection strings must use variables or secrets, not hardcoded values."
-      pattern: ".*\\.database\\.windows\\.net"
-      scope: connections
-      action: deny
-
-    - name: require_lakehouse_prefix
-      description: "All lakehouses must start with the project name."
-      check: |
-        for key, res in resources.items():
-          if res.type == 'Lakehouse' and not key.startswith(deployment.name):
-            fail(f"Lakehouse '{key}' must start with '{deployment.name}'")
+  rules:
+    - name: max_resources
+      check: max_resources
+      value: 50
+      severity: error
 ```
 
-Custom rules support two modes:
+Each rule has a `name`, a `check` identifier, an optional `value`, and a `severity` (`error` by default).
 
-- **`pattern` + `scope`**: A regex is tested against values in the specified scope. If it matches, the `action` (`deny` or `warn`) is triggered.
-- **`check`**: An inline Python expression evaluated against the deployment context. Call `fail(message)` to report a violation.
+**Custom rules are parsed but not yet enforced.** The policy engine currently evaluates only the four built-in options in section 2; entries in `rules` are accepted by the schema and ignored at validation time. Treat custom rules as a forward-compatible placeholder until enforcement ships.
 
-## Running policy checks
+---
 
-### During validation
+## 4. Running policy checks
+
+### 4.1 During validation
 
 ```bash
 udp-cicd validate
@@ -143,9 +137,9 @@ udp-cicd validate
 
 Validation always runs policies. If any policy is violated, the command exits with code `1` and prints all violations.
 
-### Strict mode
+### 4.2 Strict mode
 
-The `--strict` flag promotes warnings to errors. Policies that normally produce warnings (such as custom rules with `action: warn`) will cause validation to fail:
+The `--strict` flag promotes warnings to errors, including unresolved-variable warnings:
 
 ```bash
 udp-cicd validate --strict
@@ -153,11 +147,13 @@ udp-cicd validate --strict
 
 This is recommended for CI/CD pipelines where you want zero tolerance for policy issues.
 
-### During deployment
+### 4.3 During deployment
 
 `udp-cicd deploy` runs validation automatically before making any API calls. If validation fails, deployment is aborted. You do not need to run `validate` separately before `deploy`.
 
-## Full example output
+---
+
+## 5. Full example output
 
 ```
 $ udp-cicd validate --strict
@@ -184,25 +180,27 @@ Validating deployment: contoso-analytics (v1.0.0)
 Validation failed: 3 policy violations.
 ```
 
-## CI/CD integration
+---
+
+## 6. CI/CD integration
 
 Use policy validation as a gate in your deployment pipeline. The non-zero exit code on failure will cause the CI job to fail, preventing the merge or deployment.
 
-### GitHub Actions
+### 6.1 GitHub Actions
 
 ```yaml
 - name: Validate deployment
   run: udp-cicd validate --strict
 ```
 
-### Azure DevOps
+### 6.2 Azure DevOps
 
 ```yaml
 - script: udp-cicd validate --strict
   displayName: 'Validate deployment (strict)'
 ```
 
-### Pull request workflow
+### 6.3 Pull request workflow
 
 A typical pattern is to run `udp-cicd validate --strict` on every pull request so that policy violations are caught before code is merged:
 
@@ -222,9 +220,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - run: dotnet tool install --global udp-cicd
 
@@ -234,7 +232,9 @@ jobs:
 
 No secrets are required for validation because it does not contact the Fabric API. It only parses and checks the local deployment definition.
 
-## Recommended policy configuration
+---
+
+## 7. Recommended policy configuration
 
 A solid starting point for most teams:
 
@@ -247,4 +247,4 @@ policies:
     - "pandas<2.0"
 ```
 
-Add custom rules as your project grows and you identify patterns that should be enforced organization-wide.
+Revisit the configuration as your project grows and you identify patterns that should be enforced organization-wide.

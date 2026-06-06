@@ -1,57 +1,62 @@
 # The declarative model
 
-Unified Data Platform Deployment is **declarative**. You describe the *desired state* of your Microsoft Fabric project in `udp.yml`, and the CLI is responsible for figuring out what to create, update, or delete to make the live workspace match.
+This page explains the declarative model used by Unified Data Platform Deployment: how desired state is defined in `udp.yml`, how the engine reconciles it against a live Microsoft Fabric workspace, and how this differs from imperative scripting. Read this page before writing your first deployment.
 
-This page explains what that means in practice, how the desired-state / reconcile loop works, and how it differs from the imperative scripts that most Fabric automation starts as.
+Unified Data Platform Deployment is declarative. You describe the desired state of your Microsoft Fabric project in `udp.yml`, and the CLI determines what to create, update, or delete to make the live workspace match.
 
 ---
 
-## Imperative vs. declarative
+## 1. Imperative vs. declarative
 
-| | **Imperative** (scripts) | **Declarative** (`udp.yml`) |
+| Concern | Imperative (scripts) | Declarative (`udp.yml`) |
 |---|---|---|
-| You write | The *steps* to take | The *end state* you want |
+| You write | The steps to take | The end state you want |
 | Order | You sequence every call | Resolved from a dependency graph |
 | Re-runs | May fail or duplicate | Converge on the same state (idempotent) |
 | Drift | Invisible until something breaks | Detected by comparing desired vs. actual |
 | Deletes | Easy to forget | Computed from the diff |
 | Review | Diff is a code diff of logic | Diff is a state diff of resources |
 
-A typical imperative Fabric script reads like: *create the bronze lakehouse, then create the silver lakehouse, then upload notebook A, then update its default lakehouse to silver, then create the pipeline, then set its parameters…* Every step is your responsibility, and every step is a place where the script and the real workspace can disagree.
+A typical imperative Fabric script reads like a procedure: create the bronze lakehouse, then create the silver lakehouse, then upload notebook A, then update its default lakehouse to silver, then create the pipeline, then set its parameters. Every step is your responsibility, and every step is a place where the script and the real workspace can disagree.
 
-A declarative deployment reads like: *these are my lakehouses, these are my notebooks (each attached to one of those lakehouses), this is the pipeline that runs them.* The tool figures out the order and the operations.
+A declarative deployment reads like an inventory: these are my lakehouses, these are my notebooks (each attached to one of those lakehouses), this is the pipeline that runs them. The tool figures out the order and the operations.
 
 ---
 
-## The desired-state / reconcile loop
+## 2. The desired-state reconcile loop
 
-Every `udp-cicd` command that touches a workspace follows the same four-phase loop:
+Every `udp-cicd` command that touches a workspace runs through the same engine pipeline. The engine (`UdpCicd.Core`) has five stages:
 
-1. **Parse** — `udp.yml` (plus any `include:` files) is loaded, variables for the chosen `--target` are substituted, and the result is validated against the JSON schema. This produces the **desired state**.
-2. **Resolve** — resources are sorted into a dependency graph (e.g. environments before notebooks, lakehouses before semantic models, semantic models before reports / Data Agents).
-3. **Plan** — the desired state is compared against the **actual state** of the workspace (read live from the Fabric REST API, augmented by the local state file). The output is a diff: *create*, *update*, *replace*, *delete*, or *no-op* per resource.
-4. **Apply** — the diff is executed in dependency order. Unchanged resources are skipped via content hashing. State is updated so the next run starts from a known baseline.
+| Stage | Component | Responsibility |
+|---|---|---|
+| 1. Load | Loader (YamlFactory) | Parses `udp.yml` with YamlDotNet, merges `include:` files, substitutes variables for the chosen `--target`, and validates against the schema. Produces the desired state. |
+| 2. Resolve | Resolver | Sorts resources into a dependency graph by topological sort (for example, environments before notebooks, lakehouses before semantic models, semantic models before reports and Data Agents). |
+| 3. Plan | Planner | Compares the desired state against the actual state of the workspace (read live from the Fabric REST API, augmented by the state file). The output is a diff: Create, Update, Delete, or No-op per resource. |
+| 4. Apply | Deployer | Executes the diff in dependency order through FabricClient. Unchanged resources are skipped via content hashing. |
+| 5. Record | StateManager | Updates the per-target state file (`.udp-cicd/state-<target>.json`) so the next run starts from a known baseline. The state file also powers drift detection and idempotency. |
 
 ```text
-udp.yml ──► parse ──► resolve ──► plan ──► apply ──► state
-   (desired)              (graph)    (diff)   (REST)    (actual)
-                                       ▲                  │
-                                       └──── drift ◄──────┘
+udp.yml ──► load ──► resolve ──► plan ──► apply ──► state
+   (desired)            (graph)    (diff)   (REST)    (actual)
+                                     ▲                  │
+                                     └──── drift ◄──────┘
 ```
 
-The same loop is invoked by every workflow command:
+Each workflow command stops at a different stage:
 
-- `validate` stops after **parse** — schema + reference checks only.
-- `plan` stops after **plan** — shows the diff without touching the workspace.
-- `deploy` runs all four phases.
-- `drift` runs **parse → plan** and reports any actual-vs-desired differences.
-- `destroy` inverts the diff — everything in state, nothing in desired, delete in reverse dependency order.
+| Command | Stages run | Effect |
+|---|---|---|
+| `validate` | Load only | Schema and reference checks; no workspace contact |
+| `plan` | Load → Resolve → Plan | Shows the diff without touching the workspace |
+| `deploy` | All five | Reconciles the workspace and records state |
+| `drift` | Load → Resolve → Plan | Reports any actual-vs-desired differences |
+| `destroy` | Inverted diff | Everything in state, nothing in desired; deletes in reverse dependency order |
 
 ---
 
-## What "desired state" actually contains
+## 3. What the desired state contains
 
-The desired state is the **fully-resolved** deployment for one target. That means:
+The desired state is the fully resolved deployment for one target. That means:
 
 - `${var.*}` and `${env.*}` substitutions are applied.
 - `targets.<name>.variables` overrides are merged on top of top-level `variables`.
@@ -59,29 +64,31 @@ The desired state is the **fully-resolved** deployment for one target. That mean
 - `extends:` parents are merged.
 - Defaults from the schema are filled in.
 
-What it does **not** contain:
+What it does not contain:
 
-- Anything that exists in the workspace but isn't in the deployment (those become candidates for *delete* — only if the resource type is managed by the deployment and the resource is recorded in state).
-- Implementation details like REST endpoints or item IDs (those are looked up at plan time).
+- Anything that exists in the workspace but is not in the deployment. Such items become candidates for deletion only if the resource type is managed by the deployment and the resource is recorded in state.
+- Implementation details such as REST endpoints or item IDs. These are looked up at plan time.
 
-This separation is why a deployment is portable across workspaces and capacities — the YAML is the *what*, the provider is the *how*.
+This separation is why a deployment is portable across workspaces and capacities. The YAML is the *what*; the engine is the *how*.
 
 ---
 
-## Idempotency and content hashing
+## 4. Idempotency and content hashing
 
 Running `udp-cicd deploy` twice in a row against an unchanged deployment is a no-op. This is enforced two ways:
 
-- **Resource-level diffing** — each resource's desired definition is compared to its recorded state. Equal definitions produce a *no-op*.
-- **Content hashing** — file-backed resources (notebooks, pipeline definitions, semantic model TMDL, report definitions) hash their payload. If the hash matches what was last deployed, the upload is skipped even if metadata changed elsewhere.
+| Mechanism | Behavior |
+|---|---|
+| Resource-level diffing | Each resource's desired definition is compared to its recorded state. Equal definitions produce a No-op. |
+| Content hashing | File-backed resources (notebooks, pipeline definitions, semantic model TMDL, report definitions) hash their payload. If the hash matches what was last deployed, the upload is skipped even if metadata changed elsewhere. |
 
 This is what makes CI/CD pipelines safe to run on every merge: a deploy that finds nothing to do exits cleanly in seconds.
 
 ---
 
-## Drift detection
+## 5. Drift detection
 
-Because the tool always knows the desired state and can always read the actual state, **drift is just a plan with no apply**. `udp-cicd drift --target prod` answers: *what has changed in the live workspace since the last deploy?*
+Because the tool always knows the desired state and can always read the actual state, drift is a plan with no apply. `udp-cicd drift --target prod` answers one question: what has changed in the live workspace since the last deploy?
 
 This catches:
 
@@ -94,28 +101,32 @@ See [Drift Detection](../advanced/drift.md) for the full workflow and CI integra
 
 ---
 
-## How this compares to other tools
+## 6. Comparison with other tools
 
-- **Terraform** — same desired-state / plan / apply model, same dependency graph, same state file. Deployments apply that model to Fabric items (notebooks, pipelines, semantic models, Data Agents, …) that Terraform providers don't cover. See [Migrate from Terraform](migrate-from-terraform.md).
-- **Databricks Asset Deployments** — also declarative YAML with targets and variables, focused on Databricks. Deployments applies the same idea to Microsoft Fabric.
-- **`fabric-cicd`** — imperative deployment helper. Promotes items between workspaces but doesn't describe a project, resolve dependencies, or detect drift. See [Migrate from fabric-cicd](migrate-from-fabric-cicd.md).
-- **Fabric CLI (`udp`)** — imperative item-level operations (`export`, `import`, `create`). A great primitive layer; not a project model.
-
----
-
-## When *not* to use the declarative model
-
-Declarative tools are the wrong fit for a few cases — be honest about them:
-
-- **One-off exploration.** If you're prototyping a single notebook in the portal, a deployment is overkill. Use [`udp-cicd generate`](../cli/commands.md) later to capture it.
-- **Highly dynamic resources.** If the *set* of resources is computed at runtime (e.g. one lakehouse per tenant, discovered from a database), a thin imperative wrapper that emits YAML and then calls `udp-cicd deploy` is usually cleaner than trying to express the loop in YAML.
-- **Operations on data, not definitions.** Running a notebook, refreshing a semantic model, or kicking off a pipeline is imperative by nature. Deployments defines the resources; orchestration tools (Fabric pipelines, Airflow, ADF) run them.
+| Tool | Model | Relationship to udp-cicd |
+|---|---|---|
+| Terraform | Desired-state plan/apply, dependency graph, state file | Same model. udp-cicd applies it to Fabric items (notebooks, pipelines, semantic models, Data Agents) that Terraform providers do not cover. See [Migrate from Terraform](migrate-from-terraform.md). |
+| Databricks Asset Bundles | Declarative YAML with targets and variables | Same idea, focused on Databricks. udp-cicd applies it to Microsoft Fabric. |
+| `fabric-cicd` | Imperative deployment helper | Promotes items between workspaces but does not describe a project, resolve dependencies, or detect drift. See [Migrate from fabric-cicd](migrate-from-fabric-cicd.md). |
+| Fabric CLI (`fab`) | Imperative item-level operations (`export`, `import`, `create`) | A useful primitive layer; not a project model. |
 
 ---
 
-## Next steps
+## 7. When not to use the declarative model
 
-- [`udp.yml` reference](udp-yml.md) — every top-level key in the desired-state schema.
-- [Development Workflows](development-workflows.md) — `validate` → `plan` → `deploy` in practice.
-- [Targets & Variables](targets-variables.md) — how the desired state varies across dev / staging / prod.
-- [Drift Detection](../advanced/drift.md) — comparing desired vs. actual on a schedule.
+Declarative tools are the wrong fit for a few cases:
+
+| Case | Recommended approach |
+|---|---|
+| One-off exploration | If you are prototyping a single notebook in the portal, a deployment is overkill. Use [`udp-cicd generate`](../cli/commands.md) later to capture it. |
+| Highly dynamic resources | If the set of resources is computed at runtime (for example, one lakehouse per tenant, discovered from a database), a thin imperative wrapper that emits YAML and then calls `udp-cicd deploy` is usually cleaner than expressing the loop in YAML. |
+| Operations on data, not definitions | Running a notebook, refreshing a semantic model, or starting a pipeline is imperative by nature. Deployments define the resources; orchestration tools (Fabric pipelines, Airflow, ADF) run them. |
+
+---
+
+## 8. Next steps
+
+- [`udp.yml` reference](udp-yml.md): every top-level key in the desired-state schema.
+- [Development Workflows](development-workflows.md): `validate` → `plan` → `deploy` in practice.
+- [Targets & Variables](targets-variables.md): how the desired state varies across dev, staging, and prod.
+- [Drift Detection](../advanced/drift.md): comparing desired vs. actual on a schedule.

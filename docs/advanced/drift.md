@@ -1,36 +1,36 @@
 # Drift Detection
 
+This page describes how `udp-cicd drift` detects differences between the recorded deployment state and the live Fabric workspace, and how to resolve them. Drift detection is a Stable feature.
+
 Drift occurs when the live state of a Fabric workspace diverges from what is defined in your `udp.yml`. This can happen when someone edits a resource through the Fabric portal, when an external tool modifies an item via the REST API, or when a teammate deploys a change that is not reflected in the deployment definition. Left unchecked, drift erodes the reliability of infrastructure-as-code: what you see in source control no longer matches what is running in production.
 
-`udp-cicd drift` compares the deployment's recorded state against the actual workspace and reports every discrepancy.
+---
 
-## How drift detection works
+## 1. How drift detection works
 
-Every time `udp-cicd deploy` runs, it writes a state file (`.udp-cicd/state-{target}.json`) that records every deployed resource along with a SHA-256 hash of its definition. When you run `udp-cicd drift`, the tool:
+Every time `udp-cicd deploy` runs, the StateManager writes a per-target state file (`.udp-cicd/state-<target>.json`) that records every deployed resource along with a SHA-256 hash of its definition. When you run `udp-cicd drift`, the tool:
 
-1. **Reads the local state file** to get the list of resources udp-cicd previously deployed, including their item IDs and definition hashes.
+1. **Reads the state file** to get the list of resources udp-cicd previously deployed, including their item IDs and definition hashes.
 2. **Queries the Fabric workspace** via the REST API to retrieve the current list of items and their definitions.
 3. **Compares the two** and classifies each difference into one of three categories.
 
 No changes are made to the workspace or the state file during a drift check. It is a read-only operation.
 
-## Types of drift
+---
 
-### Added
+## 2. Types of drift
 
-Items that exist in the workspace but are not tracked in the deployment state. These were created outside of udp-cicd, for example by a user in the Fabric portal or by another deployment tool.
+| Category | Meaning | Typical cause |
+|----------|---------|---------------|
+| Added | Items exist in the workspace but are not tracked in the deployment state. | Created outside of udp-cicd, for example by a user in the Fabric portal or by another deployment tool. |
+| Removed | Items are recorded in the deployment state but no longer exist in the workspace. | Someone deleted the item manually, or another process removed it. |
+| Modified | Items exist in both the state and the workspace, but the definition hash in the state file no longer matches the hash of the live item's definition. | Someone edited the resource in the portal, for example modifying a notebook's code or changing a pipeline's activities. |
 
-### Removed
+---
 
-Items that are recorded in the deployment state but no longer exist in the workspace. Someone deleted the item manually, or another process removed it.
+## 3. Using `udp-cicd drift`
 
-### Modified
-
-Items that exist in both the state and the workspace, but whose definition has changed. The definition hash in the state file no longer matches the hash of the live item's definition. This typically means someone edited the resource in the portal (for example, modifying a notebook's code or changing a pipeline's activities).
-
-## Using `udp-cicd drift`
-
-### Basic usage
+### 3.1 Basic usage
 
 ```bash
 # Check drift against the default target
@@ -40,7 +40,7 @@ udp-cicd drift
 udp-cicd drift --target prod
 ```
 
-### Example output
+### 3.2 Example output
 
 ```
 $ udp-cicd drift --target dev
@@ -64,7 +64,7 @@ Compared against state from: 2026-03-25T14:32:10Z
 Summary: 4 resources drifted (2 added, 1 removed, 1 modified)
 ```
 
-### Machine-readable output
+### 3.3 Machine-readable output
 
 Use `--format json` to produce output suitable for scripts and CI/CD:
 
@@ -91,21 +91,22 @@ udp-cicd drift --target dev --format json
 }
 ```
 
-### Exit codes
+### 3.4 Exit codes
 
 | Exit Code | Meaning |
 |-----------|---------|
-| `0` | No drift detected |
-| `1` | Drift detected |
-| `2` | Error (authentication failure, state file not found, etc.) |
+| `0` | Check completed, with or without drift found |
+| `1` | Error (deployment failed to load, workspace unreachable) |
 
-The non-zero exit code on drift makes it straightforward to use in CI/CD pipelines where you want a job to fail when drift is present.
+Note that `drift` currently exits `0` even when drift is detected. To fail a CI/CD job on drift, parse the command output (for example, grep for `Drift detected`) rather than relying on the exit code.
 
-## Automated drift checks in CI/CD
+---
+
+## 4. Automated drift checks in CI/CD
 
 Scheduled drift checks catch configuration drift before it causes problems. A common pattern is to run a drift check on a cron schedule and notify the team when drift is found.
 
-### GitHub Actions example
+### 4.1 GitHub Actions example
 
 ```yaml
 name: Drift Check
@@ -124,9 +125,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.12'
+          dotnet-version: '9.0.x'
 
       - name: Install udp-cicd
         run: dotnet tool install --global udp-cicd
@@ -154,11 +155,13 @@ jobs:
           echo "::warning::Drift detected in ${{ matrix.target }} environment. Review drift-report artifact."
 ```
 
-## Resolving drift
+---
+
+## 5. Resolving drift
 
 Once drift is detected, you have two options depending on which version of the truth you want to keep.
 
-### Option 1: Overwrite the workspace (deployment wins)
+### 5.1 Option 1: Overwrite the workspace (deployment wins)
 
 If the deployment definition is correct and the workspace should match it, redeploy:
 
@@ -168,7 +171,7 @@ udp-cicd deploy --target dev -y
 
 This pushes the deployment definitions to the workspace, overwriting any manual changes. Added items that are not in the deployment are left untouched (udp-cicd only manages resources it tracks).
 
-### Option 2: Update the deployment to match the workspace
+### 5.2 Option 2: Update the deployment to match the workspace
 
 If the changes made in the workspace are intentional and should be preserved, update your `udp.yml` to reflect the new state:
 
@@ -188,7 +191,9 @@ udp-cicd bind --item-id <item-guid> --resource-key new_notebook --target dev
 
 For items that were deleted from the workspace and should also be removed from the deployment, delete the resource entry from `udp.yml` and redeploy.
 
-## Integration with the state file
+---
+
+## 6. Integration with the state file
 
 Drift detection depends entirely on the state file. If no state file exists for a target (because you have never deployed to it), `udp-cicd drift` will return an error:
 
@@ -197,6 +202,6 @@ Error: No state file found for target 'prod'.
   Run 'udp-cicd deploy --target prod' or 'udp-cicd import --target prod' first.
 ```
 
-When using a remote state backend (OneLake, Azure Blob, or ADLS), the drift command reads the remote state file so that any CI runner can check for drift without needing a local copy. See [State Management](state.md) for backend configuration.
+When using a remote state backend (OneLake, Azure Blob, or ADLS Gen2), the drift command reads the remote state file so that any CI runner can check for drift without needing a local copy. See [State Management](state.md) for backend configuration and stability status.
 
 The drift command never writes to the state file. Only `deploy`, `import`, `bind`, and `rollback` modify state.

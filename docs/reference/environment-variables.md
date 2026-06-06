@@ -1,18 +1,45 @@
 # Environment Variables
 
-## Authentication
+This page is the reference for environment variables recognized by `udp-cicd`, and for the variable syntaxes that read from the environment inside `udp.yml`.
+
+---
+
+## 1. Recognized environment variables
+
+### 1.1 Authentication
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `AZURE_TENANT_ID` | For SP auth | Azure AD tenant GUID |
-| `AZURE_CLIENT_ID` | For SP auth | Service principal app ID |
+|---|---|---|
+| `AZURE_TENANT_ID` | For SP auth | Entra ID (Azure AD) tenant GUID |
+| `AZURE_CLIENT_ID` | For SP auth | Service principal application (client) ID |
 | `AZURE_CLIENT_SECRET` | For SP auth | Service principal client secret |
+| `FABRIC_USE_BROWSER` | No | Set to `true` to force interactive browser sign-in |
 
-When these are set, `DefaultAzureCredential` uses `EnvironmentCredential` automatically. Otherwise falls back to `az login` session.
+Credential selection (handled by `FabricAuth` via `Azure.Identity`) follows this order:
 
-## udp.yml Variables
+| Condition | Credential used |
+|---|---|
+| `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET` all set | `ClientSecretCredential` |
+| `FABRIC_USE_BROWSER=true` | `InteractiveBrowserCredential` |
+| Otherwise | `DefaultAzureCredential` (managed identity, environment, or `az login` session) |
 
-Reference in udp.yml with `${env.VARIABLE_NAME}`:
+### 1.2 Fabric
+
+| Variable | Required | Description |
+|---|---|---|
+| `FABRIC_CAPACITY_ID` | No | Capacity GUID used for workspace creation during `deploy` and `init`, as an alternative to setting `capacity_id` in `udp.yml`. |
+
+### 1.3 Storage (remote state)
+
+| Variable | Required | Description |
+|---|---|---|
+| `AZURE_STORAGE_ACCOUNT_NAME` | For `azureblob` / `adls` backends | Storage account name for the Azure Blob or ADLS Gen2 state backend. |
+
+---
+
+## 2. Environment variables in udp.yml
+
+Reference any environment variable in `udp.yml` with `${env.VARIABLE_NAME}`:
 
 ```yaml
 resources:
@@ -23,7 +50,9 @@ resources:
         db_host: "${env.DB_HOST}"
 ```
 
-## Secret Variables
+---
+
+## 3. Secret variables
 
 Reference with `${secret.NAME}`:
 
@@ -34,9 +63,11 @@ targets:
       db_password: "${secret.DB_PASSWORD}"
 ```
 
-Secrets are resolved from environment variables at deploy time. The `secret.` prefix is a convention — it reads from the same environment.
+Secrets are resolved by the `SecretsResolver` from environment variables at deploy time. The `secret.` prefix is a convention; it reads from the same environment as `${env.NAME}` but marks the value as sensitive.
 
-## KeyVault Variables
+---
+
+## 4. Key Vault variables
 
 Reference with `${keyvault.VAULT_NAME.SECRET_NAME}`:
 
@@ -47,20 +78,24 @@ connections:
       password: "${keyvault.udp-vault.db-password}"
 ```
 
-Requires: `dotnet tool install --global udp-cicd`
+Key Vault secrets are fetched through the Azure Key Vault `SecretClient` and cached for the duration of the run. No additional installation is required; the Azure SDK is built into the tool. The lookup authenticates with the same credential chain described in section 1.1, so the identity must have secret read permission on the vault.
 
-## Deployment Variables
+---
 
-Built-in variables available in udp.yml:
+## 5. Built-in deployment variables
+
+The following variables are always available in `udp.yml`:
 
 | Variable | Value |
-|----------|-------|
+|---|---|
 | `${deployment.name}` | Deployment name from `deployment.name` |
 | `${deployment.version}` | Deployment version from `deployment.version` |
 
-## State Backend Config
+---
 
-For remote state (in udp.yml):
+## 6. State backend configuration
+
+Deployment state (`deployment-state.json`) can be stored locally or in a remote backend. Configure the backend in `udp.yml`:
 
 ```yaml
 state:
@@ -73,3 +108,13 @@ state:
     filesystem: "state"       # adls
     account_key: "..."        # azureblob (optional, uses DefaultAzureCredential)
 ```
+
+| Backend | Storage | Status |
+|---|---|---|
+| `local` | JSON file on the local filesystem | Stable |
+| `azureblob` | Azure Blob Storage | Beta |
+| `onelake` / `adls` | OneLake / ADLS Gen2 | Beta |
+
+> **Note**
+>
+> For the Blob and ADLS backends, omit `account_key` where possible so the tool authenticates with `DefaultAzureCredential` instead of a shared key. The account name can also be supplied through the `AZURE_STORAGE_ACCOUNT_NAME` environment variable.

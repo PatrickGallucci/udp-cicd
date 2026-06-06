@@ -1,8 +1,10 @@
 # Targets and Variables
 
-Targets and variables are how udp-cicd manages environment-specific configuration. Targets represent deployment environments (dev, staging, prod), and variables hold the values that differ between them.
+This page documents how udp-cicd manages environment-specific configuration. Targets represent deployment environments (dev, staging, prod), and variables hold the values that differ between them.
 
-## What targets are
+---
+
+## 1. Targets
 
 A target is a named deployment environment. Each target maps to a specific Fabric workspace and can override variables, authentication, post-deployment checks, and deployment strategy. When you run `udp-cicd deploy --target prod`, udp-cicd reads the `prod` target configuration and deploys to the workspace defined there.
 
@@ -27,9 +29,11 @@ targets:
 
 Each target can override any property from the top-level `workspace` block. Target-level settings take precedence over top-level defaults.
 
-## Default target
+---
 
-Exactly one target should have `default: true`. This is the target used when you omit the `-t` flag:
+## 2. Default target
+
+Exactly one target should have `default: true`. This is the target used when the `-t` flag is omitted:
 
 ```bash
 # Uses the default target (dev in the example above)
@@ -39,51 +43,54 @@ udp-cicd deploy
 udp-cicd deploy --target prod
 ```
 
-If no default is set and no `-t` flag is provided, udp-cicd will prompt you to select a target.
+If no default is set and no `-t` flag is provided, udp-cicd prompts for a target selection.
 
-## Variable definitions
+---
 
-Variables are declared at the top level with an optional description, type, and default value. They define what configuration knobs exist in the deployment.
+## 3. Variable definitions
+
+Variables are declared at the top level with an optional description and default value. They define what configuration knobs exist in the deployment.
 
 ```yaml
 variables:
   db_host:
     description: "SQL Server hostname"
-    type: string
     default: "localhost"
 
   db_port:
     description: "SQL Server port"
-    type: number
-    default: 1433
+    default: "1433"
 
   enable_logging:
     description: "Enable verbose logging in notebooks"
-    type: boolean
-    default: false
-
-  allowed_regions:
-    description: "Regions allowed for data residency"
-    type: list
-    default: ["eastus", "westus2"]
+    default: "false"
 ```
 
-### Supported types
+### 3.1 Variable forms
 
-| Type | Description | Example Default |
-|------|-------------|-----------------|
-| `string` | Text value | `"localhost"` |
-| `number` | Integer or float | `1433` |
-| `boolean` | True or false | `false` |
-| `list` | Array of values | `["eastus", "westus2"]` |
+A variable entry is either an object with `description`/`default`, or a plain string shorthand for the value:
 
-If `type` is omitted, udp-cicd infers the type from the `default` value. If neither is provided, the variable is treated as a required string with no default.
+```yaml
+variables:
+  region: "eastus2"   # shorthand: equivalent to { default: "eastus2" }
+```
 
-## Variable substitution syntax
+All variable values are substituted as strings. There is no `type` field; if a variable has no default and no target override, the reference is reported as an unresolved variable at load time (a warning by default, an error with `--strict`).
 
-Use `${...}` syntax to reference variables anywhere a string value is expected in `udp.yml`.
+---
 
-### `${var.name}` -- Deployment variables
+## 4. Variable substitution syntax
+
+Use `${...}` syntax to reference variables anywhere a string value is expected in `udp.yml`. Substitution is resolved recursively across the manifest.
+
+| Pattern | Resolves from |
+|---------|---------------|
+| `${var.name}` | A variable defined in the `variables` section (default or target override) |
+| `${env.NAME}` | An operating system environment variable, read at deploy time |
+| `${secret.NAME}` | An environment variable treated as a secret; redacted in plan output and logs |
+| `${deployment.name}`, `${deployment.version}` | Built-in deployment metadata |
+
+### 4.1 `${var.name}` -- Deployment variables
 
 References a variable defined in the `variables` section. The value comes from the variable's default or from a target-level override.
 
@@ -94,7 +101,7 @@ connections:
     endpoint: "${var.db_host}:${var.db_port}"
 ```
 
-### `${env.NAME}` -- Environment variables
+### 4.2 `${env.NAME}` -- Environment variables
 
 Reads a value from the operating system environment at deploy time. Useful for values that vary per machine or CI runner but are not secrets.
 
@@ -104,9 +111,9 @@ deployment:
   version: "${env.BUILD_VERSION}"
 ```
 
-### `${secret.NAME}` -- Secret references
+### 4.3 `${secret.NAME}` -- Secret references
 
-Reads a secret from the environment. Functionally identical to `${env.NAME}` but signals intent: udp-cicd redacts these values in plan output and logs. See [Secrets Management](secrets.md) for details.
+Reads a secret from the environment. Functionally identical to `${env.NAME}` but signals intent: udp-cicd redacts these values in plan output and logs. See [Secrets Management](secrets.md) for details, including the `${keyvault.VAULT.SECRET}` syntax for Azure Key Vault.
 
 ```yaml
 connections:
@@ -115,9 +122,9 @@ connections:
       password: "${secret.DB_PASSWORD}"
 ```
 
-### `${deployment.name}` and `${deployment.version}` -- Deployment metadata
+### 4.4 `${deployment.name}` and `${deployment.version}` -- Deployment metadata
 
-References the deployment's own metadata. Useful for generating resource names that include the project name or version.
+References the deployment's own metadata. These are built-in variables, always available. Useful for generating resource names that include the project name or version.
 
 ```yaml
 resources:
@@ -127,7 +134,7 @@ resources:
       description: "Data lake for ${deployment.name} v${deployment.version}"
 ```
 
-### Combining substitutions
+### 4.5 Combining substitutions
 
 Substitution expressions can be combined within a single string:
 
@@ -139,7 +146,9 @@ connections:
       database: "${deployment.name}_${var.environment_suffix}"
 ```
 
-## Per-target variable overrides
+---
+
+## 5. Per-target variable overrides
 
 Each target can override any variable. Target-level values take precedence over the default.
 
@@ -178,7 +187,9 @@ targets:
 
 When deploying to `prod`, `${var.db_host}` resolves to `prod-sql.database.windows.net`.
 
-## `run_as` -- Service principal per target
+---
+
+## 6. `run_as` -- Service principal per target
 
 Each target can specify a different service principal for deployment. This is useful when dev and prod workspaces are in different tenants or when you want to enforce least-privilege access.
 
@@ -202,7 +213,9 @@ The `service_principal` value is the display name of a service principal in Entr
 
 If `run_as` is omitted, udp-cicd uses whatever identity is available through `DefaultAzureCredential` (your logged-in account, a managed identity, or the environment variables).
 
-## `post_deploy` -- Validation checks
+---
+
+## 7. `post_deploy` -- Validation checks
 
 Run automated checks after a deployment succeeds. This is useful for smoke tests that verify the deployment actually works.
 
@@ -229,7 +242,9 @@ targets:
 
 If any `post_deploy` check fails, udp-cicd reports the failure but does not roll back the deployment. Use `udp-cicd rollback` to revert if needed.
 
-## `deployment_strategy` -- Canary deployments
+---
+
+## 8. `deployment_strategy` -- Canary deployments
 
 For production targets, you can deploy a subset of resources first (canary) before deploying everything. If the canary resources fail, the full deployment is halted.
 
@@ -256,7 +271,9 @@ The canary deployment flow:
 3. If validation passes, deploy all remaining resources.
 4. If validation fails, stop. The canary resources are rolled back.
 
-## Full YAML example
+---
+
+## 9. Full YAML example
 
 ```yaml
 deployment:
@@ -266,19 +283,15 @@ deployment:
 variables:
   db_host:
     description: "SQL Server hostname"
-    type: string
     default: "localhost"
   db_port:
     description: "SQL Server port"
-    type: number
-    default: 1433
+    default: "1433"
   enable_logging:
     description: "Enable verbose notebook logging"
-    type: boolean
-    default: false
+    default: "false"
   environment_suffix:
     description: "Environment name for resource naming"
-    type: string
 
 workspace:
   capacity_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"

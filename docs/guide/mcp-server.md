@@ -1,16 +1,22 @@
 # MCP Server
 
-Use udp-cicd as an MCP (Model Context Protocol) server in GitHub Copilot, Claude Code, or any MCP-compatible client. This lets you manage Fabric workspaces conversationally.
+This page covers installing, configuring, and using udp-cicd as an MCP (Model Context Protocol) server in GitHub Copilot, Claude Code, Claude Desktop, or any MCP-compatible client. The MCP server lets you manage Fabric workspaces conversationally through 14 tools.
 
-## Install
+---
+
+## 1. Install
+
+The MCP server ships as a .NET global tool:
 
 ```bash
 dotnet tool install --global udp-cicd-mcp
 ```
 
-## Configure
+---
 
-### GitHub Copilot
+## 2. Configure
+
+### 2.1 GitHub Copilot
 
 Add to your project's `.vscode/mcp.json`:
 
@@ -26,7 +32,7 @@ Add to your project's `.vscode/mcp.json`:
 
 Or add to your VS Code user settings (`settings.json`) under `"mcp.servers"` to use across all projects.
 
-### Claude Code
+### 2.2 Claude Code
 
 Add to your project's `.claude/settings.json`:
 
@@ -42,7 +48,7 @@ Add to your project's `.claude/settings.json`:
 
 Or add globally to `~/.claude/settings.json` to use across all projects.
 
-### Claude Desktop
+### 2.3 Claude Desktop
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
@@ -56,17 +62,25 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 }
 ```
 
-## Prerequisites
+---
 
-Before using the MCP server, make sure:
+## 3. Prerequisites
 
-1. **Azure CLI authenticated:** `az login`
-2. **udp.yml exists** in your project directory
-3. **Fabric capacity** is active and accessible
+| Requirement | Detail |
+|---|---|
+| .NET SDK | 9.0 or later (required for the global tool) |
+| Azure CLI | 2.50 or later, authenticated with `az login` |
+| Fabric capacity | Active capacity (F2 or larger) |
+| Workspace role | Admin or Contributor on the target workspace |
+| Project files | `udp.yml` present in your project directory |
 
 Run `udp-cicd doctor` to verify everything is configured correctly.
 
-## Available Tools
+---
+
+## 4. Available tools
+
+The server exposes 14 tools:
 
 | Tool | Description | Example prompt |
 |------|-------------|----------------|
@@ -82,8 +96,12 @@ Run `udp-cicd doctor` to verify everything is configured correctly.
 | `udp_list_templates` | List templates | "What templates are available?" |
 | `udp_list_workspaces` | List workspaces | "Show me all Fabric workspaces" |
 | `udp_list_capacities` | List capacities | "What Fabric capacities do I have?" |
+| `udp_export` | Export items from a workspace | "Export the prod workspace items" |
+| `udp_generate` | Generate udp.yml from a workspace | "Generate a project from my existing workspace" |
 
-## Example Conversations
+---
+
+## 5. Example conversations
 
 **"What's in my Fabric workspace?"**
 > The AI calls `udp_status` and responds:
@@ -114,11 +132,13 @@ Run `udp-cicd doctor` to verify everything is configured correctly.
 >
 > *"You have 2 capacities available: 'Team-Dev' (F8, West US 2) and 'Prod' (F16, East US). I found 4 templates: medallion (bronze/silver/gold lakehouse), starter (single lakehouse + notebook), warehouse (SQL-first with views), and custom (empty scaffold). Which template and capacity would you like to use?"*
 
-## Setting up both MCP servers
+---
 
-For the best experience, use **udp-cicd-mcp** alongside **[Microsoft's Fabric MCP server](https://github.com/microsoft/mcp)**. udp-cicd-mcp lets the AI act on your workspace (deploy, plan, status), while Microsoft's Fabric MCP gives the AI deep knowledge of Fabric APIs and best practices.
+## 6. Setting up both MCP servers
 
-### GitHub Copilot (`.vscode/mcp.json`)
+For full coverage, use udp-cicd-mcp alongside [Microsoft's Fabric MCP server](https://github.com/microsoft/mcp). udp-cicd-mcp lets the AI act on your workspace (deploy, plan, status), while Microsoft's Fabric MCP gives the AI knowledge of Fabric APIs and best practices.
+
+### 6.1 GitHub Copilot (`.vscode/mcp.json`)
 
 ```json
 {
@@ -136,7 +156,7 @@ For the best experience, use **udp-cicd-mcp** alongside **[Microsoft's Fabric MC
 
 > Check Microsoft's [Fabric MCP repo](https://github.com/microsoft/mcp) for the latest install command -- the `args` above are illustrative.
 
-### Claude Code (`.claude/settings.json`)
+### 6.2 Claude Code (`.claude/settings.json`)
 
 ```json
 {
@@ -152,7 +172,7 @@ For the best experience, use **udp-cicd-mcp** alongside **[Microsoft's Fabric MC
 }
 ```
 
-### Claude Desktop (`claude_desktop_config.json`)
+### 6.3 Claude Desktop (`claude_desktop_config.json`)
 
 ```json
 {
@@ -168,25 +188,21 @@ For the best experience, use **udp-cicd-mcp** alongside **[Microsoft's Fabric MC
 }
 ```
 
-### What each server provides
+### 6.4 What each server provides
 
 | MCP Server | Purpose | Example |
 |------------|---------|---------|
-| **udp-cicd-mcp** | Manage your Fabric project: deploy, plan, status, run, drift, destroy | "Deploy to dev", "Check for drift" |
-| **Microsoft Fabric MCP** | Fabric API docs, best practices, item schemas | "How do I configure a pipeline trigger?", "What Spark versions does Fabric support?" |
+| udp-cicd-mcp | Manage your Fabric project: deploy, plan, status, run, drift, destroy | "Deploy to dev", "Check for drift" |
+| Microsoft Fabric MCP | Fabric API docs, best practices, item schemas | "How do I configure a pipeline trigger?", "What Spark versions does Fabric support?" |
 
 Together, the AI can both *understand* Fabric and *act* on your workspace.
 
-## Troubleshooting
+---
 
-**"udp-cicd-mcp: command not found"**
-- Make sure you installed with `dotnet tool install --global udp-cicd-mcp`
-- Check that the pip scripts directory is in your PATH
+## 7. Troubleshooting
 
-**"Authentication error"**
-- Run `az login` in your terminal first
-- Or set `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` environment variables
-
-**Tools not showing up**
-- Restart your IDE after adding the MCP configuration
-- Check the MCP server logs for errors
+| Symptom | Resolution |
+|---|---|
+| `udp-cicd-mcp: command not found` | Confirm you installed with `dotnet tool install --global udp-cicd-mcp`. Check that the .NET global tools directory (`~/.dotnet/tools` on macOS/Linux, `%USERPROFILE%\.dotnet\tools` on Windows) is in your PATH. |
+| Authentication error | Run `az login` in your terminal first, or set the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET` environment variables for service principal authentication. |
+| Tools not showing up | Restart your IDE after adding the MCP configuration. Check the MCP server logs for errors. |
