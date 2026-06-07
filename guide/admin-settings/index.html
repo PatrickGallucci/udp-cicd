@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/cicd/overview/">
+        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/admin-settings/">
       
       
-        <link rel="prev" href="../../cli/commands/">
+        <link rel="prev" href="../security/">
       
       
-        <link rel="next" href="../github-actions/">
+        <link rel="next" href="../secrets/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Overview - Unified Data Platform Deployment</title>
+        <title>Admin / Tenant Settings - Unified Data Platform Deployment</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cicd-overview" class="md-skip">
+        <a href="#admin-tenant-settings" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Admin / Tenant Settings
             
           </span>
         </div>
@@ -262,11 +262,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../guide/declarative-model/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../declarative-model/" class="md-tabs__link">
           
   
   
@@ -322,13 +324,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../cicd/overview/" class="md-tabs__link">
           
   
   
@@ -600,28 +600,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -639,7 +642,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -657,7 +660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/declarative-model/" class="md-nav__link">
+      <a href="../declarative-model/" class="md-nav__link">
         
   
   
@@ -685,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/development-workflows/" class="md-nav__link">
+      <a href="../development-workflows/" class="md-nav__link">
         
   
   
@@ -713,7 +716,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/udp-yml/" class="md-nav__link">
+      <a href="../udp-yml/" class="md-nav__link">
         
   
   
@@ -741,7 +744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/resource-types/" class="md-nav__link">
+      <a href="../resource-types/" class="md-nav__link">
         
   
   
@@ -769,7 +772,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/targets-variables/" class="md-nav__link">
+      <a href="../targets-variables/" class="md-nav__link">
         
   
   
@@ -797,7 +800,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/security/" class="md-nav__link">
+      <a href="../security/" class="md-nav__link">
         
   
   
@@ -822,10 +825,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../guide/admin-settings/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin / Tenant Settings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -841,6 +871,109 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. How it works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-finding-the-settingname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Finding the settingName
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-declaring-settings-in-udpyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Declaring settings in udp.yml
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Declaring settings in udp.yml">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-why-not-part-of-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Why not part of deploy?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -853,7 +986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/secrets/" class="md-nav__link">
+      <a href="../secrets/" class="md-nav__link">
         
   
   
@@ -881,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/templates/" class="md-nav__link">
+      <a href="../templates/" class="md-nav__link">
         
   
   
@@ -909,7 +1042,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/service-principal/" class="md-nav__link">
+      <a href="../service-principal/" class="md-nav__link">
         
   
   
@@ -937,7 +1070,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/mcp-server/" class="md-nav__link">
+      <a href="../mcp-server/" class="md-nav__link">
         
   
   
@@ -965,7 +1098,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/migrate-from-terraform/" class="md-nav__link">
+      <a href="../migrate-from-terraform/" class="md-nav__link">
         
   
   
@@ -993,7 +1126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/migrate-from-fabric-cicd/" class="md-nav__link">
+      <a href="../migrate-from-fabric-cicd/" class="md-nav__link">
         
   
   
@@ -1203,31 +1336,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1245,7 +1375,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1260,37 +1390,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../cicd/overview/" class="md-nav__link">
         
   
   
@@ -1306,165 +1409,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-why-cicd-for-microsoft-fabric" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Why CI/CD for Microsoft Fabric
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-the-deployment-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. The deployment pipeline
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. The deployment pipeline">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#21-pipeline-stages-in-detail" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.1 Pipeline stages in detail
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-authentication-in-cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Authentication in CI/CD
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Authentication in CI/CD">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#31-service-principal-client-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.1 Service principal (client secret)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#32-managed-identity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.2 Managed identity
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-environment-protection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Environment protection
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Environment protection">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-github-actions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 GitHub Actions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#42-azure-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.2 Azure DevOps
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-github-actions-vs-azure-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. GitHub Actions vs Azure DevOps
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Next steps
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1477,7 +1421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../github-actions/" class="md-nav__link">
+      <a href="../../cicd/github-actions/" class="md-nav__link">
         
   
   
@@ -1505,7 +1449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure-devops/" class="md-nav__link">
+      <a href="../../cicd/azure-devops/" class="md-nav__link">
         
   
   
@@ -1732,10 +1676,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-why-cicd-for-microsoft-fabric" class="md-nav__link">
+  <a href="#1-how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Why CI/CD for Microsoft Fabric
+        1. How it works
       
     </span>
   </a>
@@ -1743,22 +1687,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-the-deployment-pipeline" class="md-nav__link">
+  <a href="#2-finding-the-settingname" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. The deployment pipeline
+        2. Finding the settingName
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. The deployment pipeline">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-declaring-settings-in-udpyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Declaring settings in udp.yml
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Declaring settings in udp.yml">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-pipeline-stages-in-detail" class="md-nav__link">
+  <a href="#fields" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 Pipeline stages in detail
+        Fields
       
     </span>
   </a>
@@ -1771,88 +1726,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-authentication-in-cicd" class="md-nav__link">
+  <a href="#4-commands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Authentication in CI/CD
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Authentication in CI/CD">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#31-service-principal-client-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.1 Service principal (client secret)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#32-managed-identity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.2 Managed identity
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-environment-protection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Environment protection
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Environment protection">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-github-actions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 GitHub Actions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#42-azure-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.2 Azure DevOps
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-github-actions-vs-azure-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. GitHub Actions vs Azure DevOps
+        4. Commands
       
     </span>
   </a>
@@ -1860,10 +1737,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-next-steps" class="md-nav__link">
+  <a href="#5-prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Next steps
+        5. Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-why-not-part-of-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Why not part of deploy?
       
     </span>
   </a>
@@ -1890,287 +1778,172 @@
   
 
 
-<h1 id="cicd-overview">CI/CD Overview<a class="headerlink" href="#cicd-overview" title="Permanent link">&para;</a></h1>
-<p>This page explains why continuous integration and deployment apply to Microsoft Fabric, describes the standard udp-cicd pipeline and its authentication model, and compares the supported CI/CD platforms. Platform-specific pipeline files are provided in <a href="../github-actions/">GitHub Actions</a> and <a href="../azure-devops/">Azure DevOps</a>.</p>
+<h1 id="admin-tenant-settings">Admin / Tenant Settings<a class="headerlink" href="#admin-tenant-settings" title="Permanent link">&para;</a></h1>
+<p>Declaratively manage <strong>Fabric tenant (admin) settings</strong> — the org-wide switches in the Admin portal's <strong>Tenant settings</strong> page — from your <code>udp.yml</code>, then apply them with a single gated command.</p>
+<p>Unlike everything else in <code>udp.yml</code>, tenant settings are <strong>not workspace items</strong>. They apply tenant-wide through the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/update-tenant-setting">Fabric Admin API</a>, not per workspace. Because a single change affects every user in the organization, they live <strong>outside</strong> the normal <code>deploy</code> flow and are applied only by the explicit <code>udp-cicd admin apply</code> command.</p>
 <hr />
-<h2 id="1-why-cicd-for-microsoft-fabric">1. Why CI/CD for Microsoft Fabric<a class="headerlink" href="#1-why-cicd-for-microsoft-fabric" title="Permanent link">&para;</a></h2>
-<p>Managing Fabric resources manually through the portal works for a single developer building a prototype. It breaks down the moment a second person touches the workspace, or the moment the same project must be deployed to staging and production. CI/CD for Fabric provides four properties:</p>
+<h2 id="1-how-it-works">1. How it works<a class="headerlink" href="#1-how-it-works" title="Permanent link">&para;</a></h2>
+<p>You declare the <strong>desired state</strong> of each setting keyed by its API <strong><code>settingName</code></strong> (for example <code>PublishToWeb</code>). On <code>admin plan</code>/<code>apply</code>, udp-cicd:</p>
+<ol>
+<li>Reads your tenant's live settings via the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/list-tenant-settings">List Tenant Settings API</a>.</li>
+<li>Validates every declared <code>settingName</code> against that live list — unknown names are reported, not silently ignored.</li>
+<li>Diffs declared vs. live state and shows exactly what would change.</li>
+<li>(<code>apply</code> only) Applies each change via the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/update-tenant-setting">Update Tenant Setting API</a>, paced under the API's 25-requests/minute limit.</li>
+</ol>
+<p>Only settings you <strong>explicitly declare</strong> are touched. Security groups and properties are managed only when you declare them — udp-cicd never clears them implicitly.</p>
+<hr />
+<h2 id="2-finding-the-settingname">2. Finding the <code>settingName</code><a class="headerlink" href="#2-finding-the-settingname" title="Permanent link">&para;</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Titles vs. identifiers</p>
+<p>The <a href="https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index">tenant settings index</a> lists <strong>display titles</strong> ("Publish to web", "Web content on dashboard tiles"), <strong>not</strong> the API <code>settingName</code> identifiers the Admin API requires. The authoritative list of identifiers comes from <strong>your tenant</strong>.</p>
+</div>
+<p>Get the real identifiers for your tenant:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>az<span class="w"> </span>rest<span class="w"> </span>--method<span class="w"> </span>get<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>--url<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com/v1/admin/tenantsettings&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--resource<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;tenantSettings[].{name:settingName, title:title, enabled:enabled}&quot;</span><span class="w"> </span>-o<span class="w"> </span>table
+</code></pre></div>
+<p>Each row's <code>name</code> is what you put in <code>udp.yml</code>; <code>title</code> matches the <a href="https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index">tenant settings index</a> so you can map a description to its identifier. The documented worked example is <code>PublishToWeb</code> (the "Publish to web" setting).</p>
+<p><code>udp-cicd admin plan</code> also validates your names directly — any identifier that doesn't exist in your tenant is flagged as <strong>unknown</strong> so you get immediate feedback.</p>
+<hr />
+<h2 id="3-declaring-settings-in-udpyml">3. Declaring settings in <code>udp.yml</code><a class="headerlink" href="#3-declaring-settings-in-udpyml" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">admin</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">tenant_settings</span><span class="p">:</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="c1"># Disable Publish to web org-wide</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">PublishToWeb</span><span class="p">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="c1"># Enable a setting only for specific security groups</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">SomeFeatureSwitch</span><span class="p">:</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="nt">enabled_security_groups</span><span class="p">:</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">graph_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;f51b705f-a409-4d40-9197-c5d5f349e2f0&quot;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Data</span><span class="nv"> </span><span class="s">Engineers&quot;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">excluded_security_groups</span><span class="p">:</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">graph_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a1b2c3d4-0000-0000-0000-000000000000&quot;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Contractors&quot;</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="c1"># Allow workspace admins to override, and set a typed property</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="nt">DevelopmentTenantSettings</span><span class="p">:</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">      </span><span class="nt">delegate_to_workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MaxItems&quot;</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500&quot;</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Integer</span>
+</code></pre></div>
+<h3 id="fields">Fields<a class="headerlink" href="#fields" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Property</th>
+<th>Field</th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Consistency</td>
-<td>Every environment is deployed from the same deployment definition. No forgotten manual steps, no "it works on my workspace" problems.</td>
+<td><code>enabled</code></td>
+<td>boolean (required)</td>
+<td>Turn the setting on or off</td>
 </tr>
 <tr>
-<td>Repeatability</td>
-<td>Deployments are deterministic. Running the same pipeline twice with the same inputs produces the same workspace state.</td>
+<td><code>delegate_to_capacity</code></td>
+<td>boolean</td>
+<td>Allow a capacity admin to override</td>
 </tr>
 <tr>
-<td>Auditability</td>
-<td>Every change goes through source control. Pull requests create a review trail. Deployment logs record who deployed what, when, and to which target.</td>
+<td><code>delegate_to_domain</code></td>
+<td>boolean</td>
+<td>Allow a domain admin to override</td>
 </tr>
 <tr>
-<td>Safety</td>
-<td>Validation catches errors before they reach a workspace. Plan output shows exactly what will change. Approval gates prevent unreviewed changes from reaching production.</td>
+<td><code>delegate_to_workspace</code></td>
+<td>boolean</td>
+<td>Allow a workspace admin to override</td>
+</tr>
+<tr>
+<td><code>enabled_security_groups</code></td>
+<td>list</td>
+<td>Groups the setting is enabled for (<code>graph_id</code> + <code>name</code>)</td>
+</tr>
+<tr>
+<td><code>excluded_security_groups</code></td>
+<td>list</td>
+<td>Groups explicitly excluded</td>
+</tr>
+<tr>
+<td><code>properties</code></td>
+<td>list</td>
+<td>Typed properties some settings require (<code>name</code>, <code>value</code>, <code>type</code>)</td>
 </tr>
 </tbody>
 </table>
+<p><code>type</code> is one of <code>FreeText</code>, <code>Url</code>, <code>Boolean</code>, <code>MailEnabledSecurityGroup</code>, <code>Integer</code>. The <code>delegate_to_*</code> fields are only diffed/applied when you declare them, so you can leave them out to manage just <code>enabled</code>.</p>
+<p><code>${var.*}</code> substitution works inside any string value — handy for security-group GUIDs that differ per tenant.</p>
 <hr />
-<h2 id="2-the-deployment-pipeline">2. The deployment pipeline<a class="headerlink" href="#2-the-deployment-pipeline" title="Permanent link">&para;</a></h2>
-<p>A standard udp-cicd pipeline follows this flow:</p>
-<ol>
-<li>A developer opens a <strong>pull request</strong> with changes to <code>udp.yml</code>, notebooks, SQL scripts, or other definitions.</li>
-<li>The CI pipeline runs <strong>validate</strong> to check schema correctness and policy compliance, then runs <strong>plan</strong> to preview what would change in the target workspace.</li>
-<li>Reviewers approve and <strong>merge</strong> the pull request.</li>
-<li>The CD pipeline automatically <strong>deploys to dev</strong>.</li>
-<li>After dev deployment succeeds, the pipeline <strong>deploys to staging</strong> (optionally with automated tests).</li>
-<li>A manual <strong>approval gate</strong> is required before <strong>deploying to production</strong>.</li>
-</ol>
-<pre class="mermaid"><code>flowchart LR
-    A[PR Created] --&gt; B[Validate]
-    B --&gt; C[Plan]
-    C --&gt; D{PR Approved?}
-    D --&gt;|Yes| E[Merge to main]
-    E --&gt; F[Deploy Dev]
-    F --&gt; G[Deploy Staging]
-    G --&gt; H{Approval Gate}
-    H --&gt;|Approved| I[Deploy Prod]
-    H --&gt;|Rejected| J[Pipeline Stopped]</code></pre>
-<h3 id="21-pipeline-stages-in-detail">2.1 Pipeline stages in detail<a class="headerlink" href="#21-pipeline-stages-in-detail" title="Permanent link">&para;</a></h3>
+<h2 id="4-commands">4. Commands<a class="headerlink" href="#4-commands" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Preview changes against the live tenant (read-only)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>plan
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Apply — prompts for confirmation (tenant-wide!)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Apply non-interactively (CI)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Preview via apply without writing</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>--dry-run
+</code></pre></div>
+<p>Sample <code>admin plan</code> output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Tenant Settings Plan
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  ~  PublishToWeb  Publish to web
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>      enabled: enabled -&gt; disabled
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  =  DevelopmentTenantSettings  no change
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  !  PublishToWebb  (unknown setting)
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>      setting not found in this tenant — check the settingName
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  Summary: 1 to update, 1 unchanged, 1 unknown
+</code></pre></div>
+<p><code>admin apply</code> refuses to run while any setting is <strong>unknown</strong>, so a typo can't silently no-op.</p>
+<hr />
+<h2 id="5-prerequisites">5. Prerequisites<a class="headerlink" href="#5-prerequisites" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Stage</th>
-<th>Command</th>
-<th>Trigger</th>
-<th>Authentication Required</th>
-<th>Purpose</th>
+<th>Requirement</th>
+<th>Detail</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Validate</td>
-<td><code>udp-cicd validate --strict</code></td>
-<td>PR opened/updated</td>
-<td>No</td>
-<td>Schema and policy checks against local files</td>
+<td>Permissions</td>
+<td>A <strong>Fabric administrator</strong>, or a service principal with the <code>Tenant.ReadWrite.All</code> delegated scope</td>
 </tr>
 <tr>
-<td>Plan</td>
-<td><code>udp-cicd plan --target dev</code></td>
-<td>PR opened/updated</td>
-<td>Yes</td>
-<td>Dry-run diff against the live workspace</td>
+<td>API status</td>
+<td>The Update Tenant Setting API is <strong>Preview</strong></td>
 </tr>
 <tr>
-<td>Deploy Dev</td>
-<td><code>udp-cicd deploy --target dev -y</code></td>
-<td>Merge to main</td>
-<td>Yes</td>
-<td>Deploy to the development workspace</td>
+<td>Rate limit</td>
+<td>25 requests/minute (udp-cicd paces <code>apply</code> automatically)</td>
 </tr>
 <tr>
-<td>Deploy Staging</td>
-<td><code>udp-cicd deploy --target staging -y</code></td>
-<td>After dev succeeds</td>
-<td>Yes</td>
-<td>Deploy to the staging workspace</td>
-</tr>
-<tr>
-<td>Deploy Prod</td>
-<td><code>udp-cicd deploy --target prod -y</code></td>
-<td>After manual approval</td>
-<td>Yes</td>
-<td>Deploy to the production workspace</td>
-</tr>
-<tr>
-<td>Drift Check</td>
-<td><code>udp-cicd drift --target prod</code></td>
-<td>Scheduled (cron)</td>
-<td>Yes</td>
-<td>Detect out-of-band changes</td>
+<td>Propagation</td>
+<td>Changes can take <strong>up to 15 minutes</strong> to take effect across the org</td>
 </tr>
 </tbody>
 </table>
-<p>Every pipeline installs the CLI as a .NET global tool before running any command:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Service principal (CI)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span>...
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span>...
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span>...
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
 </code></pre></div>
 <hr />
-<h2 id="3-authentication-in-cicd">3. Authentication in CI/CD<a class="headerlink" href="#3-authentication-in-cicd" title="Permanent link">&para;</a></h2>
-<p>udp-cicd authenticates to the Fabric API through its <code>FabricAuth</code> component, built on the Azure.Identity library. Credential selection follows this order:</p>
-<table>
-<thead>
-<tr>
-<th>Condition</th>
-<th>Credential used</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>AZURE_TENANT_ID</code>, <code>AZURE_CLIENT_ID</code>, and <code>AZURE_CLIENT_SECRET</code> are all set</td>
-<td><code>ClientSecretCredential</code> (service principal)</td>
-</tr>
-<tr>
-<td><code>FABRIC_USE_BROWSER=true</code></td>
-<td><code>InteractiveBrowserCredential</code> (interactive browser sign-in)</td>
-</tr>
-<tr>
-<td>Otherwise</td>
-<td><code>DefaultAzureCredential</code> (managed identity, Azure CLI session, and other standard sources)</td>
-</tr>
-</tbody>
-</table>
-<p>No interactive browser login is needed in CI/CD. Use a service principal or a managed identity.</p>
-<h3 id="31-service-principal-client-secret">3.1 Service principal (client secret)<a class="headerlink" href="#31-service-principal-client-secret" title="Permanent link">&para;</a></h3>
-<p>The most common approach. Set three environment variables in your CI/CD runner:</p>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>AZURE_TENANT_ID</code></td>
-<td>Your Entra ID (Azure AD) tenant GUID</td>
-</tr>
-<tr>
-<td><code>AZURE_CLIENT_ID</code></td>
-<td>The app registration's application (client) ID</td>
-</tr>
-<tr>
-<td><code>AZURE_CLIENT_SECRET</code></td>
-<td>A client secret for the app registration</td>
-</tr>
-</tbody>
-</table>
-<p>When all three variables are set, udp-cicd authenticates with <code>ClientSecretCredential</code>.</p>
-<p>See <a href="../../guide/service-principal/">Service Principal Setup</a> for step-by-step instructions on creating and configuring the service principal.</p>
-<h3 id="32-managed-identity">3.2 Managed identity<a class="headerlink" href="#32-managed-identity" title="Permanent link">&para;</a></h3>
-<p>For Azure-hosted CI/CD runners (Azure DevOps Microsoft-hosted agents with managed identity, self-hosted runners on Azure VMs, or GitHub Actions runners on Azure), you can use managed identity instead of a client secret. No environment variables are required. When the service principal variables are not set, udp-cicd falls back to <code>DefaultAzureCredential</code>, which discovers the identity automatically.</p>
-<p>This is the most secure option because there is no secret to rotate or leak.</p>
-<hr />
-<h2 id="4-environment-protection">4. Environment protection<a class="headerlink" href="#4-environment-protection" title="Permanent link">&para;</a></h2>
-<p>Both GitHub Actions and Azure DevOps support approval gates that prevent deployments to sensitive environments without human review.</p>
-<h3 id="41-github-actions">4.1 GitHub Actions<a class="headerlink" href="#41-github-actions" title="Permanent link">&para;</a></h3>
-<p>Create environments in your repository settings (Settings &gt; Environments) and add required reviewers:</p>
-<table>
-<thead>
-<tr>
-<th>Environment</th>
-<th>Protection Rules</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>dev</code></td>
-<td>None (auto-deploy on merge)</td>
-</tr>
-<tr>
-<td><code>staging</code></td>
-<td>None, or require specific reviewers</td>
-</tr>
-<tr>
-<td><code>production</code></td>
-<td>Required reviewers, wait timer (optional)</td>
-</tr>
-</tbody>
-</table>
-<p>Reference the environment in your workflow with <code>environment: production</code>. GitHub will pause the job and request approval before it runs.</p>
-<h3 id="42-azure-devops">4.2 Azure DevOps<a class="headerlink" href="#42-azure-devops" title="Permanent link">&para;</a></h3>
-<p>Create environments in Pipelines &gt; Environments and add approval checks:</p>
-<table>
-<thead>
-<tr>
-<th>Environment</th>
-<th>Approvals</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>dev</code></td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>staging</code></td>
-<td>None</td>
-</tr>
-<tr>
-<td><code>production</code></td>
-<td>Required approvers</td>
-</tr>
-</tbody>
-</table>
-<p>Reference the environment in your pipeline with <code>environment: 'production'</code>. Azure DevOps will pause the stage and request approval.</p>
-<hr />
-<h2 id="5-github-actions-vs-azure-devops">5. GitHub Actions vs Azure DevOps<a class="headerlink" href="#5-github-actions-vs-azure-devops" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Capability</th>
-<th>GitHub Actions</th>
-<th>Azure DevOps</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Workflow definition</td>
-<td><code>.github/workflows/*.yml</code></td>
-<td><code>azure-pipelines.yml</code></td>
-</tr>
-<tr>
-<td>Secrets management</td>
-<td>Repository or environment secrets</td>
-<td>Variable groups (with Key Vault linking)</td>
-</tr>
-<tr>
-<td>Approval gates</td>
-<td>Environment protection rules</td>
-<td>Environment approvals and checks</td>
-</tr>
-<tr>
-<td>Scheduled runs</td>
-<td><code>on: schedule</code> with cron syntax</td>
-<td><code>schedules:</code> trigger</td>
-</tr>
-<tr>
-<td>Manual trigger</td>
-<td><code>on: workflow_dispatch</code></td>
-<td>Manual trigger on pipeline</td>
-</tr>
-<tr>
-<td>Matrix strategy</td>
-<td><code>strategy: matrix</code></td>
-<td><code>strategy: matrix</code></td>
-</tr>
-<tr>
-<td>Artifact sharing</td>
-<td><code>actions/upload-artifact</code></td>
-<td>Pipeline artifacts</td>
-</tr>
-<tr>
-<td>Self-hosted runners</td>
-<td>Self-hosted runners</td>
-<td>Self-hosted agents</td>
-</tr>
-</tbody>
-</table>
-<p>Both platforms are fully supported. The GitHub Actions workflows have been proven end-to-end against live Fabric workspaces; the Azure DevOps pipeline covers validate, staging, and production stages with approval gates. Choose whichever your team already uses.</p>
-<hr />
-<h2 id="6-next-steps">6. Next steps<a class="headerlink" href="#6-next-steps" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../github-actions/">GitHub Actions</a> -- Full workflow files for CI, CD, drift checks, and destroy.</li>
-<li><a href="../azure-devops/">Azure DevOps</a> -- Complete pipeline YAML with stages, environments, and variable groups.</li>
-<li><a href="../../guide/service-principal/">Service Principal Setup</a> -- Create and configure the service principal for CI/CD.</li>
-<li><a href="../../guide/secrets/">Secrets Management</a> -- Handle connection strings and credentials in pipelines.</li>
-</ul>
+<h2 id="6-why-not-part-of-deploy">6. Why not part of <code>deploy</code>?<a class="headerlink" href="#6-why-not-part-of-deploy" title="Permanent link">&para;</a></h2>
+<p><code>deploy</code> targets a single workspace and is safe to run per environment. Tenant settings are <strong>tenant-global</strong> — applying them on every <code>deploy --target dev</code> would repeatedly rewrite org-wide policy. Keeping them in a separate, explicitly-confirmed <code>admin apply</code> makes the blast radius obvious and lets you gate them behind a dedicated approval in CI.</p>
 
 
 
