@@ -5004,8 +5004,19 @@
 <td><code>false</code></td>
 <td>Override deployment locks and skip the definition cache.</td>
 </tr>
+<tr>
+<td><code>--continue-on-error</code></td>
+<td></td>
+<td>Flag</td>
+<td><code>false</code></td>
+<td>On failure, keep successfully created items instead of rolling them all back. The deployment finishes as a partial success (exit code <code>1</code>) and records what was created.</td>
+</tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Rollback vs. continue-on-error</strong></p>
+<p>By default, if any item fails, udp-cicd <strong>rolls back</strong> every item it created in that run, so a deployment is all-or-nothing. Pass <code>--continue-on-error</code> to keep the items that succeeded and skip the rollback — useful when one resource is missing a definition or hitting a capacity gate but you still want the rest deployed. Re-run <code>deploy</code> after fixing the failed item to converge.</p>
+</blockquote>
 <h4 id="examples_7">Examples<a class="headerlink" href="#examples_7" title="Permanent link">&para;</a></h4>
 <p><strong>Deploy to the default target (interactive):</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>udp-cicd<span class="w"> </span>deploy
