@@ -43,6 +43,7 @@ nav:
     - Resource Types: guide/resource-types.md
     - Targets & Variables: guide/targets-variables.md
     - Security & Permissions: guide/security.md
+    - Admin / Tenant Settings: guide/admin-settings.md
     - Secrets Management: guide/secrets.md
     - Templates: guide/templates.md
     - Service Principal: guide/service-principal.md

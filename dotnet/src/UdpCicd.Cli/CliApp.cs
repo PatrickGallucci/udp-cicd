@@ -39,6 +39,7 @@ internal static partial class CliApp
         root.Subcommands.Add(DiffCommand());
         root.Subcommands.Add(GraphCommand());
         root.Subcommands.Add(CheckUpdateCommand());
+        root.Subcommands.Add(AdminCommand());
         return root;
     }
 

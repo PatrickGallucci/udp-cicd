@@ -1,0 +1,44 @@
+# Tenant / Admin Settings Example
+# Declaratively manage org-wide Fabric tenant settings.
+#
+# These are NOT workspace items — they apply tenant-wide via the Fabric Admin API.
+# Apply with the gated command (Fabric admin / SP Tenant.ReadWrite.All required):
+#
+#   udp-cicd admin plan -f udp.yml      # preview against the live tenant
+#   udp-cicd admin apply -f udp.yml     # apply (prompts for confirmation)
+#
+# Settings are keyed by their API settingName (e.g. PublishToWeb), NOT the portal
+# title. Discover the identifiers for your tenant with:
+#   az rest --method get --url "https://api.fabric.microsoft.com/v1/admin/tenantsettings" \
+#     --resource "https://api.fabric.microsoft.com" --query "tenantSettings[].settingName"
+
+deployment:
+  name: tenant-settings
+  version: "1.0.0"
+  description: "Org-wide Fabric tenant settings"
+
+variables:
+  data_eng_group_id:
+    description: "Object ID of the Data Engineers security group"
+    default: "REPLACE-WITH-SECURITY-GROUP-GUID"
+
+admin:
+  tenant_settings:
+    # Turn Publish to web off for the whole organization.
+    PublishToWeb:
+      enabled: false
+
+    # Enable a feature only for a specific security group.
+    DevelopmentTenantSettings:
+      enabled: true
+      delegate_to_workspace: true
+      enabled_security_groups:
+        - graph_id: "${var.data_eng_group_id}"
+          name: "Data Engineers"
+
+targets:
+  prod:
+    default: true
+    workspace:
+      name: tenant-settings-prod
+      capacity_id: "00000000-0000-0000-0000-000000000000"

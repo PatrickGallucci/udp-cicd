@@ -25,6 +25,7 @@ Working examples you can copy and deploy to your Fabric tenant.
 | 06 | [Shortcuts & Connections](06-shortcuts-and-connections/) | ADLS, S3, cross-workspace shortcuts | Intermediate |
 | 07 | [Shortcut Transformations](07-shortcut-transformations/) | CSV/JSON/Excel → Delta, AI summarize/translate/classify | Intermediate |
 | 08 | [All Resource Types](08-all-resource-types/) | Reference catalogue using all 45 supported item types | Reference |
+| 09 | [Tenant Settings](09-tenant-settings/) | Declarative org-wide Fabric admin/tenant settings | Advanced |
 
 ## Finding Your Capacity GUID
 

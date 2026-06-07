@@ -75,9 +75,63 @@
     "targets": {
       "type": "object",
       "additionalProperties": { "$ref": "#/definitions/target" }
+    },
+    "admin": {
+      "type": "object",
+      "description": "Tenant-level (admin) settings, applied tenant-wide via the Fabric Admin API. Applied only by 'udp-cicd admin apply', never by 'deploy'.",
+      "properties": {
+        "tenant_settings": {
+          "type": "object",
+          "description": "Tenant settings keyed by their API settingName (e.g. PublishToWeb), not the portal display title.",
+          "additionalProperties": { "$ref": "#/definitions/tenantSetting" }
+        }
+      }
     }
   },
   "definitions": {
+    "tenantSetting": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean", "description": "Enable (true) or disable (false) the setting" },
+        "delegate_to_capacity": { "type": "boolean", "description": "Allow a capacity admin to override this setting" },
+        "delegate_to_domain": { "type": "boolean", "description": "Allow a domain admin to override this setting" },
+        "delegate_to_workspace": { "type": "boolean", "description": "Allow a workspace admin to override this setting" },
+        "enabled_security_groups": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/tenantSettingSecurityGroup" }
+        },
+        "excluded_security_groups": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/tenantSettingSecurityGroup" }
+        },
+        "properties": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/tenantSettingProperty" }
+        }
+      }
+    },
+    "tenantSettingSecurityGroup": {
+      "type": "object",
+      "required": ["graph_id", "name"],
+      "properties": {
+        "graph_id": { "type": "string", "description": "Object (graph) ID of the security group" },
+        "name": { "type": "string", "description": "Display name of the security group" }
+      }
+    },
+    "tenantSettingProperty": {
+      "type": "object",
+      "required": ["name", "value"],
+      "properties": {
+        "name": { "type": "string" },
+        "value": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["FreeText", "Url", "Boolean", "MailEnabledSecurityGroup", "Integer"],
+          "default": "Boolean"
+        }
+      }
+    },
     "resourceMap_lakehouse": {
       "type": "object",
       "additionalProperties": {

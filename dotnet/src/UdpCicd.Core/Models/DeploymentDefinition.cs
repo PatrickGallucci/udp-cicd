@@ -17,6 +17,7 @@ public sealed class DeploymentDefinition
     public PolicyConfig Policies { get; set; } = new();
     public NotificationsConfig Notifications { get; set; } = new();
     public StateConfig State { get; set; } = new();
+    public AdminConfig Admin { get; set; } = new();
     public Dictionary<string, TargetConfig> Targets { get; set; } = [];
 
     /// <summary>

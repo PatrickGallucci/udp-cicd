@@ -431,6 +431,31 @@ public sealed class FabricClient
 
     public void DeleteConnection(string connectionId) => Request("DELETE", $"/connections/{connectionId}");
 
+    // -- admin / tenant settings ---------------------------------------------
+
+    /// <summary>
+    /// List all tenant settings (Admin API). Requires a Fabric administrator or a
+    /// service principal with <c>Tenant.Read.All</c>. The response is keyed under
+    /// <c>tenantSettings</c> rather than the usual <c>value</c> array.
+    /// </summary>
+    public List<JsonNode> ListTenantSettings()
+    {
+        var result = Request("GET", "/admin/tenantsettings");
+        if (result?["tenantSettings"] is JsonArray arr)
+        {
+            return arr.Where(n => n is not null).Select(n => n!).ToList();
+        }
+        return [];
+    }
+
+    /// <summary>
+    /// Update a single tenant setting by its <c>settingName</c> (Admin API, preview).
+    /// Requires a Fabric administrator or a service principal with
+    /// <c>Tenant.ReadWrite.All</c>. Rate-limited by Fabric to 25 requests/minute.
+    /// </summary>
+    public JsonNode? UpdateTenantSetting(string settingName, JsonObject body) =>
+        Request("POST", $"/admin/tenantsettings/{settingName}/update", body);
+
     // -- jobs ----------------------------------------------------------------
 
     public JsonNode? RunItemJob(string workspaceId, string itemId, string jobType, JsonNode? executionData = null)

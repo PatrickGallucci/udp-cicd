@@ -210,6 +210,8 @@ Deployment Plan: udp-analytics
 | `udp-cicd run <resource>` | Run a notebook or pipeline |
 | `udp-cicd drift` | Detect drift between deployed state and live workspace |
 | `udp-cicd bind` | Bind an existing workspace item |
+| `udp-cicd admin plan` | Preview tenant (admin) setting changes against the live tenant |
+| `udp-cicd admin apply` | Apply org-wide tenant settings via the Fabric Admin API |
 | `udp-cicd list` | List available templates |
 | `udp-cicd doctor` | Diagnose environment, auth, and connectivity |
 
