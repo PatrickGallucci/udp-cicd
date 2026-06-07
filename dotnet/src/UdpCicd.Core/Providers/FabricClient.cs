@@ -24,7 +24,7 @@ public sealed class FabricClient
         ["SemanticModel"] = "semanticModels",
         ["Report"] = "reports",
         ["DataPipeline"] = "dataPipelines",
-        ["SparkEnvironment"] = "environments",
+        ["Environment"] = "environments",
         ["Eventhouse"] = "eventhouses",
         ["Eventstream"] = "eventstreams",
         ["MLModel"] = "mlModels",

@@ -29,7 +29,7 @@ You do not declare this ordering in `udp.yml`; the Resolver derives it from reso
 |----------|----------|----------|-------------|
 | Lakehouse | `lakehouses` | Lakehouse | Shortcuts, tables, schemas |
 | Notebook | `notebooks` | Notebook | .py, .ipynb, .sql, .scala, .r |
-| Environment | `environments` | SparkEnvironment | Runtime, libraries, Spark config |
+| Environment | `environments` | Environment | Runtime, libraries, Spark config |
 | Spark Job Definition | `spark_job_definitions` | SparkJobDefinition | .py, .jar |
 | GraphQL API | `graphql_apis` | GraphQLApi | Schema file |
 | Snowflake Database | `snowflake_databases` | SnowflakeDatabase | Connection-based |

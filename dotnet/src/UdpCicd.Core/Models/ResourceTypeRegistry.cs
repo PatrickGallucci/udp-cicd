@@ -30,7 +30,7 @@ public static class ResourceTypeRegistry
         new("semantic_models", "SemanticModels", "SemanticModel", false),
         new("reports", "Reports", "Report", false),
         new("data_agents", "DataAgents", "DataAgent", false),
-        new("environments", "Environments", "SparkEnvironment", false),
+        new("environments", "Environments", "Environment", false),
         new("eventhouses", "Eventhouses", "Eventhouse", StrictNaming: true),
         new("eventstreams", "Eventstreams", "Eventstream", false),
         new("ml_models", "MlModels", "MLModel", false),

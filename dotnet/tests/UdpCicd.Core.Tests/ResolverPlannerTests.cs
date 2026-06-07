@@ -52,7 +52,7 @@ public class ResolverPlannerTests
         Assert.Equal(deployment.Resources.AllResourceKeys().Count, plan.Creates.Count);
         // Fabric item-type mapping applied (notebooks -> Notebook, pipelines -> DataPipeline).
         Assert.Contains(plan.Items, i => i is { ResourceKey: "daily_etl", ResourceType: "DataPipeline" });
-        Assert.Contains(plan.Items, i => i is { ResourceKey: "spark_env", ResourceType: "SparkEnvironment" });
+        Assert.Contains(plan.Items, i => i is { ResourceKey: "spark_env", ResourceType: "Environment" });
     }
 
     [Fact]
