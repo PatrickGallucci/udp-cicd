@@ -2231,11 +2231,11 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>udp-cicd<span class="w"> </span>--version
 </code></pre></div>
 <h3 id="32-run-the-diagnostic-check">3.2 Run the diagnostic check<a class="headerlink" href="#32-run-the-diagnostic-check" title="Permanent link">&para;</a></h3>
-<p>The <code>doctor</code> command validates the .NET runtime, Azure CLI status, authentication, and Fabric API connectivity in a single step:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>udp-cicd<span class="w"> </span>doctor
+<p>The <code>diag</code> command validates the .NET runtime, Azure CLI status, authentication, and Fabric API connectivity in a single step:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>udp-cicd<span class="w"> </span>diag
 </code></pre></div>
 <p><strong>Example output (healthy environment):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-cicd doctor
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-cicd diag
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  ✓ .NET runtime 9.0.0
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  ✓ Azure CLI installed
@@ -2248,7 +2248,7 @@
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
-<p>The <code>doctor</code> command does not require a <code>udp.yml</code> file. If one is not found, it skips the deployment validation check. All other checks still run.</p>
+<p>The <code>diag</code> command does not require a <code>udp.yml</code> file. If one is not found, it skips the deployment validation check. All other checks still run.</p>
 </blockquote>
 <hr />
 <h2 id="4-set-up-authentication">4. Set up authentication<a class="headerlink" href="#4-set-up-authentication" title="Permanent link">&para;</a></h2>
