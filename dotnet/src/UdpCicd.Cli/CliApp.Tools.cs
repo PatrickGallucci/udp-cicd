@@ -53,9 +53,24 @@ internal static partial class CliApp
             Check("Azure CLI authenticated", () => RunProcess("az", "account show --query name -o tsv"));
             Check("Fabric API reachable", () => NewClient().ListWorkspaces() is not null);
             Check("udp.yml found", () => File.Exists("udp.yml") || File.Exists("udp.yaml"));
-            if (File.Exists("udp.yml"))
+            if (File.Exists("udp.yml") || File.Exists("udp.yaml"))
             {
-                Check("Deployment validates", () => { Loader.LoadDeployment(); return true; });
+                Core.Models.DeploymentDefinition? loaded = null;
+                Check("Deployment validates", () => { loaded = Loader.LoadDeployment(); return true; });
+
+                if (loaded is { Connections.Count: > 0 })
+                {
+                    foreach (var result in ConnectionChecker.CheckAll(loaded))
+                    {
+                        if (!result.Tested)
+                        {
+                            Ansi.MarkupLine($"  [dim]·[/] Connection '{Markup.Escape(result.Name)}' [dim]skipped ({Markup.Escape(result.Detail ?? "")})[/]");
+                            continue;
+                        }
+                        Check($"Connection '{result.Name}' reachable ({result.Target})",
+                            () => result.Reachable ? true : throw new Exception(result.Detail ?? "unreachable"));
+                    }
+                }
             }
 
             Ansi.WriteLine();

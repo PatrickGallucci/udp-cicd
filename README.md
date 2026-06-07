@@ -488,7 +488,7 @@ dotnet/
 ├── src/
 │   ├── UdpCicd.Core/
 │   │   ├── Models/            # DeploymentDefinition + typed udp.yml schema
-│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver, AdminApplier
+│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver, AdminApplier, ConnectionChecker
 │   │   ├── Providers/         # FabricClient, FabricAuth (Fabric REST + Admin API)
 │   │   ├── Generators/        # ReverseGenerator, TemplateEngine
 │   │   └── Assets/templates/  # medallion/, blank/
@@ -633,6 +633,7 @@ For Blob/ADLS state backends, omit the account key where possible — the system
 | drift, status, diff, history, diag | **Stable** | Tested against live workspaces |
 | run (notebooks/pipelines) | **Stable** | Job submission works, LRO tracking limited |
 | Security roles (workspace) | **Stable** | Entra user/group GUIDs |
+| Connection reachability check | **Stable** | `validate`/`diag` TCP-probe each `connections` source (host:port from conn string or endpoint) |
 | Incremental deploy (hash-based) | **Stable** | Skips unchanged resources |
 | Deployment locking | **Stable** | Local + remote (blob lease) |
 | CI/CD (GitHub Actions) | **Stable** | [Proven end-to-end](https://github.com/PatrickGallucci/udp-udp-cicd-example) |

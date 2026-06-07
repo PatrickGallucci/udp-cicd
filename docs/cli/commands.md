@@ -187,8 +187,9 @@ udp-cicd diag
   ✓ Fabric API reachable
   ✓ udp.yml found
   ✓ Deployment validates
+  ✓ Connection 'sales_db' reachable (myserver.database.windows.net:1433)
 
-  6 passed, 0 failed
+  7 passed, 0 failed
 ```
 
 #### Checks performed
@@ -201,6 +202,7 @@ udp-cicd diag
 | Fabric API reachable | The Fabric REST API responds to a workspace list request. |
 | `udp.yml` found | A `udp.yml` or `udp.yaml` file exists in the current directory. |
 | Deployment validates | The deployment definition parses and validates without errors. |
+| Connection reachable | For each `connections` entry, a TCP connection to the source `host:port` (from the connection string or `endpoint`) succeeds. Connections with no testable target are skipped. |
 
 ---
 
@@ -258,6 +260,20 @@ udp-cicd validate [OPTIONS]
 | `--file` | `-f` | String | Auto-detected | Path to `udp.yml`. If omitted, searches the current directory. |
 | `--target` | `-t` | String | *(none)* | Target environment to validate against. Applies target-specific variable overrides and workspace config. |
 | `--strict` | | Flag | `false` | Fail on unresolved variables and warnings in addition to errors. |
+| `--skip-connection-check` | | Flag | `false` | Skip the source reachability check for `connections` (see below). |
+
+#### Connection checks
+
+When the deployment defines [`connections`](../guide/udp-yml.md#connections), `validate` derives a `host:port` from each connection's resolved connection string (`connection_string_var` + secrets) or its `endpoint`, and opens a TCP socket to confirm the source is reachable:
+
+```
+  Connection checks:
+    ✓ sales_db — reachable (myserver.database.windows.net:1433)
+    ✗ legacy_dw — unreachable (oldhost:1433): No such host is known.
+    · http_api — skipped (no connection string or endpoint to test)
+```
+
+This is a **network reachability** check (TCP connect), not an authentication or protocol handshake. An unreachable source is a **warning** by default so `validate` stays usable offline; pass `--strict` to make it a failure (exit code `1`), or `--skip-connection-check` to disable it.
 
 #### Examples
 

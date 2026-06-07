@@ -744,6 +744,12 @@ connections:
 >
 > Never put secrets (connection strings, API keys, passwords) directly in `udp.yml`. Use `${keyvault.VAULT.SECRET}` for Key Vault references, `${secret.NAME}` or `${env.VAR_NAME}` for environment variables, or the `connection_string_var` field.
 
+### 8.3 Connectivity check
+
+`udp-cicd validate` and `udp-cicd diag` verify that each connection's source is reachable. For every connection they derive a `host:port` — from the resolved connection string (`connection_string_var` + secrets) when present, otherwise from `endpoint` — and open a TCP socket to confirm the source accepts connections. The default port follows the `type` (`sql_server`/`azure_sql` → 1433, everything else → 443) unless the connection string or endpoint specifies one.
+
+This is a **network reachability** check, not an authenticated handshake. In `validate`, an unreachable source is a warning by default (use `--strict` to fail, or `--skip-connection-check` to disable); in `diag` it is a pass/fail check. Connections with no resolvable connection string or endpoint are skipped.
+
 ---
 
 ## 9. policies

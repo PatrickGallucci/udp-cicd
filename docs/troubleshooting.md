@@ -255,7 +255,28 @@ Use the `name` column value as the key in `udp.yml`.
 
 ---
 
-## 10. Getting help
+## 10. Connections
+
+### 10.1 `validate`/`diag` reports a connection as "unreachable"
+
+**Cause:** The source `host:port` derived from the connection string or `endpoint` did not accept a TCP connection. Common reasons: the host name is wrong (`No such host is known`), a firewall or private endpoint blocks your machine, the source is paused, or the port is non-default and not specified.
+
+**Resolution:**
+
+- Confirm the host resolves and is reachable from where you run the command (corporate networks and CI runners are often isolated from data sources).
+- For non-standard ports, include the port in the connection string (`Server=host,1500`) or endpoint URL (`https://host:8443`).
+- This is a **reachability** check only — a reachable source can still reject authentication. It does not validate credentials.
+- To proceed despite an unreachable source, drop `--strict`; the check is a warning by default. Use `--skip-connection-check` to skip it entirely.
+
+### 10.2 A connection is "skipped (no connection string or endpoint to test)"
+
+**Cause:** The connection has neither a resolvable `connection_string_var` (the environment variable is unset) nor an `endpoint`, so no `host:port` could be derived.
+
+**Resolution:** Set the `connection_string_var` environment variable, or add an `endpoint` to the connection in `udp.yml`.
+
+---
+
+## 11. Getting help
 
 - Run `udp-cicd diag` to diagnose common issues.
 - Check [GitHub Issues](https://github.com/PatrickGallucci/udp-cicd/issues) for known bugs.

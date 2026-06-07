@@ -102,8 +102,9 @@ internal static partial class CliApp
         var file = FileOption();
         var target = new Option<string?>("--target", "-t") { Description = "Target to validate against" };
         var strict = new Option<bool>("--strict") { Description = "Fail on unresolved variables and warnings" };
+        var skipConnectionCheck = new Option<bool>("--skip-connection-check") { Description = "Skip the connectivity check for udp.yml connections" };
 
-        var cmd = new Command("validate", "Validate the deployment definition.") { file, target, strict };
+        var cmd = new Command("validate", "Validate the deployment definition.") { file, target, strict, skipConnectionCheck };
 
         cmd.SetAction(pr =>
         {
@@ -171,6 +172,41 @@ internal static partial class CliApp
                 Ansi.MarkupLine($"    {i}. [[{Markup.Escape(node.ResourceType)}]] {Markup.Escape(node.Key)}{Markup.Escape(deps)}");
                 i++;
             }
+
+            var strictVal = pr.GetValue(strict);
+            if (!pr.GetValue(skipConnectionCheck) && deployment.Connections.Count > 0)
+            {
+                Ansi.WriteLine();
+                Ansi.MarkupLine("  Connection checks:");
+                var unreachable = 0;
+                foreach (var result in ConnectionChecker.CheckAll(deployment))
+                {
+                    if (!result.Tested)
+                    {
+                        Ansi.MarkupLine($"    [dim]·[/] {Markup.Escape(result.Name)} — skipped ({Markup.Escape(result.Detail ?? "")})");
+                    }
+                    else if (result.Reachable)
+                    {
+                        Ansi.MarkupLine($"    [green]✓[/] {Markup.Escape(result.Name)} — reachable ({Markup.Escape(result.Target ?? "")})");
+                    }
+                    else
+                    {
+                        unreachable++;
+                        Ansi.MarkupLine($"    [yellow]✗[/] {Markup.Escape(result.Name)} — unreachable ({Markup.Escape(result.Target ?? "")}): {Markup.Escape(result.Detail ?? "")}");
+                    }
+                }
+                if (unreachable > 0)
+                {
+                    Ansi.WriteLine();
+                    if (strictVal)
+                    {
+                        Ansi.MarkupLine($"[red]{unreachable} connection(s) unreachable.[/] (failing because --strict)");
+                        return 1;
+                    }
+                    Ansi.MarkupLine($"[yellow]Warning:[/] {unreachable} connection(s) unreachable. Use --strict to fail on this.");
+                }
+            }
+
             return 0;
         });
         return cmd;
