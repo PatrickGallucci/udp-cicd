@@ -42,6 +42,12 @@ public sealed partial class Deployer
 
     public StateManager? StateManager { get; set; }
 
+    /// <summary>
+    /// When true, a failed item does not trigger rollback — successfully created
+    /// items are kept and the deployment is finalized as a partial success.
+    /// </summary>
+    public bool ContinueOnError { get; set; }
+
     public Deployer(FabricClient client, DeploymentDefinition deployment, string projectDir,
         IAnsiConsole? console = null, bool dryRun = false)
     {
@@ -321,6 +327,12 @@ public sealed partial class Deployer
             }
             return parts.Count > 0 ? new JsonObject { ["parts"] = parts } : null;
         }
+        // No directory and no single file — treat as "no definition" so the caller
+        // skips gracefully (consistent with semantic models) instead of throwing.
+        if (!File.Exists(full))
+        {
+            return null;
+        }
         return new JsonObject { ["parts"] = new JsonArray(Part(Path.GetFileName(full), ReadFileAsBase64(path))) };
     }
 
@@ -350,7 +362,74 @@ public sealed partial class Deployer
         {
             return null;
         }
-        return BuildDirectoryDefinition(report.Path);
+        var definition = BuildDirectoryDefinition(report.Path);
+        if (definition is not null)
+        {
+            RebindReportToSemanticModel(definition, report);
+        }
+        return definition;
+    }
+
+    /// <summary>
+    /// Rewrite a report's <c>definition.pbir</c> to reference the deployed semantic
+    /// model by connection id. The Fabric REST API requires a <c>byConnection</c>
+    /// reference (a <c>byPath</c> reference only works in Power BI Desktop / Git), so
+    /// we inject the just-created model's item id at deploy time.
+    /// </summary>
+    private void RebindReportToSemanticModel(JsonObject definition, ReportResource report)
+    {
+        if (string.IsNullOrEmpty(report.SemanticModel) || string.IsNullOrEmpty(_currentWorkspaceId))
+        {
+            return;
+        }
+        if (definition["parts"] is not JsonArray parts)
+        {
+            return;
+        }
+
+        JsonObject? pbirPart = null;
+        foreach (var part in parts)
+        {
+            if (part?["path"]?.GetValue<string>() == "definition.pbir")
+            {
+                pbirPart = part.AsObject();
+                break;
+            }
+        }
+        if (pbirPart is null)
+        {
+            return;
+        }
+
+        string? modelId;
+        try
+        {
+            var items = _client.GetWorkspaceItemsMap(_currentWorkspaceId);
+            modelId = items.GetValueOrDefault(report.SemanticModel)?.GetValueOrDefault("id")?.ToString();
+        }
+        catch
+        {
+            return;
+        }
+        if (string.IsNullOrEmpty(modelId))
+        {
+            return;
+        }
+
+        try
+        {
+            var json = Encoding.UTF8.GetString(Convert.FromBase64String(pbirPart["payload"]!.GetValue<string>()));
+            var pbir = JsonNode.Parse(json)!.AsObject();
+            pbir["datasetReference"] = new JsonObject
+            {
+                ["byConnection"] = new JsonObject { ["connectionString"] = $"semanticmodelid={modelId}" },
+            };
+            pbirPart["payload"] = Convert.ToBase64String(Encoding.UTF8.GetBytes(pbir.ToJsonString()));
+        }
+        catch
+        {
+            // Leave the original definition.pbir untouched if it can't be parsed.
+        }
     }
 
     private JsonObject? DetectReportSchemaVersion(string workspaceId)
@@ -1415,13 +1494,17 @@ public sealed partial class Deployer
             }
         }
 
-        if (result.ItemsFailed > 0 && _rollbackStack.Count > 0)
+        if (result.ItemsFailed > 0 && _rollbackStack.Count > 0 && !ContinueOnError)
         {
             Rollback(workspaceId, result);
         }
+        else if (result.ItemsFailed > 0 && ContinueOnError)
+        {
+            _console.MarkupLine($"[yellow]Continuing past {result.ItemsFailed} error(s)[/] (--continue-on-error) — created items left in place.");
+        }
         result.Success = result.ItemsFailed == 0;
 
-        if (result.Success && !_dryRun)
+        if ((result.Success || ContinueOnError) && !_dryRun)
         {
             var hookWarnings = new List<string>();
             var hooks = new (string Name, Action Fn)[]
@@ -1460,7 +1543,7 @@ public sealed partial class Deployer
             }
         }
 
-        if (result.Success && !_dryRun && StateManager is not null)
+        if ((result.Success || ContinueOnError) && !_dryRun && StateManager is not null)
         {
             var deployedItems = new Dictionary<string, Dictionary<string, object?>>();
             try
@@ -1471,10 +1554,16 @@ public sealed partial class Deployer
                     if (item.Action is PlanAction.Create or PlanAction.Update)
                     {
                         var live = currentItems.GetValueOrDefault(item.ResourceKey);
+                        // With --continue-on-error, failed items never reached the
+                        // workspace — only record what actually exists.
+                        if (live is null)
+                        {
+                            continue;
+                        }
                         var definition = GetItemDefinition(item.ResourceKey, item.ResourceType);
                         deployedItems[item.ResourceKey] = new Dictionary<string, object?>
                         {
-                            ["id"] = live?.GetValueOrDefault("id")?.ToString() ?? "",
+                            ["id"] = live.GetValueOrDefault("id")?.ToString() ?? "",
                             ["type"] = item.ResourceType,
                             ["definition_hash"] = StateJson.ComputeDefinitionHash(definition),
                         };

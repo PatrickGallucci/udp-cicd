@@ -190,9 +190,17 @@ rm .udp-cicd/lock-dev.lock
 
 ### 7.2 Partial deployment / rollback
 
-**Cause:** Some items failed during creation, triggering a rollback of already-created items.
+**Cause:** Some items failed during creation. By default udp-cicd then **rolls back** every item it created in that run, so the deployment is all-or-nothing.
 
-**Resolution:** Check the error messages for the failed items. Fix the issues (naming, definitions, permissions) and run deploy again. Successfully created items from previous runs will show as "update" instead of "create".
+**Resolution:** Check the error messages for the failed items. Fix the issues (naming, definitions, permissions) and run deploy again — items from previous runs show as "update" instead of "create".
+
+To keep the items that succeeded instead of rolling them all back, deploy with `--continue-on-error`:
+
+```bash
+udp-cicd deploy --target dev --continue-on-error
+```
+
+The deployment finishes as a partial success (exit code `1`), records what was created, and leaves the failed items for you to fix and redeploy. Items whose definition is missing (for example a semantic model or report with no definition files) are **skipped** with a warning rather than failing the deployment.
 
 ---
 

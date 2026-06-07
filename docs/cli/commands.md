@@ -527,6 +527,11 @@ udp-cicd deploy [OPTIONS]
 | `--auto-approve` | `-y` | Flag | `false` | Skip the interactive confirmation prompt. Required for CI/CD. |
 | `--auto-delete / --no-auto-delete` | | Flag | `false` | Delete workspace items that are not defined in the deployment. |
 | `--force` | | Flag | `false` | Override deployment locks and skip the definition cache. |
+| `--continue-on-error` | | Flag | `false` | On failure, keep successfully created items instead of rolling them all back. The deployment finishes as a partial success (exit code `1`) and records what was created. |
+
+> **Rollback vs. continue-on-error**
+>
+> By default, if any item fails, udp-cicd **rolls back** every item it created in that run, so a deployment is all-or-nothing. Pass `--continue-on-error` to keep the items that succeeded and skip the rollback — useful when one resource is missing a definition or hitting a capacity gate but you still want the rest deployed. Re-run `deploy` after fixing the failed item to converge.
 
 #### Examples
 

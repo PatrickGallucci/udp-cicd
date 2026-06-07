@@ -223,6 +223,7 @@ Deployment Plan: udp-analytics
 | `-t, --target` | Target environment (dev, staging, prod) |
 | `-y, --auto-approve` | Skip confirmation prompts |
 | `--dry-run` | Preview without making changes |
+| `--continue-on-error` | (deploy) Keep created items on failure instead of rolling back |
 
 ### 3.3 MCP Server (GitHub Copilot / Claude Code)
 

@@ -275,9 +275,10 @@ internal static partial class CliApp
         var autoApprove = new Option<bool>("--auto-approve", "-y") { Description = "Skip confirmation" };
         var autoDelete = new Option<bool>("--auto-delete") { Description = "Delete unmanaged items" };
         var force = new Option<bool>("--force") { Description = "Override deployment lock and skip cache" };
+        var continueOnError = new Option<bool>("--continue-on-error") { Description = "Keep successfully created items on failure instead of rolling back" };
 
         var cmd = new Command("deploy", "Deploy the deployment to a target workspace.")
-        { file, target, dryRun, autoApprove, autoDelete, force };
+        { file, target, dryRun, autoApprove, autoDelete, force, continueOnError };
 
         cmd.SetAction(pr =>
         {
@@ -327,7 +328,11 @@ internal static partial class CliApp
                 return 0;
             }
 
-            var deployer = new Deployer(client, deployment, projectDir, Ansi, dryRun: dry) { StateManager = stateMgr };
+            var deployer = new Deployer(client, deployment, projectDir, Ansi, dryRun: dry)
+            {
+                StateManager = stateMgr,
+                ContinueOnError = pr.GetValue(continueOnError),
+            };
             var result = deployer.Execute(plan, targetVal, force: pr.GetValue(force));
             return result.Success ? 0 : 1;
         });

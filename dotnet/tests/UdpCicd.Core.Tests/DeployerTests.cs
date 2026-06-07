@@ -129,12 +129,106 @@ public class DeployerTests
         }
     }
 
+    private static string MakeTwoLakehouseProject()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "udp-deploy-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, "udp.yml"), """
+            deployment:
+              name: test-coe
+              version: "1.0.0"
+            workspace:
+              workspace_id: "11111111-1111-1111-1111-111111111111"
+            resources:
+              lakehouses:
+                good_lh:
+                  description: "succeeds"
+                bad_lh:
+                  description: "fails"
+            """);
+        return dir;
+    }
+
+    [Fact]
+    public void ContinueOnError_Keeps_Created_Items_And_Skips_Rollback()
+    {
+        var dir = MakeTwoLakehouseProject();
+        try
+        {
+            var deployment = Loader.LoadDeployment(Path.Combine(dir, "udp.yml"));
+            var plan = Planner.CreatePlan(deployment);
+
+            var handler = new RouteHandlerCapturing((method, path, body) =>
+            {
+                if (method == "GET" && path.EndsWith("/items")) return Json("""{"value":[]}""");
+                if (method == "POST" && path.EndsWith("/lakehouses"))
+                {
+                    return (body ?? "").Contains("bad_lh")
+                        ? Json("""{"message":"DisplayName is Invalid"}""", HttpStatusCode.BadRequest)
+                        : Json("""{"id":"good-id"}""");
+                }
+                return Json("{}");
+            });
+            var client = new FabricClient(new FabricAuth { Credential = new FakeCredential() }, new HttpClient(handler));
+
+            var deployer = new Deployer(client, deployment, dir, SilentConsole(), dryRun: false) { ContinueOnError = true };
+            var result = deployer.Execute(plan);
+
+            Assert.False(result.Success);          // a failure occurred
+            Assert.Equal(1, result.ItemsCreated);  // good_lh kept
+            Assert.Equal(1, result.ItemsFailed);   // bad_lh failed
+            Assert.Empty(result.RollbackLog);      // nothing rolled back
+            Assert.DoesNotContain(handler.Methods, m => m == "DELETE");
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Default_Rolls_Back_Created_Items_On_Failure()
+    {
+        var dir = MakeTwoLakehouseProject();
+        try
+        {
+            var deployment = Loader.LoadDeployment(Path.Combine(dir, "udp.yml"));
+            var plan = Planner.CreatePlan(deployment);
+
+            var handler = new RouteHandlerCapturing((method, path, body) =>
+            {
+                if (method == "GET" && path.EndsWith("/items")) return Json("""{"value":[]}""");
+                if (method == "POST" && path.EndsWith("/lakehouses"))
+                {
+                    return (body ?? "").Contains("bad_lh")
+                        ? Json("""{"message":"DisplayName is Invalid"}""", HttpStatusCode.BadRequest)
+                        : Json("""{"id":"good-id"}""");
+                }
+                return Json("{}"); // DELETE during rollback
+            });
+            var client = new FabricClient(new FabricAuth { Credential = new FakeCredential() }, new HttpClient(handler));
+
+            var deployer = new Deployer(client, deployment, dir, SilentConsole(), dryRun: false); // ContinueOnError = false (default)
+            var result = deployer.Execute(plan);
+
+            Assert.False(result.Success);
+            Assert.NotEmpty(result.RollbackLog);                 // rollback happened
+            Assert.Contains(handler.Methods, m => m == "DELETE"); // created item was deleted
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
     private sealed class RouteHandlerCapturing : HttpMessageHandler
     {
         private readonly Func<string, string, string?, HttpResponseMessage> _route;
+        public List<string> Methods { get; } = [];
         public RouteHandlerCapturing(Func<string, string, string?, HttpResponseMessage> route) => _route = route;
         protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken ct)
         {
+            Methods.Add(request.Method.Method);
             var body = request.Content?.ReadAsStringAsync(ct).GetAwaiter().GetResult();
             return _route(request.Method.Method, request.RequestUri!.AbsolutePath, body);
         }

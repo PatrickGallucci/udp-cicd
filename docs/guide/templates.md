@@ -62,13 +62,20 @@ contoso-analytics/
 │   ├── bronze_to_silver.py
 │   └── silver_to_gold.py
 ├── sql/
-│   └── gold_views.sql
-├── pipelines/
-│   └── daily_ingest.yml
+│   └── create_gold_views.sql
+├── semantic_model/          # TMDL definition for analytics_model
+│   ├── definition.pbism
+│   └── definition/...
+├── reports/dashboard/       # PBIR definition for the report
+│   ├── definition.pbir
+│   └── definition/...
 ├── agent/
-│   └── analytics_agent.yml
+│   ├── instructions.md
+│   └── examples.yaml
 └── .gitignore
 ```
+
+The template now ships a minimal **TMDL semantic model** and **PBIR report** so the `analytics_model` and `dashboard` items deploy end-to-end. The semantic model is a self-contained starter (a single calculated table) — replace it with your real model (for example, a Direct Lake model over the gold lakehouse). On deploy, udp-cicd automatically rebinds the report to the deployed semantic model's id (the Fabric REST API requires a `byConnection` reference).
 
 Resources defined in `udp.yml`:
 
