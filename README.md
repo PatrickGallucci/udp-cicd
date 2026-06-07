@@ -123,7 +123,7 @@ udp-cicd init
 udp-cicd init --template medallion --name udp-analytics
 ```
 
-Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse).
+Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 45 item types).
 
 Retrieve your Fabric capacity GUID and update the `workspace` section of the generated `udp.yml`, then run the standard lifecycle:
 
@@ -411,6 +411,8 @@ include:
 
 **`blank`** — minimal structure for new projects.
 
+**`all-resource-types`** — reference catalogue: a `udp.yml` declaring all 45 supported Fabric item types (validates out of the box), with working stubs for the deployable text-based items. Copy the blocks you need.
+
 **Custom templates** — add a directory with a `template.yml` and a `udp.yml`. The template engine uses Scriban for scaffolding.
 
 ### 4.6 VS Code Integration
@@ -491,7 +493,7 @@ dotnet/
 │   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver, AdminApplier, ConnectionChecker
 │   │   ├── Providers/         # FabricClient, FabricAuth (Fabric REST + Admin API)
 │   │   ├── Generators/        # ReverseGenerator, TemplateEngine
-│   │   └── Assets/templates/  # medallion/, blank/
+│   │   └── Assets/templates/  # medallion/, blank/, all-resource-types/
 │   ├── UdpCicd.Cli/           # System.CommandLine entry point
 │   └── UdpCicd.Mcp/           # MCP server (14 tools)
 └── tests/

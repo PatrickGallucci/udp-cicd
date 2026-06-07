@@ -20,6 +20,7 @@ This creates a new directory with the project name containing a fully configured
 |----------|-------------|
 | `blank` | Minimal starting point: empty `udp.yml` plus the standard directory structure. |
 | `medallion` | Bronze/Silver/Gold lakehouse architecture with ETL notebooks, a data pipeline, and a Data Agent. |
+| `all-resource-types` | Reference catalogue: a `udp.yml` that declares all 45 supported Fabric item types. |
 
 ### 2.1 `blank`
 
@@ -84,6 +85,33 @@ Resources defined in `udp.yml`:
 | `spark_env` | Environment | Spark runtime with library dependencies |
 
 The template includes dev and prod targets with variable overrides for database connections.
+
+### 2.3 `all-resource-types`
+
+A reference catalogue whose `udp.yml` declares **all 45 supported Fabric item types**, cross-referenced so the dependency graph is exercised. Use it to copy the exact schema for any item type — most projects keep only a handful and delete the rest.
+
+```bash
+udp-cicd init --template all-resource-types --name udp-catalogue
+```
+
+Creates a project with working stubs for the deployable text-based items (notebooks, Spark job, SQL, KQL, Data Agent) and placeholders for items that need exported definitions (semantic model TMDL, report PBIR, etc.):
+
+```
+udp-catalogue/
+├── udp.yml                 # all 45 item types
+├── notebooks/ingest.py
+├── spark/batch_job.py
+├── sql/create_views.sql
+├── sql/app_schema.sql
+├── kql/create_tables.kql
+├── agent/instructions.md
+├── agent/ops_instructions.md
+├── agent/examples.yaml
+├── README.md
+└── .gitignore
+```
+
+The generated `udp.yml` **validates out of the box** (`udp-cicd validate` → 46 resources). To `deploy`, set your `capacity_id` and supply the definition files for definition-required items — see the generated `README.md` and the [Resource Types guide](resource-types.md). Deploy incrementally; some types are capacity-gated or need external connections.
 
 ---
 

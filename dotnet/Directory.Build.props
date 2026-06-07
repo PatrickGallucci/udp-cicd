@@ -8,7 +8,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
 
     <!-- Package / assembly metadata (mirrors pyproject.toml) -->
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
     <Authors>UDP</Authors>
     <Company>Microsoft Unified Data Platform</Company>
     <Product>UDP-CICD</Product>
