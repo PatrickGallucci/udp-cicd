@@ -14,7 +14,7 @@ If configured, you have access to these tools via the `udp-cicd-mcp` MCP server:
 - `udp_drift` — Detect out-of-band changes
 - `udp_run` — Run a notebook or pipeline
 - `udp_history` — Show deployment history
-- `udp_doctor` — Diagnose configuration issues
+- `udp_diag` — Diagnose configuration issues
 - `udp_list_templates` — Available project templates
 - `udp_list_workspaces` — List Fabric workspaces
 - `udp_list_capacities` — List available capacities

@@ -1,6 +1,6 @@
 # Troubleshooting
 
-This page lists common errors by category, with the cause and resolution for each. For a general environment check, run `udp-cicd doctor`, which validates the .NET runtime, Azure CLI status, and Fabric API connectivity.
+This page lists common errors by category, with the cause and resolution for each. For a general environment check, run `udp-cicd diag`, which validates the .NET runtime, Azure CLI status, and Fabric API connectivity.
 
 ---
 
@@ -208,7 +208,7 @@ rm .udp-cicd/lock-dev.lock
 | Capacity | Not active, or wrong GUID |
 | Naming | Hyphens in resource names |
 
-**Resolution:** Check the full log output in the Actions run. Run `udp-cicd doctor` locally to diagnose.
+**Resolution:** Check the full log output in the Actions run. Run `udp-cicd diag` locally to diagnose.
 
 ### 8.2 "udp-cicd: command not found" in CI
 
@@ -257,6 +257,6 @@ Use the `name` column value as the key in `udp.yml`.
 
 ## 10. Getting help
 
-- Run `udp-cicd doctor` to diagnose common issues.
+- Run `udp-cicd diag` to diagnose common issues.
 - Check [GitHub Issues](https://github.com/PatrickGallucci/udp-cicd/issues) for known bugs.
 - File a new issue with the full error message and your `udp.yml` (redact secrets).

@@ -27,7 +27,7 @@ udp-cicd deploy --help
 |---|---|---|
 | **Project setup** | [init](#init) | Create a new deployment project from a template. |
 | | [list](#list) | List available deployment templates. |
-| | [doctor](#doctor) | Diagnose configuration issues. |
+| | [diag](#diag) | Diagnose configuration issues. |
 | | [check-update](#check-update) | Check if a newer version is available. |
 | **Validation** | [validate](#validate) | Validate the deployment definition. |
 | | [graph](#graph) | Visualize the dependency graph. |
@@ -158,28 +158,28 @@ Usage: udp-cicd init --template <name> --name <project-name>
 
 ---
 
-<a id="doctor"></a>
+<a id="diag"></a>
 
-### 3.3 doctor
+### 3.3 diag
 
 Run diagnostic checks to validate your environment, the .NET runtime, authentication, API connectivity, and deployment configuration.
 
 #### Syntax
 
 ```
-udp-cicd doctor
+udp-cicd diag
 ```
 
 #### Examples
 
 ```bash
-udp-cicd doctor
+udp-cicd diag
 ```
 
 **Example output:**
 
 ```
-udp-cicd doctor
+udp-cicd diag
 
   ✓ .NET runtime 9.0.x
   ✓ Azure CLI installed

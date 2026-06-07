@@ -213,7 +213,7 @@ Then talk to your Fabric workspace like a person:
 > *“Run the daily ETL pipeline and tell me when it finishes.”*
 > *“What changed in this deployment since last Friday?”*
 
-Twelve MCP tools — `validate`, `plan`, `deploy`, `destroy`, `status`, `drift`, `run`, `history`, `doctor`, `list-templates`, `list-workspaces`, `list-capacities` — all callable by your AI assistant, with deploymentd instruction files for both Copilot and Claude so the model actually understands your project conventions.
+Twelve MCP tools — `validate`, `plan`, `deploy`, `destroy`, `status`, `drift`, `run`, `history`, `diag`, `list-templates`, `list-workspaces`, `list-capacities` — all callable by your AI assistant, with deploymentd instruction files for both Copilot and Claude so the model actually understands your project conventions.
 
 This is what “AI for data engineering” should feel like: not a chatbot guessing at clicks, but an agent driving a real, deterministic, production-grade tool.
 
@@ -277,7 +277,7 @@ Every layer is independently testable. Every layer is independently replaceable.
 
 Today, Unified Data Platform Deployment ships the standalone CLI `udp-cicd`. T
 
-The roadmap is public, the tests run on every PR, and the CI/CD examples are battle-tested. The core (`validate`, `plan`, `deploy`, `destroy`, `drift`, `status`, `history`, `doctor`) is **stable**. Remote state, the MCP server, OneLake data access roles, environment library publishing — **beta**. Watch mode, canary deploys, Slack/Teams notifications, policy enforcement — **experimental, ready to harden with real-world feedback**.
+The roadmap is public, the tests run on every PR, and the CI/CD examples are battle-tested. The core (`validate`, `plan`, `deploy`, `destroy`, `drift`, `status`, `history`, `diag`) is **stable**. Remote state, the MCP server, OneLake data access roles, environment library publishing — **beta**. Watch mode, canary deploys, Slack/Teams notifications, policy enforcement — **experimental, ready to harden with real-world feedback**.
 
 That feedback is where you come in.
 

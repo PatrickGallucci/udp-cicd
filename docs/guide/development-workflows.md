@@ -466,7 +466,7 @@ The MCP server exposes 14 tools:
 | `udp_drift` | "Check for drift in staging" |
 | `udp_run` | "Run the ETL pipeline in dev" |
 | `udp_history` | "Show me recent deployments" |
-| `udp_doctor` | "Is my Fabric setup working?" |
+| `udp_diag` | "Is my Fabric setup working?" |
 | `udp_list_templates` | "What templates are available?" |
 | `udp_list_workspaces` | "Show me all my workspaces" |
 | `udp_list_capacities` | "What capacities do I have?" |

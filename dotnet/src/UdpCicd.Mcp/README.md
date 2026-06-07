@@ -58,7 +58,7 @@ Restart your IDE after adding the configuration.
 | `udp_drift` | Detect out-of-band changes between deployed state and live workspace |
 | `udp_run` | Run a notebook or pipeline in the workspace |
 | `udp_history` | Show deployment history for a target |
-| `udp_doctor` | Diagnose .NET runtime, Azure auth, Fabric API, and deployment issues |
+| `udp_diag` | Diagnose .NET runtime, Azure auth, Fabric API, and deployment issues |
 | `udp_list_templates` | List available project templates |
 | `udp_list_workspaces` | List accessible Fabric workspaces |
 | `udp_list_capacities` | List Fabric capacities with IDs, SKUs, and regions |

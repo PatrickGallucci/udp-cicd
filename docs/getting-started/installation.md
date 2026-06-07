@@ -73,16 +73,16 @@ udp-cicd --version
 
 ### 3.2 Run the diagnostic check
 
-The `doctor` command validates the .NET runtime, Azure CLI status, authentication, and Fabric API connectivity in a single step:
+The `diag` command validates the .NET runtime, Azure CLI status, authentication, and Fabric API connectivity in a single step:
 
 ```bash
-udp-cicd doctor
+udp-cicd diag
 ```
 
 **Example output (healthy environment):**
 
 ```
-udp-cicd doctor
+udp-cicd diag
 
   ✓ .NET runtime 9.0.0
   ✓ Azure CLI installed
@@ -96,7 +96,7 @@ udp-cicd doctor
 
 > **Note**
 >
-> The `doctor` command does not require a `udp.yml` file. If one is not found, it skips the deployment validation check. All other checks still run.
+> The `diag` command does not require a `udp.yml` file. If one is not found, it skips the deployment validation check. All other checks still run.
 
 ---
 

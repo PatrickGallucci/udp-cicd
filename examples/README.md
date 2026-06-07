@@ -39,4 +39,4 @@ az rest --method get \
 
 - [Documentation](https://PatrickGallucci.github.io/udp-cicd/)
 - [GitHub Issues](https://github.com/PatrickGallucci/udp-cicd/issues)
-- `udp-cicd doctor` to diagnose common issues
+- `udp-cicd diag` to diagnose common issues

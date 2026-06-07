@@ -85,10 +85,10 @@ dotnet tool install --global udp-cicd
 dotnet tool install --global udp-cicd-mcp
 ```
 
-Verify the installation with `doctor`, which checks the .NET runtime, Azure CLI status, and Fabric API connectivity:
+Verify the installation with `diag`, which checks the .NET runtime, Azure CLI status, and Fabric API connectivity:
 
 ```bash
-udp-cicd doctor
+udp-cicd diag
 ```
 
 ### 2.3 Authentication
@@ -213,7 +213,7 @@ Deployment Plan: udp-analytics
 | `udp-cicd admin plan` | Preview tenant (admin) setting changes against the live tenant |
 | `udp-cicd admin apply` | Apply org-wide tenant settings via the Fabric Admin API |
 | `udp-cicd list` | List available templates |
-| `udp-cicd doctor` | Diagnose environment, auth, and connectivity |
+| `udp-cicd diag` | Diagnose environment, auth, and connectivity |
 
 ### 3.2 Common Flags
 
@@ -256,7 +256,7 @@ dotnet tool install --global udp-cicd-mcp
 
 Then just talk: *"Deploy to dev"*, *"Check for drift in prod"*, *"Run the ETL pipeline"*.
 
-**14 MCP tools:** validate, plan, deploy, destroy, status, drift, run, history, doctor, list-templates, list-workspaces, list-capacities, export, generate.
+**14 MCP tools:** validate, plan, deploy, destroy, status, drift, run, history, diag, list-templates, list-workspaces, list-capacities, export, generate.
 
 Copy the AI instructions file for your IDE to your project root:
 
@@ -630,7 +630,7 @@ For Blob/ADLS state backends, omit the account key where possible — the system
 | Feature | Status | Notes |
 |---------|--------|-------|
 | validate, plan, deploy, destroy | **Stable** | Tested end-to-end against live API |
-| drift, status, diff, history, doctor | **Stable** | Tested against live workspaces |
+| drift, status, diff, history, diag | **Stable** | Tested against live workspaces |
 | run (notebooks/pipelines) | **Stable** | Job submission works, LRO tracking limited |
 | Security roles (workspace) | **Stable** | Entra user/group GUIDs |
 | Incremental deploy (hash-based) | **Stable** | Skips unchanged resources |

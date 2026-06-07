@@ -74,7 +74,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 | Workspace role | Admin or Contributor on the target workspace |
 | Project files | `udp.yml` present in your project directory |
 
-Run `udp-cicd doctor` to verify everything is configured correctly.
+Run `udp-cicd diag` to verify everything is configured correctly.
 
 ---
 
@@ -92,7 +92,7 @@ The server exposes 14 tools:
 | `udp_drift` | Detect out-of-band changes | "Check for drift in staging" |
 | `udp_run` | Run a notebook or pipeline | "Run the ingest_to_bronze notebook in dev" |
 | `udp_history` | Show deployment history | "Show me recent deployments" |
-| `udp_doctor` | Diagnose issues | "Check if my Fabric setup is working" |
+| `udp_diag` | Diagnose issues | "Check if my Fabric setup is working" |
 | `udp_list_templates` | List templates | "What templates are available?" |
 | `udp_list_workspaces` | List workspaces | "Show me all Fabric workspaces" |
 | `udp_list_capacities` | List capacities | "What Fabric capacities do I have?" |

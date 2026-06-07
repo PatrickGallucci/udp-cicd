@@ -362,9 +362,9 @@ public static class UdpTools
         return Format(entries.Select(e => e.DeepClone()).ToList());
     });
 
-    [McpServerTool(Name = "udp_doctor")]
+    [McpServerTool(Name = "udp_diag")]
     [Description("Diagnose common configuration issues: .NET runtime, Azure auth, Fabric API, deployment validity.")]
-    public static string Doctor(
+    public static string Diag(
         [Description("Path to project directory")] string? project_dir = null) => Guard(() =>
     {
         var checks = new List<Dictionary<string, object?>>();

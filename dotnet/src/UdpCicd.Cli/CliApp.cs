@@ -32,7 +32,7 @@ internal static partial class CliApp
         root.Subcommands.Add(HistoryCommand());
         root.Subcommands.Add(RollbackCommand());
         root.Subcommands.Add(PromoteCommand());
-        root.Subcommands.Add(DoctorCommand());
+        root.Subcommands.Add(DiagCommand());
         root.Subcommands.Add(WatchCommand());
         root.Subcommands.Add(StatusCommand());
         root.Subcommands.Add(ImportCommand());

@@ -14,11 +14,11 @@ namespace UdpCicd.Cli;
 
 internal static partial class CliApp
 {
-    // -- doctor --------------------------------------------------------------
+    // -- diag ----------------------------------------------------------------
 
-    private static Command DoctorCommand()
+    private static Command DiagCommand()
     {
-        var cmd = new Command("doctor", "Diagnose common configuration issues.");
+        var cmd = new Command("diag", "Diagnose common configuration issues.");
         cmd.SetAction(_ =>
         {
             var passed = 0;
@@ -45,7 +45,7 @@ internal static partial class CliApp
                 }
             }
 
-            Ansi.MarkupLine("[bold]udp-cicd doctor[/]");
+            Ansi.MarkupLine("[bold]udp-cicd diag[/]");
             Ansi.WriteLine();
 
             Check($".NET runtime {Environment.Version}", () => Environment.Version.Major >= 9);
