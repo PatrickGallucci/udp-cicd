@@ -1756,10 +1756,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-getting-help" class="md-nav__link">
+  <a href="#9-admin-tenant-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. Getting help
+        9. Admin / tenant settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Admin / tenant settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-admin-plan-reports-a-setting-as-unknown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 admin plan reports a setting as "unknown"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-could-not-read-tenant-settings-403-forbidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 "Could not read tenant settings" / 403 Forbidden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-a-change-applied-but-isnt-visible-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 A change applied but isn't visible yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-declared-security-groups-are-ignored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Declared security groups are ignored
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Getting help
       
     </span>
   </a>
@@ -2291,10 +2352,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-getting-help" class="md-nav__link">
+  <a href="#9-admin-tenant-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. Getting help
+        9. Admin / tenant settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Admin / tenant settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-admin-plan-reports-a-setting-as-unknown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 admin plan reports a setting as "unknown"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-could-not-read-tenant-settings-403-forbidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 "Could not read tenant settings" / 403 Forbidden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-a-change-applied-but-isnt-visible-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 A change applied but isn't visible yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-declared-security-groups-are-ignored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Declared security groups are ignored
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Getting help
       
     </span>
   </a>
@@ -2504,7 +2626,27 @@
 <p><strong>Cause:</strong> udp-cicd is not installed in the CI environment.</p>
 <p><strong>Resolution:</strong> Add <code>dotnet tool install --global udp-cicd</code> before running udp-cicd commands.</p>
 <hr />
-<h2 id="9-getting-help">9. Getting help<a class="headerlink" href="#9-getting-help" title="Permanent link">&para;</a></h2>
+<h2 id="9-admin-tenant-settings">9. Admin / tenant settings<a class="headerlink" href="#9-admin-tenant-settings" title="Permanent link">&para;</a></h2>
+<h3 id="91-admin-plan-reports-a-setting-as-unknown">9.1 <code>admin plan</code> reports a setting as "unknown"<a class="headerlink" href="#91-admin-plan-reports-a-setting-as-unknown" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> The key under <code>admin.tenant_settings</code> is not a valid <code>settingName</code> for your tenant. The <a href="https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index">tenant settings index</a> lists display titles, not the API identifiers udp-cicd needs.</p>
+<p><strong>Resolution:</strong> List the real identifiers and match by title:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>az<span class="w"> </span>rest<span class="w"> </span>--method<span class="w"> </span>get<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>--url<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com/v1/admin/tenantsettings&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>--resource<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;tenantSettings[].{name:settingName, title:title}&quot;</span><span class="w"> </span>-o<span class="w"> </span>table
+</code></pre></div>
+<p>Use the <code>name</code> column value as the key in <code>udp.yml</code>.</p>
+<h3 id="92-could-not-read-tenant-settings-403-forbidden">9.2 "Could not read tenant settings" / 403 Forbidden<a class="headerlink" href="#92-could-not-read-tenant-settings-403-forbidden" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> The caller is not a Fabric administrator. Tenant settings require elevated permissions.</p>
+<p><strong>Resolution:</strong> Sign in as a <strong>Fabric administrator</strong>, or use a service principal granted the <code>Tenant.ReadWrite.All</code> delegated scope. The service principal must also be enabled to call admin APIs (Admin portal → <em>Service principals can access admin APIs used for updates</em>).</p>
+<h3 id="93-a-change-applied-but-isnt-visible-yet">9.3 A change applied but isn't visible yet<a class="headerlink" href="#93-a-change-applied-but-isnt-visible-yet" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> Tenant setting changes propagate gradually.</p>
+<p><strong>Resolution:</strong> Wait — changes can take <strong>up to 15 minutes</strong> to take effect across the organization.</p>
+<h3 id="94-declared-security-groups-are-ignored">9.4 Declared security groups are ignored<a class="headerlink" href="#94-declared-security-groups-are-ignored" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> The setting does not support per-group scoping (<code>canSpecifySecurityGroups</code> is false). <code>admin plan</code> prints a warning for this.</p>
+<p><strong>Resolution:</strong> Apply the setting org-wide (<code>enabled: true</code>/<code>false</code>) without <code>enabled_security_groups</code>.</p>
+<hr />
+<h2 id="10-getting-help">10. Getting help<a class="headerlink" href="#10-getting-help" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Run <code>udp-cicd doctor</code> to diagnose common issues.</li>
 <li>Check <a href="https://github.com/PatrickGallucci/udp-cicd/issues">GitHub Issues</a> for known bugs.</li>
