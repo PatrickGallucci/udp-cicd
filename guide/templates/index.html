@@ -988,6 +988,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#23-all-resource-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 all-resource-types
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1798,6 +1809,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#23-all-resource-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 all-resource-types
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1959,6 +1981,10 @@
 <td><code>medallion</code></td>
 <td>Bronze/Silver/Gold lakehouse architecture with ETL notebooks, a data pipeline, and a Data Agent.</td>
 </tr>
+<tr>
+<td><code>all-resource-types</code></td>
+<td>Reference catalogue: a <code>udp.yml</code> that declares all 45 supported Fabric item types.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="21-blank">2.1 <code>blank</code><a class="headerlink" href="#21-blank" title="Permanent link">&para;</a></h3>
@@ -2052,37 +2078,56 @@
 </tbody>
 </table>
 <p>The template includes dev and prod targets with variable overrides for database connections.</p>
+<h3 id="23-all-resource-types">2.3 <code>all-resource-types</code><a class="headerlink" href="#23-all-resource-types" title="Permanent link">&para;</a></h3>
+<p>A reference catalogue whose <code>udp.yml</code> declares <strong>all 45 supported Fabric item types</strong>, cross-referenced so the dependency graph is exercised. Use it to copy the exact schema for any item type — most projects keep only a handful and delete the rest.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>all-resource-types<span class="w"> </span>--name<span class="w"> </span>udp-catalogue
+</code></pre></div>
+<p>Creates a project with working stubs for the deployable text-based items (notebooks, Spark job, SQL, KQL, Data Agent) and placeholders for items that need exported definitions (semantic model TMDL, report PBIR, etc.):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>udp-catalogue/
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── udp.yml                 # all 45 item types
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>├── notebooks/ingest.py
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>├── spark/batch_job.py
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>├── sql/create_views.sql
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── sql/app_schema.sql
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>├── kql/create_tables.kql
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>├── agent/instructions.md
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>├── agent/ops_instructions.md
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>├── agent/examples.yaml
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>├── README.md
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>└── .gitignore
+</code></pre></div>
+<p>The generated <code>udp.yml</code> <strong>validates out of the box</strong> (<code>udp-cicd validate</code> → 46 resources). To <code>deploy</code>, set your <code>capacity_id</code> and supply the definition files for definition-required items — see the generated <code>README.md</code> and the <a href="../resource-types/">Resource Types guide</a>. Deploy incrementally; some types are capacity-gated or need external connections.</p>
 <hr />
 <h2 id="3-creating-custom-templates">3. Creating custom templates<a class="headerlink" href="#3-creating-custom-templates" title="Permanent link">&para;</a></h2>
 <p>A custom template is a directory containing a <code>template.yml</code> manifest and a set of files that are copied into the new project. File contents can include <code>${{ variable }}</code> placeholders that are substituted at init time.</p>
 <h3 id="31-directory-structure">3.1 Directory structure<a class="headerlink" href="#31-directory-structure" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-custom-template/
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>├── template.yml
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>├── udp.yml
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>├── notebooks/
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>│   └── setup.py
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>├── sql/
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>│   └── init.sql
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>└── .gitignore
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>udp-custom-template/
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>├── template.yml
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>├── udp.yml
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>├── notebooks/
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>│   └── setup.py
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>├── sql/
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>│   └── init.sql
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>└── .gitignore
 </code></pre></div>
 <h3 id="32-templateyml-format">3.2 <code>template.yml</code> format<a class="headerlink" href="#32-templateyml-format" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udp-custom-template</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;A</span><span class="nv"> </span><span class="s">custom</span><span class="nv"> </span><span class="s">template</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">our</span><span class="nv"> </span><span class="s">team&#39;s</span><span class="nv"> </span><span class="s">standard</span><span class="nv"> </span><span class="s">project</span><span class="nv"> </span><span class="s">layout.&quot;</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Data</span><span class="nv"> </span><span class="s">Platform</span><span class="nv"> </span><span class="s">Team&quot;</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nt">variables</span><span class="p">:</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">  </span><span class="nt">project_name</span><span class="p">:</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Project</span><span class="nv"> </span><span class="s">name</span><span class="nv"> </span><span class="s">(used</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">resource</span><span class="nv"> </span><span class="s">naming)&quot;</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;udp-project&quot;</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">  </span><span class="nt">lakehouse_prefix</span><span class="p">:</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Prefix</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">lakehouse</span><span class="nv"> </span><span class="s">names&quot;</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bronze&quot;</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">  </span><span class="nt">capacity_id</span><span class="p">:</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Fabric</span><span class="nv"> </span><span class="s">capacity</span><span class="nv"> </span><span class="s">GUID</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">dev</span><span class="nv"> </span><span class="s">target&quot;</span>
-<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udp-custom-template</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;A</span><span class="nv"> </span><span class="s">custom</span><span class="nv"> </span><span class="s">template</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">our</span><span class="nv"> </span><span class="s">team&#39;s</span><span class="nv"> </span><span class="s">standard</span><span class="nv"> </span><span class="s">project</span><span class="nv"> </span><span class="s">layout.&quot;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0.0&quot;</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Data</span><span class="nv"> </span><span class="s">Platform</span><span class="nv"> </span><span class="s">Team&quot;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nt">variables</span><span class="p">:</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="nt">project_name</span><span class="p">:</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Project</span><span class="nv"> </span><span class="s">name</span><span class="nv"> </span><span class="s">(used</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">resource</span><span class="nv"> </span><span class="s">naming)&quot;</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;udp-project&quot;</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span><span class="nt">lakehouse_prefix</span><span class="p">:</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Prefix</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">lakehouse</span><span class="nv"> </span><span class="s">names&quot;</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bronze&quot;</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">  </span><span class="nt">capacity_id</span><span class="p">:</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Fabric</span><span class="nv"> </span><span class="s">capacity</span><span class="nv"> </span><span class="s">GUID</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">dev</span><span class="nv"> </span><span class="s">target&quot;</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
 </code></pre></div>
 <p>When a user runs <code>udp-cicd init --template ./udp-custom-template</code>, the defaults from <code>template.yml</code> are applied unless overridden with <code>--var KEY=VALUE</code>.</p>
 <h3 id="33-placeholders-in-template-files">3.3 Placeholders in template files<a class="headerlink" href="#33-placeholders-in-template-files" title="Permanent link">&para;</a></h3>
@@ -2114,22 +2159,22 @@
 </tbody>
 </table>
 <p>In <code>udp.yml</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">deployment</span><span class="p">:</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{project_name}}</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nt">resources</span><span class="p">:</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nt">lakehouses</span><span class="p">:</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">${{lakehouse_prefix}}_landing</span><span class="p p-Indicator">:</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">      </span><span class="nt">display_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${{project_name}}_landing&quot;</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Raw</span><span class="nv"> </span><span class="s">data</span><span class="nv"> </span><span class="s">landing</span><span class="nv"> </span><span class="s">zone&quot;</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="nt">targets</span><span class="p">:</span>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">  </span><span class="nt">dev</span><span class="p">:</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="nt">workspace</span><span class="p">:</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{project_name}}-dev</span>
-<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">      </span><span class="nt">capacity_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${{capacity_id}}&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">deployment</span><span class="p">:</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{project_name}}</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0.0&quot;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="nt">resources</span><span class="p">:</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span><span class="nt">lakehouses</span><span class="p">:</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">${{lakehouse_prefix}}_landing</span><span class="p p-Indicator">:</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">      </span><span class="nt">display_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${{project_name}}_landing&quot;</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Raw</span><span class="nv"> </span><span class="s">data</span><span class="nv"> </span><span class="s">landing</span><span class="nv"> </span><span class="s">zone&quot;</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="nt">targets</span><span class="p">:</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">  </span><span class="nt">dev</span><span class="p">:</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="nt">workspace</span><span class="p">:</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{project_name}}-dev</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">      </span><span class="nt">capacity_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${{capacity_id}}&quot;</span>
 </code></pre></div>
 <h3 id="34-built-in-template-variables">3.4 Built-in template variables<a class="headerlink" href="#34-built-in-template-variables" title="Permanent link">&para;</a></h3>
 <p>One variable is always available in addition to the ones defined in <code>template.yml</code>:</p>
@@ -2152,11 +2197,11 @@
 <p>Templates can be loaded from a URL or a GitHub repository. This allows teams to share standard templates without copying files.</p>
 <h3 id="41-url-based-templates">4.1 URL-based templates<a class="headerlink" href="#41-url-based-templates" title="Permanent link">&para;</a></h3>
 <p>Point to a <code>.tar.gz</code> archive containing the template directory (<code>.zip</code> archives are not supported):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>https://example.com/templates/data-mesh-v2.tar.gz<span class="w"> </span>--name<span class="w"> </span>udp-project
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>https://example.com/templates/data-mesh-v2.tar.gz<span class="w"> </span>--name<span class="w"> </span>udp-project
 </code></pre></div>
 <h3 id="42-github-shorthand">4.2 GitHub shorthand<a class="headerlink" href="#42-github-shorthand" title="Permanent link">&para;</a></h3>
 <p>Use the <code>github:owner/repo</code> prefix to reference a template repository. The shorthand downloads the <code>main</code> branch as a tarball; subdirectory paths and branch/tag pins are not supported:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>github:contoso/udp-templates<span class="w"> </span>--name<span class="w"> </span>udp-project
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>github:contoso/udp-templates<span class="w"> </span>--name<span class="w"> </span>udp-project
 </code></pre></div>
 <p>The archive must contain a <code>template.yml</code>; the directory containing the first <code>template.yml</code> found is used as the template root. Only publicly accessible URLs and repositories are supported.</p>
 <p>Note: remote templates (URL and <code>github:</code>) are copied verbatim. <code>${{ variable }}</code> placeholder rendering currently applies to built-in and local directory templates only.</p>
@@ -2168,12 +2213,12 @@
 <li><strong>Default values</strong>: From the <code>variables</code> section of <code>template.yml</code>.</li>
 <li><strong>Unmatched placeholders</strong>: Render as empty strings; <code>udp-cicd validate</code> will surface any resulting gaps.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Provide all variables on the command line (no prompts)</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span>--template<span class="w"> </span>medallion<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span>--name<span class="w"> </span>contoso-analytics<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>--var<span class="w"> </span><span class="nv">lakehouse_prefix</span><span class="o">=</span>contoso<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span>--var<span class="w"> </span><span class="nv">include_agent</span><span class="o">=</span><span class="nb">true</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Provide all variables on the command line (no prompts)</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span>--template<span class="w"> </span>medallion<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span>--name<span class="w"> </span>contoso-analytics<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span>--var<span class="w"> </span><span class="nv">lakehouse_prefix</span><span class="o">=</span>contoso<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span>--var<span class="w"> </span><span class="nv">include_agent</span><span class="o">=</span><span class="nb">true</span>
 </code></pre></div>
 
 
