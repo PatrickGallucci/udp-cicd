@@ -332,6 +332,13 @@ security:
       entra_group: sg-analysts
       workspace_role: viewer
 
+# Org-wide Fabric tenant settings — applied tenant-wide via `udp-cicd admin apply`,
+# never by `deploy`. Keyed by API settingName. See docs/guide/admin-settings.md.
+admin:
+  tenant_settings:
+    PublishToWeb:
+      enabled: false
+
 targets:
   dev:
     default: true
@@ -481,8 +488,8 @@ dotnet/
 ├── src/
 │   ├── UdpCicd.Core/
 │   │   ├── Models/            # DeploymentDefinition + typed udp.yml schema
-│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver
-│   │   ├── Providers/         # FabricClient, FabricAuth (Fabric REST API)
+│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver, AdminApplier
+│   │   ├── Providers/         # FabricClient, FabricAuth (Fabric REST + Admin API)
 │   │   ├── Generators/        # ReverseGenerator, TemplateEngine
 │   │   └── Assets/templates/  # medallion/, blank/
 │   ├── UdpCicd.Cli/           # System.CommandLine entry point
@@ -631,6 +638,7 @@ For Blob/ADLS state backends, omit the account key where possible — the system
 | CI/CD (GitHub Actions) | **Stable** | [Proven end-to-end](https://github.com/PatrickGallucci/udp-udp-cicd-example) |
 | Remote state (OneLake, Blob, ADLS) | **Beta** | Built, not yet tested live |
 | MCP server | **Beta** | 14 tools verified locally |
+| Tenant/admin settings | **Beta** | Declarative tenant settings via Admin API (`admin plan`/`apply`); diff unit-tested, live apply unverified |
 | OneLake data access roles | **Beta** | Built, not yet tested live |
 | Environment publish (libraries) | **Beta** | Fire-and-forget, can't track completion |
 | watch, promote, canary | **Experimental** | Built, untested |

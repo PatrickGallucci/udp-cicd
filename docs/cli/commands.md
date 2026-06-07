@@ -46,6 +46,8 @@ udp-cicd deploy --help
 | | [generate](#generate) | Generate udp.yml from an existing workspace. |
 | | [bind](#bind) | Bind an existing workspace item to deployment management. |
 | | [import](#import) | Import resources from Terraform state or a workspace. |
+| **Admin** | [admin plan](#admin-plan) | Preview tenant (admin) setting changes against the live tenant. |
+| | [admin apply](#admin-apply) | Apply org-wide tenant settings via the Fabric Admin API. |
 
 ---
 
@@ -1338,7 +1340,109 @@ Imported 6 resources to udp-cicd state.
 
 ---
 
-## 8. Exit codes
+## 8. Admin commands
+
+The `admin` command group manages **tenant-level (admin) settings** via the Fabric Admin API. Unlike every other command, these settings are **tenant-wide**, not scoped to a workspace or target — so they live outside the normal `deploy` flow. See [Admin / Tenant Settings](../guide/admin-settings.md) for the full guide and the `udp.yml` schema.
+
+> **Permissions**
+>
+> The caller must be a **Fabric administrator**, or a service principal with the `Tenant.ReadWrite.All` delegated scope. The Update Tenant Setting API is in **preview** and rate-limited to 25 requests/minute (paced automatically). Changes can take up to 15 minutes to take effect.
+
+Settings are keyed in `udp.yml` by their API `settingName` (for example `PublishToWeb`), not the portal display title. Both commands validate declared names against the live tenant; unknown names are reported, never silently ignored.
+
+### 8.1 admin plan
+
+Preview the difference between the tenant settings declared under `admin.tenant_settings` and the live tenant. Read-only — makes no changes.
+
+#### Syntax
+
+```
+udp-cicd admin plan [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | (auto-detect) | Path to `udp.yml`. |
+
+#### Example
+
+```bash
+udp-cicd admin plan
+```
+
+**Example output:**
+
+```
+Tenant Settings Plan
+
+  ~  PublishToWeb  Publish to web
+      enabled: enabled -> disabled
+  =  DevelopmentTenantSettings  no change
+  !  PublishToWebb  (unknown setting)
+      setting not found in this tenant — check the settingName
+
+  Summary: 1 to update, 1 unchanged, 1 unknown
+```
+
+Markers: `~` change, `=` no change, `!` unknown settingName.
+
+### 8.2 admin apply
+
+Apply the declared tenant settings to the tenant. Prompts for confirmation because the changes are organization-wide.
+
+#### Syntax
+
+```
+udp-cicd admin apply [OPTIONS]
+```
+
+#### Options
+
+| Option | Short | Type | Default | Description |
+|---|---|---|---|---|
+| `--file` | `-f` | String | (auto-detect) | Path to `udp.yml`. |
+| `--dry-run` | | Flag | `false` | Show what would be applied without writing. |
+| `--auto-approve` | `-y` | Flag | `false` | Skip the confirmation prompt (for CI). |
+
+`admin apply` refuses to run while any declared `settingName` is **unknown**, so a typo cannot silently no-op.
+
+#### Examples
+
+```bash
+# Preview, then apply with confirmation
+udp-cicd admin apply
+
+# Non-interactive (CI)
+udp-cicd admin apply -y
+
+# Preview without writing
+udp-cicd admin apply --dry-run
+```
+
+**Example output:**
+
+```
+Tenant Settings Plan
+
+  ~  PublishToWeb  Publish to web
+      enabled: enabled -> disabled
+
+  Summary: 1 to update, 0 unchanged
+
+WARNING: These changes apply tenant-wide and affect every user in the organization.
+Apply these tenant setting changes? [y/n]: y
+
+  ~ Updated: PublishToWeb
+
+Apply complete. Updated: 1 setting(s).
+Note: tenant setting changes can take up to 15 minutes to take effect.
+```
+
+---
+
+## 9. Exit codes
 
 All `udp-cicd` commands use the following exit codes:
 
@@ -1351,7 +1455,7 @@ The `drift` command additionally distinguishes between detected drift (exit code
 
 ---
 
-## 9. Environment variables
+## 10. Environment variables
 
 The following environment variables affect `udp-cicd` behavior:
 
@@ -1371,7 +1475,8 @@ When the three `AZURE_*` service principal variables are set, the CLI authentica
 
 ---
 
-## 10. See also
+## 11. See also
 
 - [Installation](../getting-started/installation.md) -- Install and configure Unified Data Platform Deployment.
 - [udp.yml reference](../guide/udp-yml.md) -- Complete schema reference for deployment definitions.
+- [Admin / Tenant Settings](../guide/admin-settings.md) -- Declaratively manage org-wide Fabric tenant settings.

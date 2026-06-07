@@ -51,3 +51,4 @@ Unified Data Platform Deployment fills that gap.
 | Secrets | Environment variables and Azure Key Vault integration |
 | CI/CD ready | GitHub Actions and Azure DevOps templates included |
 | Policy enforcement | Configurable pre-deploy validation rules |
+| Tenant settings | Declaratively manage org-wide Fabric admin/tenant settings via a gated `admin apply` |

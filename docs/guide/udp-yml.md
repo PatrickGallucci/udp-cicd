@@ -18,6 +18,7 @@ connections:     # Data source connection definitions.
 policies:        # Validation and governance rules.
 notifications:   # Deployment notification hooks.
 state:           # Remote state backend configuration.
+admin:           # Tenant-level (admin) settings, applied tenant-wide.
 targets:         # Environment-specific overrides (dev, staging, prod).
 include:         # Additional YAML files to merge into the deployment.
 extends:         # Parent deployment to inherit from.
@@ -1034,17 +1035,65 @@ targets:
 
 ---
 
-## 13. include
+## 13. admin
+
+Tenant-level (admin) settings, applied **tenant-wide** via the Fabric Admin API. Unlike `resources`, these are not workspace items and are never applied by `deploy` — they are applied only by the gated [`udp-cicd admin apply`](../cli/commands.md#admin-apply) command. See [Admin / Tenant Settings](admin-settings.md) for the full guide.
+
+### 13.1 Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `tenant_settings` | map | Tenant settings keyed by their API `settingName` (e.g. `PublishToWeb`), not the portal display title. |
+
+### 13.2 TenantSetting
+
+| Field | Type | Description |
+|---|---|---|
+| `enabled` | boolean (required) | Enable (`true`) or disable (`false`) the setting. |
+| `delegate_to_capacity` | boolean | Allow a capacity admin to override. Only applied when declared. |
+| `delegate_to_domain` | boolean | Allow a domain admin to override. Only applied when declared. |
+| `delegate_to_workspace` | boolean | Allow a workspace admin to override. Only applied when declared. |
+| `enabled_security_groups` | list | Security groups the setting is enabled for (`graph_id` + `name`). |
+| `excluded_security_groups` | list | Security groups explicitly excluded. |
+| `properties` | list | Typed properties some settings require (`name`, `value`, `type`). |
+
+`type` is one of `FreeText`, `Url`, `Boolean`, `MailEnabledSecurityGroup`, `Integer`. Only settings, groups, and properties you explicitly declare are managed — nothing is cleared implicitly.
+
+### 13.3 Example
+
+```yaml
+admin:
+  tenant_settings:
+    # Disable Publish to web org-wide
+    PublishToWeb:
+      enabled: false
+
+    # Enable a feature only for a security group, with workspace delegation
+    DevelopmentTenantSettings:
+      enabled: true
+      delegate_to_workspace: true
+      enabled_security_groups:
+        - graph_id: "f51b705f-a409-4d40-9197-c5d5f349e2f0"
+          name: "Data Engineers"
+```
+
+> **Note**
+>
+> Setting names are the API `settingName` identifiers, which the [tenant settings index](https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index) does not list (it shows display titles). Run `udp-cicd admin plan` to validate your names against the live tenant; unknown names are reported.
+
+---
+
+## 14. include
 
 Merge additional YAML files into the deployment definition. Use `include` to split large deployments across multiple files.
 
-### 13.1 Fields
+### 14.1 Fields
 
 | Type | Description |
 |---|---|
 | List of strings | File paths or glob patterns relative to the `udp.yml` location. |
 
-### 13.2 Example
+### 14.2 Example
 
 **Main udp.yml:**
 
@@ -1087,17 +1136,17 @@ resources:
 
 ---
 
-## 14. extends
+## 15. extends
 
 Inherit from a parent deployment definition. The child deployment inherits all settings from the parent and can override any field.
 
-### 14.1 Fields
+### 15.1 Fields
 
 | Type | Description |
 |---|---|
 | String | Path to the parent `udp.yml` file, relative to the child deployment location. |
 
-### 14.2 Example
+### 15.2 Example
 
 **Parent deployment (shared/udp.yml):**
 
@@ -1140,7 +1189,7 @@ resources:
 
 ---
 
-## 15. Complete example
+## 16. Complete example
 
 The following `udp.yml` demonstrates most features:
 
@@ -1286,7 +1335,8 @@ targets:
 
 ---
 
-## 16. See also
+## 17. See also
 
 - [CLI command reference](../cli/commands.md) -- Full reference for all `udp-cicd` commands.
+- [Admin / Tenant Settings](admin-settings.md) -- Declaratively manage org-wide Fabric tenant settings.
 - [Installation](../getting-started/installation.md) -- Install and configure Unified Data Platform Deployment.

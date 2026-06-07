@@ -218,7 +218,44 @@ rm .udp-cicd/lock-dev.lock
 
 ---
 
-## 9. Getting help
+## 9. Admin / tenant settings
+
+### 9.1 `admin plan` reports a setting as "unknown"
+
+**Cause:** The key under `admin.tenant_settings` is not a valid `settingName` for your tenant. The [tenant settings index](https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index) lists display titles, not the API identifiers udp-cicd needs.
+
+**Resolution:** List the real identifiers and match by title:
+
+```bash
+az rest --method get \
+  --url "https://api.fabric.microsoft.com/v1/admin/tenantsettings" \
+  --resource "https://api.fabric.microsoft.com" \
+  --query "tenantSettings[].{name:settingName, title:title}" -o table
+```
+
+Use the `name` column value as the key in `udp.yml`.
+
+### 9.2 "Could not read tenant settings" / 403 Forbidden
+
+**Cause:** The caller is not a Fabric administrator. Tenant settings require elevated permissions.
+
+**Resolution:** Sign in as a **Fabric administrator**, or use a service principal granted the `Tenant.ReadWrite.All` delegated scope. The service principal must also be enabled to call admin APIs (Admin portal → *Service principals can access admin APIs used for updates*).
+
+### 9.3 A change applied but isn't visible yet
+
+**Cause:** Tenant setting changes propagate gradually.
+
+**Resolution:** Wait — changes can take **up to 15 minutes** to take effect across the organization.
+
+### 9.4 Declared security groups are ignored
+
+**Cause:** The setting does not support per-group scoping (`canSpecifySecurityGroups` is false). `admin plan` prints a warning for this.
+
+**Resolution:** Apply the setting org-wide (`enabled: true`/`false`) without `enabled_security_groups`.
+
+---
+
+## 10. Getting help
 
 - Run `udp-cicd doctor` to diagnose common issues.
 - Check [GitHub Issues](https://github.com/PatrickGallucci/udp-cicd/issues) for known bugs.
