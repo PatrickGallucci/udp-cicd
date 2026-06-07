@@ -1383,6 +1383,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#83-connectivity-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Connectivity check
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3212,6 +3223,17 @@
     <span class="md-ellipsis">
       
         8.2 Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-connectivity-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Connectivity check
       
     </span>
   </a>
@@ -5304,6 +5326,9 @@
 <p><strong>Warning</strong></p>
 <p>Never put secrets (connection strings, API keys, passwords) directly in <code>udp.yml</code>. Use <code>${keyvault.VAULT.SECRET}</code> for Key Vault references, <code>${secret.NAME}</code> or <code>${env.VAR_NAME}</code> for environment variables, or the <code>connection_string_var</code> field.</p>
 </blockquote>
+<h3 id="83-connectivity-check">8.3 Connectivity check<a class="headerlink" href="#83-connectivity-check" title="Permanent link">&para;</a></h3>
+<p><code>udp-cicd validate</code> and <code>udp-cicd diag</code> verify that each connection's source is reachable. For every connection they derive a <code>host:port</code> — from the resolved connection string (<code>connection_string_var</code> + secrets) when present, otherwise from <code>endpoint</code> — and open a TCP socket to confirm the source accepts connections. The default port follows the <code>type</code> (<code>sql_server</code>/<code>azure_sql</code> → 1433, everything else → 443) unless the connection string or endpoint specifies one.</p>
+<p>This is a <strong>network reachability</strong> check, not an authenticated handshake. In <code>validate</code>, an unreachable source is a warning by default (use <code>--strict</code> to fail, or <code>--skip-connection-check</code> to disable); in <code>diag</code> it is a pass/fail check. Connections with no resolvable connection string or endpoint are skipped.</p>
 <hr />
 <h2 id="9-policies">9. policies<a class="headerlink" href="#9-policies" title="Permanent link">&para;</a></h2>
 <p>Validation and governance rules enforced during <code>udp-cicd validate</code> and <code>udp-cicd deploy</code>.</p>

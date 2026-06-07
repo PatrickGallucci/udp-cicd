@@ -1817,10 +1817,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#10-getting-help" class="md-nav__link">
+  <a href="#10-connections" class="md-nav__link">
     <span class="md-ellipsis">
       
-        10. Getting help
+        10. Connections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Connections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-validatediag-reports-a-connection-as-unreachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 validate/diag reports a connection as "unreachable"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-a-connection-is-skipped-no-connection-string-or-endpoint-to-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 A connection is "skipped (no connection string or endpoint to test)"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Getting help
       
     </span>
   </a>
@@ -2413,10 +2452,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#10-getting-help" class="md-nav__link">
+  <a href="#10-connections" class="md-nav__link">
     <span class="md-ellipsis">
       
-        10. Getting help
+        10. Connections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Connections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-validatediag-reports-a-connection-as-unreachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 validate/diag reports a connection as "unreachable"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-a-connection-is-skipped-no-connection-string-or-endpoint-to-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 A connection is "skipped (no connection string or endpoint to test)"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Getting help
       
     </span>
   </a>
@@ -2646,7 +2724,21 @@
 <p><strong>Cause:</strong> The setting does not support per-group scoping (<code>canSpecifySecurityGroups</code> is false). <code>admin plan</code> prints a warning for this.</p>
 <p><strong>Resolution:</strong> Apply the setting org-wide (<code>enabled: true</code>/<code>false</code>) without <code>enabled_security_groups</code>.</p>
 <hr />
-<h2 id="10-getting-help">10. Getting help<a class="headerlink" href="#10-getting-help" title="Permanent link">&para;</a></h2>
+<h2 id="10-connections">10. Connections<a class="headerlink" href="#10-connections" title="Permanent link">&para;</a></h2>
+<h3 id="101-validatediag-reports-a-connection-as-unreachable">10.1 <code>validate</code>/<code>diag</code> reports a connection as "unreachable"<a class="headerlink" href="#101-validatediag-reports-a-connection-as-unreachable" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> The source <code>host:port</code> derived from the connection string or <code>endpoint</code> did not accept a TCP connection. Common reasons: the host name is wrong (<code>No such host is known</code>), a firewall or private endpoint blocks your machine, the source is paused, or the port is non-default and not specified.</p>
+<p><strong>Resolution:</strong></p>
+<ul>
+<li>Confirm the host resolves and is reachable from where you run the command (corporate networks and CI runners are often isolated from data sources).</li>
+<li>For non-standard ports, include the port in the connection string (<code>Server=host,1500</code>) or endpoint URL (<code>https://host:8443</code>).</li>
+<li>This is a <strong>reachability</strong> check only — a reachable source can still reject authentication. It does not validate credentials.</li>
+<li>To proceed despite an unreachable source, drop <code>--strict</code>; the check is a warning by default. Use <code>--skip-connection-check</code> to skip it entirely.</li>
+</ul>
+<h3 id="102-a-connection-is-skipped-no-connection-string-or-endpoint-to-test">10.2 A connection is "skipped (no connection string or endpoint to test)"<a class="headerlink" href="#102-a-connection-is-skipped-no-connection-string-or-endpoint-to-test" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> The connection has neither a resolvable <code>connection_string_var</code> (the environment variable is unset) nor an <code>endpoint</code>, so no <code>host:port</code> could be derived.</p>
+<p><strong>Resolution:</strong> Set the <code>connection_string_var</code> environment variable, or add an <code>endpoint</code> to the connection in <code>udp.yml</code>.</p>
+<hr />
+<h2 id="11-getting-help">11. Getting help<a class="headerlink" href="#11-getting-help" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Run <code>udp-cicd diag</code> to diagnose common issues.</li>
 <li>Check <a href="https://github.com/PatrickGallucci/udp-cicd/issues">GitHub Issues</a> for known bugs.</li>

@@ -1497,6 +1497,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#connection-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#examples_4" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3196,6 +3207,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#connection-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#examples_4" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4578,8 +4600,9 @@
 <a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>  ✓ Fabric API reachable
 <a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>  ✓ udp.yml found
 <a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>  ✓ Deployment validates
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>  6 passed, 0 failed
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>  ✓ Connection &#39;sales_db&#39; reachable (myserver.database.windows.net:1433)
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>  7 passed, 0 failed
 </code></pre></div>
 <h4 id="checks-performed">Checks performed<a class="headerlink" href="#checks-performed" title="Permanent link">&para;</a></h4>
 <table>
@@ -4613,6 +4636,10 @@
 <tr>
 <td>Deployment validates</td>
 <td>The deployment definition parses and validates without errors.</td>
+</tr>
+<tr>
+<td>Connection reachable</td>
+<td>For each <code>connections</code> entry, a TCP connection to the source <code>host:port</code> (from the connection string or <code>endpoint</code>) succeeds. Connections with no testable target are skipped.</td>
 </tr>
 </tbody>
 </table>
@@ -4674,54 +4701,69 @@
 <td><code>false</code></td>
 <td>Fail on unresolved variables and warnings in addition to errors.</td>
 </tr>
+<tr>
+<td><code>--skip-connection-check</code></td>
+<td></td>
+<td>Flag</td>
+<td><code>false</code></td>
+<td>Skip the source reachability check for <code>connections</code> (see below).</td>
+</tr>
 </tbody>
 </table>
+<h4 id="connection-checks">Connection checks<a class="headerlink" href="#connection-checks" title="Permanent link">&para;</a></h4>
+<p>When the deployment defines <a href="../../guide/udp-yml/#connections"><code>connections</code></a>, <code>validate</code> derives a <code>host:port</code> from each connection's resolved connection string (<code>connection_string_var</code> + secrets) or its <code>endpoint</code>, and opens a TCP socket to confirm the source is reachable:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>  Connection checks:
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>    ✓ sales_db — reachable (myserver.database.windows.net:1433)
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    ✗ legacy_dw — unreachable (oldhost:1433): No such host is known.
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    · http_api — skipped (no connection string or endpoint to test)
+</code></pre></div>
+<p>This is a <strong>network reachability</strong> check (TCP connect), not an authentication or protocol handshake. An unreachable source is a <strong>warning</strong> by default so <code>validate</code> stays usable offline; pass <code>--strict</code> to make it a failure (exit code <code>1</code>), or <code>--skip-connection-check</code> to disable it.</p>
 <h4 id="examples_4">Examples<a class="headerlink" href="#examples_4" title="Permanent link">&para;</a></h4>
 <p><strong>Validate the deployment in the current directory:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>udp-cicd<span class="w"> </span>validate
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>udp-cicd<span class="w"> </span>validate
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>Deployment is valid.
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
-<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>  Deployment:    sales-analytics v1.0.0
-<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>  Desc:      Sales analytics pipeline
-<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>  Resources: 6
-<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    environments: 1
-<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>    lakehouses: 2
-<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    notebooks: 2
-<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>    pipelines: 1
-<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>  Targets:   dev, staging, prod
-<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>
-<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>  Deployment order:
-<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>    1. [environments] spark_env
-<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>    2. [lakehouses] bronze_lakehouse
-<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>    3. [lakehouses] gold_lakehouse
-<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>    4. [notebooks] ingest_notebook (depends: bronze_lakehouse, spark_env)
-<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>    5. [notebooks] transform_notebook (depends: bronze_lakehouse, gold_lakehouse, spark_env)
-<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a>    6. [pipelines] daily_pipeline (depends: ingest_notebook, transform_notebook)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Deployment is valid.
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>  Deployment:    sales-analytics v1.0.0
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>  Desc:      Sales analytics pipeline
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>  Resources: 6
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>    environments: 1
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>    lakehouses: 2
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>    notebooks: 2
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>    pipelines: 1
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>  Targets:   dev, staging, prod
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>  Deployment order:
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>    1. [environments] spark_env
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>    2. [lakehouses] bronze_lakehouse
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>    3. [lakehouses] gold_lakehouse
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>    4. [notebooks] ingest_notebook (depends: bronze_lakehouse, spark_env)
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>    5. [notebooks] transform_notebook (depends: bronze_lakehouse, gold_lakehouse, spark_env)
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>    6. [pipelines] daily_pipeline (depends: ingest_notebook, transform_notebook)
 </code></pre></div>
 <p><strong>Validate against a specific target:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>udp-cicd<span class="w"> </span>validate<span class="w"> </span>--target<span class="w"> </span>prod
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>udp-cicd<span class="w"> </span>validate<span class="w"> </span>--target<span class="w"> </span>prod
 </code></pre></div>
 <p><strong>Example output (with target):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Deployment is valid.
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
-<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>  Deployment:    sales-analytics v1.0.0
-<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>  Resources: 6
-<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>    ...
-<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>  Targets:   dev, staging, prod
-<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>  Workspace: sales-analytics-prod
-<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>  Variables: 3
-<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
-<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>  Deployment order:
-<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>    ...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>Deployment is valid.
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>  Deployment:    sales-analytics v1.0.0
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>  Resources: 6
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    ...
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>  Targets:   dev, staging, prod
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>  Workspace: sales-analytics-prod
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>  Variables: 3
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>  Deployment order:
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>    ...
 </code></pre></div>
 <p><strong>Strict validation:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>udp-cicd<span class="w"> </span>validate<span class="w"> </span>--strict
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>udp-cicd<span class="w"> </span>validate<span class="w"> </span>--strict
 </code></pre></div>
 <p><strong>Example output (failure):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>Validation failed: Unresolved variable: ${source_connection}
-<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>  Variable &#39;source_connection&#39; has no default value and no target override
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>Validation failed: Unresolved variable: ${source_connection}
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>  Variable &#39;source_connection&#39; has no default value and no target override
 </code></pre></div>
 <blockquote>
 <p><strong>Tip</strong></p>
@@ -4732,7 +4774,7 @@
 <h3 id="42-graph">4.2 graph<a class="headerlink" href="#42-graph" title="Permanent link">&para;</a></h3>
 <p>Visualize the deployment dependency graph in Mermaid, DOT (Graphviz), or plain text format.</p>
 <h4 id="syntax_5">Syntax<a class="headerlink" href="#syntax_5" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>udp-cicd graph [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>udp-cicd graph [OPTIONS]
 </code></pre></div>
 <h4 id="options_2">Options<a class="headerlink" href="#options_2" title="Permanent link">&para;</a></h4>
 <table>
@@ -4778,30 +4820,30 @@
 </table>
 <h4 id="examples_5">Examples<a class="headerlink" href="#examples_5" title="Permanent link">&para;</a></h4>
 <p><strong>Generate a Mermaid diagram:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>udp-cicd<span class="w"> </span>graph
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>udp-cicd<span class="w"> </span>graph
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>graph TD
-<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    spark_env[&quot;spark_env\n(environments)&quot;]
-<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    style spark_env fill:#457b9d,color:#fff
-<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>    bronze_lakehouse[&quot;bronze_lakehouse\n(lakehouses)&quot;]
-<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>    style bronze_lakehouse fill:#2d6a4f,color:#fff
-<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>    ingest_notebook[&quot;ingest_notebook\n(notebooks)&quot;]
-<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>    style ingest_notebook fill:#264653,color:#fff
-<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>    spark_env --&gt; ingest_notebook
-<a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>    bronze_lakehouse --&gt; ingest_notebook
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>graph TD
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>    spark_env[&quot;spark_env\n(environments)&quot;]
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>    style spark_env fill:#457b9d,color:#fff
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>    bronze_lakehouse[&quot;bronze_lakehouse\n(lakehouses)&quot;]
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>    style bronze_lakehouse fill:#2d6a4f,color:#fff
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>    ingest_notebook[&quot;ingest_notebook\n(notebooks)&quot;]
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>    style ingest_notebook fill:#264653,color:#fff
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>    spark_env --&gt; ingest_notebook
+<a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>    bronze_lakehouse --&gt; ingest_notebook
 </code></pre></div>
 <p><strong>Generate a DOT file for Graphviz:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>udp-cicd<span class="w"> </span>graph<span class="w"> </span>--format<span class="w"> </span>dot<span class="w"> </span>-o<span class="w"> </span>graph.dot
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>udp-cicd<span class="w"> </span>graph<span class="w"> </span>--format<span class="w"> </span>dot<span class="w"> </span>-o<span class="w"> </span>graph.dot
 </code></pre></div>
 <p><strong>Generate plain text:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>udp-cicd<span class="w"> </span>graph<span class="w"> </span>--format<span class="w"> </span>text
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>udp-cicd<span class="w"> </span>graph<span class="w"> </span>--format<span class="w"> </span>text
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>  [environments] spark_env
-<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>  [lakehouses] bronze_lakehouse
-<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>  [notebooks] ingest_notebook ← spark_env, bronze_lakehouse
-<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>  [pipelines] daily_pipeline ← ingest_notebook
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>  [environments] spark_env
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>  [lakehouses] bronze_lakehouse
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>  [notebooks] ingest_notebook ← spark_env, bronze_lakehouse
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>  [pipelines] daily_pipeline ← ingest_notebook
 </code></pre></div>
 <blockquote>
 <p><strong>Tip</strong></p>
@@ -4813,7 +4855,7 @@
 <h3 id="51-plan">5.1 plan<a class="headerlink" href="#51-plan" title="Permanent link">&para;</a></h3>
 <p>Preview what changes would be made to the target workspace without actually deploying. Compares the local deployment definition to the current workspace state.</p>
 <h4 id="syntax_6">Syntax<a class="headerlink" href="#syntax_6" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>udp-cicd plan [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>udp-cicd plan [OPTIONS]
 </code></pre></div>
 <h4 id="options_3">Options<a class="headerlink" href="#options_3" title="Permanent link">&para;</a></h4>
 <table>
@@ -4859,43 +4901,43 @@
 </table>
 <h4 id="examples_6">Examples<a class="headerlink" href="#examples_6" title="Permanent link">&para;</a></h4>
 <p><strong>Preview changes for the default target:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>udp-cicd<span class="w"> </span>plan
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>udp-cicd<span class="w"> </span>plan
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>Plan: sales-analytics → sales-analytics-dev
-<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>
-<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>  + [Lakehouse]      bronze_lakehouse          CREATE
-<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>  + [Lakehouse]      gold_lakehouse            CREATE
-<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>  + [Environment]    spark_env                 CREATE
-<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>  + [Notebook]       ingest_notebook           CREATE
-<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>  + [Notebook]       transform_notebook        CREATE
-<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>  + [DataPipeline]   daily_pipeline            CREATE
-<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a>
-<a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a>  Summary: 6 to create, 0 to update, 0 to delete, 0 unchanged
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>Plan: sales-analytics → sales-analytics-dev
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>  + [Lakehouse]      bronze_lakehouse          CREATE
+<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>  + [Lakehouse]      gold_lakehouse            CREATE
+<a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>  + [Environment]    spark_env                 CREATE
+<a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>  + [Notebook]       ingest_notebook           CREATE
+<a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a>  + [Notebook]       transform_notebook        CREATE
+<a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a>  + [DataPipeline]   daily_pipeline            CREATE
+<a id="__codelineno-32-9" name="__codelineno-32-9" href="#__codelineno-32-9"></a>
+<a id="__codelineno-32-10" name="__codelineno-32-10" href="#__codelineno-32-10"></a>  Summary: 6 to create, 0 to update, 0 to delete, 0 unchanged
 </code></pre></div>
 <p><strong>Plan with auto-delete to remove unmanaged items:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--auto-delete
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--auto-delete
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>Plan: sales-analytics → sales-analytics-prod
-<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>
-<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>  = [Lakehouse]      bronze_lakehouse          NO CHANGE
-<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>  ~ [Notebook]       ingest_notebook           UPDATE
-<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>  - [Notebook]       old_notebook              DELETE (unmanaged)
-<a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>
-<a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>  Summary: 0 to create, 1 to update, 1 to delete, 1 unchanged
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>Plan: sales-analytics → sales-analytics-prod
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>  = [Lakehouse]      bronze_lakehouse          NO CHANGE
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>  ~ [Notebook]       ingest_notebook           UPDATE
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>  - [Notebook]       old_notebook              DELETE (unmanaged)
+<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>
+<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>  Summary: 0 to create, 1 to update, 1 to delete, 1 unchanged
 </code></pre></div>
 <p><strong>Plan with API validation:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--validate-api
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--validate-api
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>Plan: sales-analytics → sales-analytics-dev
-<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>  ...
-<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>
-<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>Validating definitions against Fabric API...
-<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>  ✓ ingest_notebook: definition valid (2 parts)
-<a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>  ✓ transform_notebook: definition valid (2 parts)
-<a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a>  - daily_pipeline: no definition (metadata only)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>Plan: sales-analytics → sales-analytics-dev
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>  ...
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>Validating definitions against Fabric API...
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>  ✓ ingest_notebook: definition valid (2 parts)
+<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>  ✓ transform_notebook: definition valid (2 parts)
+<a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>  - daily_pipeline: no definition (metadata only)
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -4906,7 +4948,7 @@
 <h3 id="52-deploy">5.2 deploy<a class="headerlink" href="#52-deploy" title="Permanent link">&para;</a></h3>
 <p>Deploy the deployment to a target workspace. Creates, updates, or deletes items as needed to match the deployment definition.</p>
 <h4 id="syntax_7">Syntax<a class="headerlink" href="#syntax_7" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>udp-cicd deploy [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>udp-cicd deploy [OPTIONS]
 </code></pre></div>
 <h4 id="options_4">Options<a class="headerlink" href="#options_4" title="Permanent link">&para;</a></h4>
 <table>
@@ -4966,33 +5008,33 @@
 </table>
 <h4 id="examples_7">Examples<a class="headerlink" href="#examples_7" title="Permanent link">&para;</a></h4>
 <p><strong>Deploy to the default target (interactive):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>udp-cicd<span class="w"> </span>deploy
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>udp-cicd<span class="w"> </span>deploy
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>Plan: sales-analytics → sales-analytics-dev
-<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
-<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>  + [Lakehouse]      bronze_lakehouse          CREATE
-<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>  + [Environment]    spark_env                 CREATE
-<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>  + [Notebook]       ingest_notebook           CREATE
-<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>
-<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>  Summary: 3 to create, 0 to update, 0 to delete
-<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>
-<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>Do you want to apply these changes? [y/N]: y
-<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>
-<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>  ✓ Created: bronze_lakehouse (Lakehouse)
-<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a>  ✓ Created: spark_env (Environment)
-<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a>  ✓ Created: ingest_notebook (Notebook)
-<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a>
-<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a>Deploy complete. 3 items deployed in 12.4s.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>Plan: sales-analytics → sales-analytics-dev
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>  + [Lakehouse]      bronze_lakehouse          CREATE
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>  + [Environment]    spark_env                 CREATE
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>  + [Notebook]       ingest_notebook           CREATE
+<a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>
+<a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a>  Summary: 3 to create, 0 to update, 0 to delete
+<a id="__codelineno-39-8" name="__codelineno-39-8" href="#__codelineno-39-8"></a>
+<a id="__codelineno-39-9" name="__codelineno-39-9" href="#__codelineno-39-9"></a>Do you want to apply these changes? [y/N]: y
+<a id="__codelineno-39-10" name="__codelineno-39-10" href="#__codelineno-39-10"></a>
+<a id="__codelineno-39-11" name="__codelineno-39-11" href="#__codelineno-39-11"></a>  ✓ Created: bronze_lakehouse (Lakehouse)
+<a id="__codelineno-39-12" name="__codelineno-39-12" href="#__codelineno-39-12"></a>  ✓ Created: spark_env (Environment)
+<a id="__codelineno-39-13" name="__codelineno-39-13" href="#__codelineno-39-13"></a>  ✓ Created: ingest_notebook (Notebook)
+<a id="__codelineno-39-14" name="__codelineno-39-14" href="#__codelineno-39-14"></a>
+<a id="__codelineno-39-15" name="__codelineno-39-15" href="#__codelineno-39-15"></a>Deploy complete. 3 items deployed in 12.4s.
 </code></pre></div>
 <p><strong>Deploy to production with auto-approve (CI/CD):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>-y
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>-y
 </code></pre></div>
 <p><strong>Dry run:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>staging<span class="w"> </span>--dry-run
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>staging<span class="w"> </span>--dry-run
 </code></pre></div>
 <p><strong>Force deploy (skip lock and cache):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>--force<span class="w"> </span>--auto-approve
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>--force<span class="w"> </span>--auto-approve
 </code></pre></div>
 <blockquote>
 <p><strong>Warning</strong></p>
@@ -5005,7 +5047,7 @@
 <h3 id="53-destroy">5.3 destroy<a class="headerlink" href="#53-destroy" title="Permanent link">&para;</a></h3>
 <p>Delete all deployment-managed resources from the target workspace. Optionally delete the workspace itself.</p>
 <h4 id="syntax_8">Syntax<a class="headerlink" href="#syntax_8" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>udp-cicd destroy [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>udp-cicd destroy [OPTIONS]
 </code></pre></div>
 <h4 id="options_5">Options<a class="headerlink" href="#options_5" title="Permanent link">&para;</a></h4>
 <table>
@@ -5051,34 +5093,34 @@
 </table>
 <h4 id="examples_8">Examples<a class="headerlink" href="#examples_8" title="Permanent link">&para;</a></h4>
 <p><strong>Destroy resources in the dev environment:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>udp-cicd<span class="w"> </span>destroy<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>udp-cicd<span class="w"> </span>destroy<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>WARNING: This will delete all deployment-managed resources in:
-<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>  Workspace: sales-analytics-dev
-<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>  Target:    dev
-<a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>
-<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>  Resources to destroy (reverse dependency order):
-<a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>    1. - [pipelines] daily_pipeline
-<a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a>    2. - [notebooks] transform_notebook
-<a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a>    3. - [notebooks] ingest_notebook
-<a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a>    4. - [environments] spark_env
-<a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a>    5. - [lakehouses] gold_lakehouse
-<a id="__codelineno-44-11" name="__codelineno-44-11" href="#__codelineno-44-11"></a>    6. - [lakehouses] bronze_lakehouse
-<a id="__codelineno-44-12" name="__codelineno-44-12" href="#__codelineno-44-12"></a>
-<a id="__codelineno-44-13" name="__codelineno-44-13" href="#__codelineno-44-13"></a>Type the deployment name &#39;sales-analytics&#39; to confirm destruction: sales-analytics
-<a id="__codelineno-44-14" name="__codelineno-44-14" href="#__codelineno-44-14"></a>
-<a id="__codelineno-44-15" name="__codelineno-44-15" href="#__codelineno-44-15"></a>  - Deleted: daily_pipeline
-<a id="__codelineno-44-16" name="__codelineno-44-16" href="#__codelineno-44-16"></a>  - Deleted: transform_notebook
-<a id="__codelineno-44-17" name="__codelineno-44-17" href="#__codelineno-44-17"></a>  - Deleted: ingest_notebook
-<a id="__codelineno-44-18" name="__codelineno-44-18" href="#__codelineno-44-18"></a>  - Deleted: spark_env
-<a id="__codelineno-44-19" name="__codelineno-44-19" href="#__codelineno-44-19"></a>  - Deleted: gold_lakehouse
-<a id="__codelineno-44-20" name="__codelineno-44-20" href="#__codelineno-44-20"></a>  - Deleted: bronze_lakehouse
-<a id="__codelineno-44-21" name="__codelineno-44-21" href="#__codelineno-44-21"></a>
-<a id="__codelineno-44-22" name="__codelineno-44-22" href="#__codelineno-44-22"></a>Destroy complete. Deleted: 6 resources.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>WARNING: This will delete all deployment-managed resources in:
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>  Workspace: sales-analytics-dev
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>  Target:    dev
+<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a>
+<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>  Resources to destroy (reverse dependency order):
+<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a>    1. - [pipelines] daily_pipeline
+<a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a>    2. - [notebooks] transform_notebook
+<a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a>    3. - [notebooks] ingest_notebook
+<a id="__codelineno-45-9" name="__codelineno-45-9" href="#__codelineno-45-9"></a>    4. - [environments] spark_env
+<a id="__codelineno-45-10" name="__codelineno-45-10" href="#__codelineno-45-10"></a>    5. - [lakehouses] gold_lakehouse
+<a id="__codelineno-45-11" name="__codelineno-45-11" href="#__codelineno-45-11"></a>    6. - [lakehouses] bronze_lakehouse
+<a id="__codelineno-45-12" name="__codelineno-45-12" href="#__codelineno-45-12"></a>
+<a id="__codelineno-45-13" name="__codelineno-45-13" href="#__codelineno-45-13"></a>Type the deployment name &#39;sales-analytics&#39; to confirm destruction: sales-analytics
+<a id="__codelineno-45-14" name="__codelineno-45-14" href="#__codelineno-45-14"></a>
+<a id="__codelineno-45-15" name="__codelineno-45-15" href="#__codelineno-45-15"></a>  - Deleted: daily_pipeline
+<a id="__codelineno-45-16" name="__codelineno-45-16" href="#__codelineno-45-16"></a>  - Deleted: transform_notebook
+<a id="__codelineno-45-17" name="__codelineno-45-17" href="#__codelineno-45-17"></a>  - Deleted: ingest_notebook
+<a id="__codelineno-45-18" name="__codelineno-45-18" href="#__codelineno-45-18"></a>  - Deleted: spark_env
+<a id="__codelineno-45-19" name="__codelineno-45-19" href="#__codelineno-45-19"></a>  - Deleted: gold_lakehouse
+<a id="__codelineno-45-20" name="__codelineno-45-20" href="#__codelineno-45-20"></a>  - Deleted: bronze_lakehouse
+<a id="__codelineno-45-21" name="__codelineno-45-21" href="#__codelineno-45-21"></a>
+<a id="__codelineno-45-22" name="__codelineno-45-22" href="#__codelineno-45-22"></a>Destroy complete. Deleted: 6 resources.
 </code></pre></div>
 <p><strong>Destroy with auto-approve and delete workspace (CI/CD cleanup):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>udp-cicd<span class="w"> </span>destroy<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-y<span class="w"> </span>--delete-workspace
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>udp-cicd<span class="w"> </span>destroy<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-y<span class="w"> </span>--delete-workspace
 </code></pre></div>
 <blockquote>
 <p><strong>Warning</strong></p>
@@ -5091,7 +5133,7 @@
 <h3 id="54-promote">5.4 promote<a class="headerlink" href="#54-promote" title="Permanent link">&para;</a></h3>
 <p>Promote deployed artifacts from one target workspace to another by copying item definitions.</p>
 <h4 id="syntax_9">Syntax<a class="headerlink" href="#syntax_9" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>udp-cicd promote [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>udp-cicd promote [OPTIONS]
 </code></pre></div>
 <h4 id="options_6">Options<a class="headerlink" href="#options_6" title="Permanent link">&para;</a></h4>
 <table>
@@ -5137,24 +5179,24 @@
 </table>
 <h4 id="examples_9">Examples<a class="headerlink" href="#examples_9" title="Permanent link">&para;</a></h4>
 <p><strong>Promote from staging to production:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>udp-cicd<span class="w"> </span>promote<span class="w"> </span>--from<span class="w"> </span>staging<span class="w"> </span>--to<span class="w"> </span>prod
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>udp-cicd<span class="w"> </span>promote<span class="w"> </span>--from<span class="w"> </span>staging<span class="w"> </span>--to<span class="w"> </span>prod
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>Promote: staging → prod
-<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>  Source:  sales-analytics-staging (abc123-...)
-<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>  Dest:    sales-analytics-prod (def456-...)
-<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a>
-<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a>  6 items to promote
-<a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a>Proceed? [y/N]: y
-<a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a>
-<a id="__codelineno-48-8" name="__codelineno-48-8" href="#__codelineno-48-8"></a>  + Created: bronze_lakehouse
-<a id="__codelineno-48-9" name="__codelineno-48-9" href="#__codelineno-48-9"></a>  + Created: gold_lakehouse
-<a id="__codelineno-48-10" name="__codelineno-48-10" href="#__codelineno-48-10"></a>  ~ Updated: ingest_notebook
-<a id="__codelineno-48-11" name="__codelineno-48-11" href="#__codelineno-48-11"></a>  ~ Updated: transform_notebook
-<a id="__codelineno-48-12" name="__codelineno-48-12" href="#__codelineno-48-12"></a>  + Created: daily_pipeline
-<a id="__codelineno-48-13" name="__codelineno-48-13" href="#__codelineno-48-13"></a>  + Created: spark_env
-<a id="__codelineno-48-14" name="__codelineno-48-14" href="#__codelineno-48-14"></a>
-<a id="__codelineno-48-15" name="__codelineno-48-15" href="#__codelineno-48-15"></a>Promoted 6 items from staging to prod.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>Promote: staging → prod
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>  Source:  sales-analytics-staging (abc123-...)
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>  Dest:    sales-analytics-prod (def456-...)
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a>
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>  6 items to promote
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>Proceed? [y/N]: y
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a>
+<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a>  + Created: bronze_lakehouse
+<a id="__codelineno-49-9" name="__codelineno-49-9" href="#__codelineno-49-9"></a>  + Created: gold_lakehouse
+<a id="__codelineno-49-10" name="__codelineno-49-10" href="#__codelineno-49-10"></a>  ~ Updated: ingest_notebook
+<a id="__codelineno-49-11" name="__codelineno-49-11" href="#__codelineno-49-11"></a>  ~ Updated: transform_notebook
+<a id="__codelineno-49-12" name="__codelineno-49-12" href="#__codelineno-49-12"></a>  + Created: daily_pipeline
+<a id="__codelineno-49-13" name="__codelineno-49-13" href="#__codelineno-49-13"></a>  + Created: spark_env
+<a id="__codelineno-49-14" name="__codelineno-49-14" href="#__codelineno-49-14"></a>
+<a id="__codelineno-49-15" name="__codelineno-49-15" href="#__codelineno-49-15"></a>Promoted 6 items from staging to prod.
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -5168,7 +5210,7 @@
 <h3 id="61-status">6.1 status<a class="headerlink" href="#61-status" title="Permanent link">&para;</a></h3>
 <p>Show the deployed resource health and status for a target, including which items are deployed, missing, pending, or unmanaged.</p>
 <h4 id="syntax_10">Syntax<a class="headerlink" href="#syntax_10" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>udp-cicd status [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>udp-cicd status [OPTIONS]
 </code></pre></div>
 <h4 id="options_7">Options<a class="headerlink" href="#options_7" title="Permanent link">&para;</a></h4>
 <table>
@@ -5199,27 +5241,27 @@
 </tbody>
 </table>
 <h4 id="examples_10">Examples<a class="headerlink" href="#examples_10" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>udp-cicd<span class="w"> </span>status<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>udp-cicd<span class="w"> </span>status<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>Status: sales-analytics
-<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>  Target:    dev
-<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>  Workspace: sales-analytics-dev (abc123-def456-...)
-<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>  Last deploy: 2025-03-15 14:30
-<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>  Items in workspace: 8
-<a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a>  Items in deployment:    6
-<a id="__codelineno-51-7" name="__codelineno-51-7" href="#__codelineno-51-7"></a>
-<a id="__codelineno-51-8" name="__codelineno-51-8" href="#__codelineno-51-8"></a>Resource                   Type             Status       Item ID
-<a id="__codelineno-51-9" name="__codelineno-51-9" href="#__codelineno-51-9"></a>bronze_lakehouse           lakehouses       deployed     abc123def456
-<a id="__codelineno-51-10" name="__codelineno-51-10" href="#__codelineno-51-10"></a>gold_lakehouse             lakehouses       deployed     def789abc012
-<a id="__codelineno-51-11" name="__codelineno-51-11" href="#__codelineno-51-11"></a>spark_env                  environments     deployed     ghi345jkl678
-<a id="__codelineno-51-12" name="__codelineno-51-12" href="#__codelineno-51-12"></a>ingest_notebook            notebooks        deployed     mno901pqr234
-<a id="__codelineno-51-13" name="__codelineno-51-13" href="#__codelineno-51-13"></a>transform_notebook         notebooks        deployed     stu567vwx890
-<a id="__codelineno-51-14" name="__codelineno-51-14" href="#__codelineno-51-14"></a>daily_pipeline             pipelines        deployed     yza123bcd456
-<a id="__codelineno-51-15" name="__codelineno-51-15" href="#__codelineno-51-15"></a>legacy_report              reports          unmanaged    efg789hij012
-<a id="__codelineno-51-16" name="__codelineno-51-16" href="#__codelineno-51-16"></a>test_notebook              notebooks        unmanaged    klm345nop678
-<a id="__codelineno-51-17" name="__codelineno-51-17" href="#__codelineno-51-17"></a>
-<a id="__codelineno-51-18" name="__codelineno-51-18" href="#__codelineno-51-18"></a>  Drift detected: 1 item(s)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>Status: sales-analytics
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>  Target:    dev
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>  Workspace: sales-analytics-dev (abc123-def456-...)
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a>  Last deploy: 2025-03-15 14:30
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>  Items in workspace: 8
+<a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a>  Items in deployment:    6
+<a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a>
+<a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a>Resource                   Type             Status       Item ID
+<a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a>bronze_lakehouse           lakehouses       deployed     abc123def456
+<a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a>gold_lakehouse             lakehouses       deployed     def789abc012
+<a id="__codelineno-52-11" name="__codelineno-52-11" href="#__codelineno-52-11"></a>spark_env                  environments     deployed     ghi345jkl678
+<a id="__codelineno-52-12" name="__codelineno-52-12" href="#__codelineno-52-12"></a>ingest_notebook            notebooks        deployed     mno901pqr234
+<a id="__codelineno-52-13" name="__codelineno-52-13" href="#__codelineno-52-13"></a>transform_notebook         notebooks        deployed     stu567vwx890
+<a id="__codelineno-52-14" name="__codelineno-52-14" href="#__codelineno-52-14"></a>daily_pipeline             pipelines        deployed     yza123bcd456
+<a id="__codelineno-52-15" name="__codelineno-52-15" href="#__codelineno-52-15"></a>legacy_report              reports          unmanaged    efg789hij012
+<a id="__codelineno-52-16" name="__codelineno-52-16" href="#__codelineno-52-16"></a>test_notebook              notebooks        unmanaged    klm345nop678
+<a id="__codelineno-52-17" name="__codelineno-52-17" href="#__codelineno-52-17"></a>
+<a id="__codelineno-52-18" name="__codelineno-52-18" href="#__codelineno-52-18"></a>  Drift detected: 1 item(s)
 </code></pre></div>
 <h4 id="status-meanings">Status meanings<a class="headerlink" href="#status-meanings" title="Permanent link">&para;</a></h4>
 <table>
@@ -5253,7 +5295,7 @@
 <h3 id="62-drift">6.2 drift<a class="headerlink" href="#62-drift" title="Permanent link">&para;</a></h3>
 <p>Detect drift between the last deployed state and the live workspace. Reports items that were added, removed, or modified outside of <code>udp-cicd</code>. See <a href="../../advanced/drift/">Drift Detection</a> for concepts, JSON output, and CI/CD integration.</p>
 <h4 id="syntax_11">Syntax<a class="headerlink" href="#syntax_11" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>udp-cicd drift [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>udp-cicd drift [OPTIONS]
 </code></pre></div>
 <h4 id="options_8">Options<a class="headerlink" href="#options_8" title="Permanent link">&para;</a></h4>
 <table>
@@ -5284,18 +5326,18 @@
 </tbody>
 </table>
 <h4 id="examples_11">Examples<a class="headerlink" href="#examples_11" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>udp-cicd<span class="w"> </span>drift<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>udp-cicd<span class="w"> </span>drift<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output (drift detected):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>Drift detected: 2 item(s)
-<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>
-<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>  + new_notebook: added
-<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a>  ~ ingest_notebook: modified
-<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>
-<a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>  Run &#39;udp-cicd deploy&#39; to reconcile, or &#39;udp-cicd plan&#39; to preview changes.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>Drift detected: 2 item(s)
+<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>
+<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a>  + new_notebook: added
+<a id="__codelineno-55-4" name="__codelineno-55-4" href="#__codelineno-55-4"></a>  ~ ingest_notebook: modified
+<a id="__codelineno-55-5" name="__codelineno-55-5" href="#__codelineno-55-5"></a>
+<a id="__codelineno-55-6" name="__codelineno-55-6" href="#__codelineno-55-6"></a>  Run &#39;udp-cicd deploy&#39; to reconcile, or &#39;udp-cicd plan&#39; to preview changes.
 </code></pre></div>
 <p><strong>Example output (no drift):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>No drift detected. Workspace matches deployed state.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>No drift detected. Workspace matches deployed state.
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -5306,7 +5348,7 @@
 <h3 id="63-diff">6.3 diff<a class="headerlink" href="#63-diff" title="Permanent link">&para;</a></h3>
 <p>Show a definition-level diff between local files and the deployed definitions in the workspace. Uses unified diff format.</p>
 <h4 id="syntax_12">Syntax<a class="headerlink" href="#syntax_12" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>udp-cicd diff [OPTIONS] [RESOURCE_NAME]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>udp-cicd diff [OPTIONS] [RESOURCE_NAME]
 </code></pre></div>
 <h4 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h4>
 <table>
@@ -5355,22 +5397,22 @@
 </table>
 <h4 id="examples_12">Examples<a class="headerlink" href="#examples_12" title="Permanent link">&para;</a></h4>
 <p><strong>Diff all resources:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>udp-cicd<span class="w"> </span>diff<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>udp-cicd<span class="w"> </span>diff<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>--- deployed/ingest_notebook/notebook-content.py
-<a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a>+++ local/ingest_notebook/notebook-content.py
-<a id="__codelineno-58-3" name="__codelineno-58-3" href="#__codelineno-58-3"></a>@@ -10,6 +10,8 @@
-<a id="__codelineno-58-4" name="__codelineno-58-4" href="#__codelineno-58-4"></a> df = spark.read.format(&quot;csv&quot;).load(source_path)
-<a id="__codelineno-58-5" name="__codelineno-58-5" href="#__codelineno-58-5"></a>+# Added data quality check
-<a id="__codelineno-58-6" name="__codelineno-58-6" href="#__codelineno-58-6"></a>+df = df.filter(df[&quot;amount&quot;] &gt; 0)
-<a id="__codelineno-58-7" name="__codelineno-58-7" href="#__codelineno-58-7"></a> df.write.format(&quot;delta&quot;).save(target_path)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>--- deployed/ingest_notebook/notebook-content.py
+<a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a>+++ local/ingest_notebook/notebook-content.py
+<a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a>@@ -10,6 +10,8 @@
+<a id="__codelineno-59-4" name="__codelineno-59-4" href="#__codelineno-59-4"></a> df = spark.read.format(&quot;csv&quot;).load(source_path)
+<a id="__codelineno-59-5" name="__codelineno-59-5" href="#__codelineno-59-5"></a>+# Added data quality check
+<a id="__codelineno-59-6" name="__codelineno-59-6" href="#__codelineno-59-6"></a>+df = df.filter(df[&quot;amount&quot;] &gt; 0)
+<a id="__codelineno-59-7" name="__codelineno-59-7" href="#__codelineno-59-7"></a> df.write.format(&quot;delta&quot;).save(target_path)
 </code></pre></div>
 <p><strong>Diff a single resource:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>udp-cicd<span class="w"> </span>diff<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>ingest_notebook
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>udp-cicd<span class="w"> </span>diff<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>ingest_notebook
 </code></pre></div>
 <p><strong>Example output (no differences):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>No differences found.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>No differences found.
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -5381,7 +5423,7 @@
 <h3 id="64-history">6.4 history<a class="headerlink" href="#64-history" title="Permanent link">&para;</a></h3>
 <p>Show the deployment history for a target environment.</p>
 <h4 id="syntax_13">Syntax<a class="headerlink" href="#syntax_13" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>udp-cicd history [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>udp-cicd history [OPTIONS]
 </code></pre></div>
 <h4 id="options_10">Options<a class="headerlink" href="#options_10" title="Permanent link">&para;</a></h4>
 <table>
@@ -5419,27 +5461,27 @@
 </tbody>
 </table>
 <h4 id="examples_13">Examples<a class="headerlink" href="#examples_13" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>udp-cicd<span class="w"> </span><span class="nb">history</span><span class="w"> </span>--target<span class="w"> </span>prod
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a>udp-cicd<span class="w"> </span><span class="nb">history</span><span class="w"> </span>--target<span class="w"> </span>prod
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a>Deployment History (prod):
-<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a>
-<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a>  deploy-abc123  2025-03-15 14:30  v1.2.0  6 resources  Update ingest_notebook
-<a id="__codelineno-63-4" name="__codelineno-63-4" href="#__codelineno-63-4"></a>  deploy-def456  2025-03-10 09:15  v1.1.0  6 resources  Add transform_notebook
-<a id="__codelineno-63-5" name="__codelineno-63-5" href="#__codelineno-63-5"></a>  deploy-ghi789  2025-03-01 11:00  v1.0.0  4 resources  Initial deployment
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a>Deployment History (prod):
+<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>
+<a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a>  deploy-abc123  2025-03-15 14:30  v1.2.0  6 resources  Update ingest_notebook
+<a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a>  deploy-def456  2025-03-10 09:15  v1.1.0  6 resources  Add transform_notebook
+<a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a>  deploy-ghi789  2025-03-01 11:00  v1.0.0  4 resources  Initial deployment
 </code></pre></div>
 <p><strong>Show only the last 5 entries:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a>udp-cicd<span class="w"> </span><span class="nb">history</span><span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a>udp-cicd<span class="w"> </span><span class="nb">history</span><span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
 </code></pre></div>
 <p><strong>Example output (no history):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a>No deployment history found.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a>No deployment history found.
 </code></pre></div>
 <hr />
 <p><a id="rollback"></a></p>
 <h3 id="65-rollback">6.5 rollback<a class="headerlink" href="#65-rollback" title="Permanent link">&para;</a></h3>
 <p>Roll back to a previous deployment by restoring the state file to a prior version.</p>
 <h4 id="syntax_14">Syntax<a class="headerlink" href="#syntax_14" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a>udp-cicd rollback [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a>udp-cicd rollback [OPTIONS]
 </code></pre></div>
 <h4 id="options_11">Options<a class="headerlink" href="#options_11" title="Permanent link">&para;</a></h4>
 <table>
@@ -5492,18 +5534,18 @@
 </table>
 <h4 id="examples_14">Examples<a class="headerlink" href="#examples_14" title="Permanent link">&para;</a></h4>
 <p><strong>Roll back to the previous deployment:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a>udp-cicd<span class="w"> </span>rollback<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--last
+<div class="highlight"><pre><span></span><code><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a>udp-cicd<span class="w"> </span>rollback<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--last
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a>Rollback target: deploy-def456 (2025-03-10 09:15)
-<a id="__codelineno-68-2" name="__codelineno-68-2" href="#__codelineno-68-2"></a>  Version: v1.1.0
-<a id="__codelineno-68-3" name="__codelineno-68-3" href="#__codelineno-68-3"></a>  Resources: 6
-<a id="__codelineno-68-4" name="__codelineno-68-4" href="#__codelineno-68-4"></a>
-<a id="__codelineno-68-5" name="__codelineno-68-5" href="#__codelineno-68-5"></a>Proceed with rollback? [y/N]: y
-<a id="__codelineno-68-6" name="__codelineno-68-6" href="#__codelineno-68-6"></a>State rolled back. Run &#39;udp-cicd deploy&#39; to apply.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a>Rollback target: deploy-def456 (2025-03-10 09:15)
+<a id="__codelineno-69-2" name="__codelineno-69-2" href="#__codelineno-69-2"></a>  Version: v1.1.0
+<a id="__codelineno-69-3" name="__codelineno-69-3" href="#__codelineno-69-3"></a>  Resources: 6
+<a id="__codelineno-69-4" name="__codelineno-69-4" href="#__codelineno-69-4"></a>
+<a id="__codelineno-69-5" name="__codelineno-69-5" href="#__codelineno-69-5"></a>Proceed with rollback? [y/N]: y
+<a id="__codelineno-69-6" name="__codelineno-69-6" href="#__codelineno-69-6"></a>State rolled back. Run &#39;udp-cicd deploy&#39; to apply.
 </code></pre></div>
 <p><strong>Roll back to a specific deployment:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a>udp-cicd<span class="w"> </span>rollback<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--to<span class="w"> </span>deploy-ghi789<span class="w"> </span>-y
+<div class="highlight"><pre><span></span><code><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a>udp-cicd<span class="w"> </span>rollback<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--to<span class="w"> </span>deploy-ghi789<span class="w"> </span>-y
 </code></pre></div>
 <blockquote>
 <p><strong>Important</strong></p>
@@ -5516,7 +5558,7 @@
 <h3 id="66-watch">6.6 watch<a class="headerlink" href="#66-watch" title="Permanent link">&para;</a></h3>
 <p>Watch the project directory for file changes and automatically deploy to the target workspace.</p>
 <h4 id="syntax_15">Syntax<a class="headerlink" href="#syntax_15" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a>udp-cicd watch [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-71-1" name="__codelineno-71-1" href="#__codelineno-71-1"></a>udp-cicd watch [OPTIONS]
 </code></pre></div>
 <h4 id="options_12">Options<a class="headerlink" href="#options_12" title="Permanent link">&para;</a></h4>
 <table>
@@ -5555,20 +5597,20 @@
 </table>
 <h4 id="examples_15">Examples<a class="headerlink" href="#examples_15" title="Permanent link">&para;</a></h4>
 <p><strong>Watch and auto-deploy to dev:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-71-1" name="__codelineno-71-1" href="#__codelineno-71-1"></a>udp-cicd<span class="w"> </span>watch<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a>udp-cicd<span class="w"> </span>watch<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a>Watching for changes... (target: dev, interval: 5s)
-<a id="__codelineno-72-2" name="__codelineno-72-2" href="#__codelineno-72-2"></a>  Press Ctrl+C to stop.
-<a id="__codelineno-72-3" name="__codelineno-72-3" href="#__codelineno-72-3"></a>
-<a id="__codelineno-72-4" name="__codelineno-72-4" href="#__codelineno-72-4"></a>  [14:30:15] Changed: notebooks/ingest_notebook.py
-<a id="__codelineno-72-5" name="__codelineno-72-5" href="#__codelineno-72-5"></a>  Deployed.
-<a id="__codelineno-72-6" name="__codelineno-72-6" href="#__codelineno-72-6"></a>
-<a id="__codelineno-72-7" name="__codelineno-72-7" href="#__codelineno-72-7"></a>  [14:32:08] Changed: udp.yml, notebooks/transform_notebook.py
-<a id="__codelineno-72-8" name="__codelineno-72-8" href="#__codelineno-72-8"></a>  Deployed.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-73-1" name="__codelineno-73-1" href="#__codelineno-73-1"></a>Watching for changes... (target: dev, interval: 5s)
+<a id="__codelineno-73-2" name="__codelineno-73-2" href="#__codelineno-73-2"></a>  Press Ctrl+C to stop.
+<a id="__codelineno-73-3" name="__codelineno-73-3" href="#__codelineno-73-3"></a>
+<a id="__codelineno-73-4" name="__codelineno-73-4" href="#__codelineno-73-4"></a>  [14:30:15] Changed: notebooks/ingest_notebook.py
+<a id="__codelineno-73-5" name="__codelineno-73-5" href="#__codelineno-73-5"></a>  Deployed.
+<a id="__codelineno-73-6" name="__codelineno-73-6" href="#__codelineno-73-6"></a>
+<a id="__codelineno-73-7" name="__codelineno-73-7" href="#__codelineno-73-7"></a>  [14:32:08] Changed: udp.yml, notebooks/transform_notebook.py
+<a id="__codelineno-73-8" name="__codelineno-73-8" href="#__codelineno-73-8"></a>  Deployed.
 </code></pre></div>
 <p><strong>Watch with a faster interval:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-73-1" name="__codelineno-73-1" href="#__codelineno-73-1"></a>udp-cicd<span class="w"> </span>watch<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>--interval<span class="w"> </span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-74-1" name="__codelineno-74-1" href="#__codelineno-74-1"></a>udp-cicd<span class="w"> </span>watch<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>--interval<span class="w"> </span><span class="m">2</span>
 </code></pre></div>
 <h4 id="watched-file-types">Watched file types<a class="headerlink" href="#watched-file-types" title="Permanent link">&para;</a></h4>
 <p>The watch command monitors files with the following extensions: <code>.py</code>, <code>.sql</code>, <code>.yml</code>, <code>.yaml</code>, <code>.json</code>, <code>.ipynb</code>, <code>.tmdl</code>, <code>.r</code>, <code>.scala</code>.</p>
@@ -5583,7 +5625,7 @@
 <h3 id="71-run">7.1 run<a class="headerlink" href="#71-run" title="Permanent link">&para;</a></h3>
 <p>Execute a specific notebook or pipeline in the target workspace.</p>
 <h4 id="syntax_16">Syntax<a class="headerlink" href="#syntax_16" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-74-1" name="__codelineno-74-1" href="#__codelineno-74-1"></a>udp-cicd run RESOURCE_NAME [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-75-1" name="__codelineno-75-1" href="#__codelineno-75-1"></a>udp-cicd run RESOURCE_NAME [OPTIONS]
 </code></pre></div>
 <h4 id="arguments_1">Arguments<a class="headerlink" href="#arguments_1" title="Permanent link">&para;</a></h4>
 <table>
@@ -5639,30 +5681,30 @@
 </table>
 <h4 id="examples_16">Examples<a class="headerlink" href="#examples_16" title="Permanent link">&para;</a></h4>
 <p><strong>Run a notebook:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-75-1" name="__codelineno-75-1" href="#__codelineno-75-1"></a>udp-cicd<span class="w"> </span>run<span class="w"> </span>ingest_notebook<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-76-1" name="__codelineno-76-1" href="#__codelineno-76-1"></a>udp-cicd<span class="w"> </span>run<span class="w"> </span>ingest_notebook<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-76-1" name="__codelineno-76-1" href="#__codelineno-76-1"></a>Running [notebook]: ingest_notebook
-<a id="__codelineno-76-2" name="__codelineno-76-2" href="#__codelineno-76-2"></a>  Workspace: sales-analytics-dev (abc123-...)
-<a id="__codelineno-76-3" name="__codelineno-76-3" href="#__codelineno-76-3"></a>  Item ID:   def456-...
-<a id="__codelineno-76-4" name="__codelineno-76-4" href="#__codelineno-76-4"></a>
-<a id="__codelineno-76-5" name="__codelineno-76-5" href="#__codelineno-76-5"></a>Job submitted. Waiting for completion...
-<a id="__codelineno-76-6" name="__codelineno-76-6" href="#__codelineno-76-6"></a>Run complete.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-77-1" name="__codelineno-77-1" href="#__codelineno-77-1"></a>Running [notebook]: ingest_notebook
+<a id="__codelineno-77-2" name="__codelineno-77-2" href="#__codelineno-77-2"></a>  Workspace: sales-analytics-dev (abc123-...)
+<a id="__codelineno-77-3" name="__codelineno-77-3" href="#__codelineno-77-3"></a>  Item ID:   def456-...
+<a id="__codelineno-77-4" name="__codelineno-77-4" href="#__codelineno-77-4"></a>
+<a id="__codelineno-77-5" name="__codelineno-77-5" href="#__codelineno-77-5"></a>Job submitted. Waiting for completion...
+<a id="__codelineno-77-6" name="__codelineno-77-6" href="#__codelineno-77-6"></a>Run complete.
 </code></pre></div>
 <p><strong>Run a notebook with parameters:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-77-1" name="__codelineno-77-1" href="#__codelineno-77-1"></a>udp-cicd<span class="w"> </span>run<span class="w"> </span>ingest_notebook<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-p<span class="w"> </span><span class="nv">start_date</span><span class="o">=</span><span class="m">2025</span>-01-01<span class="w"> </span>-p<span class="w"> </span><span class="nv">end_date</span><span class="o">=</span><span class="m">2025</span>-12-31
+<div class="highlight"><pre><span></span><code><a id="__codelineno-78-1" name="__codelineno-78-1" href="#__codelineno-78-1"></a>udp-cicd<span class="w"> </span>run<span class="w"> </span>ingest_notebook<span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-p<span class="w"> </span><span class="nv">start_date</span><span class="o">=</span><span class="m">2025</span>-01-01<span class="w"> </span>-p<span class="w"> </span><span class="nv">end_date</span><span class="o">=</span><span class="m">2025</span>-12-31
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-78-1" name="__codelineno-78-1" href="#__codelineno-78-1"></a>Running [notebook]: ingest_notebook
-<a id="__codelineno-78-2" name="__codelineno-78-2" href="#__codelineno-78-2"></a>  Workspace: sales-analytics-dev (abc123-...)
-<a id="__codelineno-78-3" name="__codelineno-78-3" href="#__codelineno-78-3"></a>  Item ID:   def456-...
-<a id="__codelineno-78-4" name="__codelineno-78-4" href="#__codelineno-78-4"></a>
-<a id="__codelineno-78-5" name="__codelineno-78-5" href="#__codelineno-78-5"></a>  Parameters: {&#39;start_date&#39;: &#39;2025-01-01&#39;, &#39;end_date&#39;: &#39;2025-12-31&#39;}
-<a id="__codelineno-78-6" name="__codelineno-78-6" href="#__codelineno-78-6"></a>Job submitted. Waiting for completion...
-<a id="__codelineno-78-7" name="__codelineno-78-7" href="#__codelineno-78-7"></a>Run complete.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-79-1" name="__codelineno-79-1" href="#__codelineno-79-1"></a>Running [notebook]: ingest_notebook
+<a id="__codelineno-79-2" name="__codelineno-79-2" href="#__codelineno-79-2"></a>  Workspace: sales-analytics-dev (abc123-...)
+<a id="__codelineno-79-3" name="__codelineno-79-3" href="#__codelineno-79-3"></a>  Item ID:   def456-...
+<a id="__codelineno-79-4" name="__codelineno-79-4" href="#__codelineno-79-4"></a>
+<a id="__codelineno-79-5" name="__codelineno-79-5" href="#__codelineno-79-5"></a>  Parameters: {&#39;start_date&#39;: &#39;2025-01-01&#39;, &#39;end_date&#39;: &#39;2025-12-31&#39;}
+<a id="__codelineno-79-6" name="__codelineno-79-6" href="#__codelineno-79-6"></a>Job submitted. Waiting for completion...
+<a id="__codelineno-79-7" name="__codelineno-79-7" href="#__codelineno-79-7"></a>Run complete.
 </code></pre></div>
 <p><strong>Run a pipeline:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-79-1" name="__codelineno-79-1" href="#__codelineno-79-1"></a>udp-cicd<span class="w"> </span>run<span class="w"> </span>daily_pipeline<span class="w"> </span>--target<span class="w"> </span>prod
+<div class="highlight"><pre><span></span><code><a id="__codelineno-80-1" name="__codelineno-80-1" href="#__codelineno-80-1"></a>udp-cicd<span class="w"> </span>run<span class="w"> </span>daily_pipeline<span class="w"> </span>--target<span class="w"> </span>prod
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -5675,7 +5717,7 @@
 <h3 id="72-export">7.2 export<a class="headerlink" href="#72-export" title="Permanent link">&para;</a></h3>
 <p>Export item definitions from a deployed workspace to local files.</p>
 <h4 id="syntax_17">Syntax<a class="headerlink" href="#syntax_17" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-80-1" name="__codelineno-80-1" href="#__codelineno-80-1"></a>udp-cicd export [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-81-1" name="__codelineno-81-1" href="#__codelineno-81-1"></a>udp-cicd export [OPTIONS]
 </code></pre></div>
 <h4 id="options_14">Options<a class="headerlink" href="#options_14" title="Permanent link">&para;</a></h4>
 <table>
@@ -5721,28 +5763,28 @@
 </table>
 <h4 id="examples_17">Examples<a class="headerlink" href="#examples_17" title="Permanent link">&para;</a></h4>
 <p><strong>Export all items from the dev workspace:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-81-1" name="__codelineno-81-1" href="#__codelineno-81-1"></a>udp-cicd<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-o<span class="w"> </span>./exported
+<div class="highlight"><pre><span></span><code><a id="__codelineno-82-1" name="__codelineno-82-1" href="#__codelineno-82-1"></a>udp-cicd<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-o<span class="w"> </span>./exported
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-82-1" name="__codelineno-82-1" href="#__codelineno-82-1"></a>Exporting from workspace: sales-analytics-dev
-<a id="__codelineno-82-2" name="__codelineno-82-2" href="#__codelineno-82-2"></a>
-<a id="__codelineno-82-3" name="__codelineno-82-3" href="#__codelineno-82-3"></a>  + ingest_notebook (Notebook): 2 files → exported/ingest_notebook
-<a id="__codelineno-82-4" name="__codelineno-82-4" href="#__codelineno-82-4"></a>  + transform_notebook (Notebook): 2 files → exported/transform_notebook
-<a id="__codelineno-82-5" name="__codelineno-82-5" href="#__codelineno-82-5"></a>  + daily_pipeline (DataPipeline): 1 files → exported/daily_pipeline
-<a id="__codelineno-82-6" name="__codelineno-82-6" href="#__codelineno-82-6"></a>  = bronze_lakehouse (Lakehouse): no exportable definition
-<a id="__codelineno-82-7" name="__codelineno-82-7" href="#__codelineno-82-7"></a>  = gold_lakehouse (Lakehouse): no exportable definition
-<a id="__codelineno-82-8" name="__codelineno-82-8" href="#__codelineno-82-8"></a>
-<a id="__codelineno-82-9" name="__codelineno-82-9" href="#__codelineno-82-9"></a>Exported 3 item(s) to /Users/you/project/exported
+<div class="highlight"><pre><span></span><code><a id="__codelineno-83-1" name="__codelineno-83-1" href="#__codelineno-83-1"></a>Exporting from workspace: sales-analytics-dev
+<a id="__codelineno-83-2" name="__codelineno-83-2" href="#__codelineno-83-2"></a>
+<a id="__codelineno-83-3" name="__codelineno-83-3" href="#__codelineno-83-3"></a>  + ingest_notebook (Notebook): 2 files → exported/ingest_notebook
+<a id="__codelineno-83-4" name="__codelineno-83-4" href="#__codelineno-83-4"></a>  + transform_notebook (Notebook): 2 files → exported/transform_notebook
+<a id="__codelineno-83-5" name="__codelineno-83-5" href="#__codelineno-83-5"></a>  + daily_pipeline (DataPipeline): 1 files → exported/daily_pipeline
+<a id="__codelineno-83-6" name="__codelineno-83-6" href="#__codelineno-83-6"></a>  = bronze_lakehouse (Lakehouse): no exportable definition
+<a id="__codelineno-83-7" name="__codelineno-83-7" href="#__codelineno-83-7"></a>  = gold_lakehouse (Lakehouse): no exportable definition
+<a id="__codelineno-83-8" name="__codelineno-83-8" href="#__codelineno-83-8"></a>
+<a id="__codelineno-83-9" name="__codelineno-83-9" href="#__codelineno-83-9"></a>Exported 3 item(s) to /Users/you/project/exported
 </code></pre></div>
 <p><strong>Export a single resource:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-83-1" name="__codelineno-83-1" href="#__codelineno-83-1"></a>udp-cicd<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-r<span class="w"> </span>ingest_notebook<span class="w"> </span>-o<span class="w"> </span>./exported
+<div class="highlight"><pre><span></span><code><a id="__codelineno-84-1" name="__codelineno-84-1" href="#__codelineno-84-1"></a>udp-cicd<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--target<span class="w"> </span>dev<span class="w"> </span>-r<span class="w"> </span>ingest_notebook<span class="w"> </span>-o<span class="w"> </span>./exported
 </code></pre></div>
 <hr />
 <p><a id="generate"></a></p>
 <h3 id="73-generate">7.3 generate<a class="headerlink" href="#73-generate" title="Permanent link">&para;</a></h3>
 <p>Generate a <code>udp.yml</code> deployment definition by scanning an existing Fabric workspace.</p>
 <h4 id="syntax_18">Syntax<a class="headerlink" href="#syntax_18" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-84-1" name="__codelineno-84-1" href="#__codelineno-84-1"></a>udp-cicd generate [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-85-1" name="__codelineno-85-1" href="#__codelineno-85-1"></a>udp-cicd generate [OPTIONS]
 </code></pre></div>
 <h4 id="options_15">Options<a class="headerlink" href="#options_15" title="Permanent link">&para;</a></h4>
 <table>
@@ -5774,25 +5816,25 @@
 </table>
 <h4 id="examples_18">Examples<a class="headerlink" href="#examples_18" title="Permanent link">&para;</a></h4>
 <p><strong>Generate from a workspace name:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-85-1" name="__codelineno-85-1" href="#__codelineno-85-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Existing Workspace&quot;</span><span class="w"> </span>-o<span class="w"> </span>./generated
+<div class="highlight"><pre><span></span><code><a id="__codelineno-86-1" name="__codelineno-86-1" href="#__codelineno-86-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Existing Workspace&quot;</span><span class="w"> </span>-o<span class="w"> </span>./generated
 </code></pre></div>
 <p><strong>Generate from a workspace GUID:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-86-1" name="__codelineno-86-1" href="#__codelineno-86-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;abc12345-def6-7890-abcd-ef1234567890&quot;</span><span class="w"> </span>-o<span class="w"> </span>./generated
+<div class="highlight"><pre><span></span><code><a id="__codelineno-87-1" name="__codelineno-87-1" href="#__codelineno-87-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;abc12345-def6-7890-abcd-ef1234567890&quot;</span><span class="w"> </span>-o<span class="w"> </span>./generated
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-87-1" name="__codelineno-87-1" href="#__codelineno-87-1"></a>Scanning workspace: My Existing Workspace (abc12345-...)
-<a id="__codelineno-87-2" name="__codelineno-87-2" href="#__codelineno-87-2"></a>  Found 8 items
-<a id="__codelineno-87-3" name="__codelineno-87-3" href="#__codelineno-87-3"></a>
-<a id="__codelineno-87-4" name="__codelineno-87-4" href="#__codelineno-87-4"></a>  + Lakehouse: bronze_lake
-<a id="__codelineno-87-5" name="__codelineno-87-5" href="#__codelineno-87-5"></a>  + Lakehouse: gold_lake
-<a id="__codelineno-87-6" name="__codelineno-87-6" href="#__codelineno-87-6"></a>  + Notebook:  etl_step1
-<a id="__codelineno-87-7" name="__codelineno-87-7" href="#__codelineno-87-7"></a>  + Notebook:  etl_step2
-<a id="__codelineno-87-8" name="__codelineno-87-8" href="#__codelineno-87-8"></a>  + Pipeline:  nightly_run
-<a id="__codelineno-87-9" name="__codelineno-87-9" href="#__codelineno-87-9"></a>
-<a id="__codelineno-87-10" name="__codelineno-87-10" href="#__codelineno-87-10"></a>Generated:
-<a id="__codelineno-87-11" name="__codelineno-87-11" href="#__codelineno-87-11"></a>  ./generated/udp.yml
-<a id="__codelineno-87-12" name="__codelineno-87-12" href="#__codelineno-87-12"></a>  ./generated/notebooks/etl_step1/notebook-content.py
-<a id="__codelineno-87-13" name="__codelineno-87-13" href="#__codelineno-87-13"></a>  ./generated/notebooks/etl_step2/notebook-content.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-88-1" name="__codelineno-88-1" href="#__codelineno-88-1"></a>Scanning workspace: My Existing Workspace (abc12345-...)
+<a id="__codelineno-88-2" name="__codelineno-88-2" href="#__codelineno-88-2"></a>  Found 8 items
+<a id="__codelineno-88-3" name="__codelineno-88-3" href="#__codelineno-88-3"></a>
+<a id="__codelineno-88-4" name="__codelineno-88-4" href="#__codelineno-88-4"></a>  + Lakehouse: bronze_lake
+<a id="__codelineno-88-5" name="__codelineno-88-5" href="#__codelineno-88-5"></a>  + Lakehouse: gold_lake
+<a id="__codelineno-88-6" name="__codelineno-88-6" href="#__codelineno-88-6"></a>  + Notebook:  etl_step1
+<a id="__codelineno-88-7" name="__codelineno-88-7" href="#__codelineno-88-7"></a>  + Notebook:  etl_step2
+<a id="__codelineno-88-8" name="__codelineno-88-8" href="#__codelineno-88-8"></a>  + Pipeline:  nightly_run
+<a id="__codelineno-88-9" name="__codelineno-88-9" href="#__codelineno-88-9"></a>
+<a id="__codelineno-88-10" name="__codelineno-88-10" href="#__codelineno-88-10"></a>Generated:
+<a id="__codelineno-88-11" name="__codelineno-88-11" href="#__codelineno-88-11"></a>  ./generated/udp.yml
+<a id="__codelineno-88-12" name="__codelineno-88-12" href="#__codelineno-88-12"></a>  ./generated/notebooks/etl_step1/notebook-content.py
+<a id="__codelineno-88-13" name="__codelineno-88-13" href="#__codelineno-88-13"></a>  ./generated/notebooks/etl_step2/notebook-content.py
 </code></pre></div>
 <blockquote>
 <p><strong>Tip</strong></p>
@@ -5803,7 +5845,7 @@
 <h3 id="74-bind">7.4 bind<a class="headerlink" href="#74-bind" title="Permanent link">&para;</a></h3>
 <p>Bind an existing workspace item to deployment management. The item must already be defined in <code>udp.yml</code>.</p>
 <h4 id="syntax_19">Syntax<a class="headerlink" href="#syntax_19" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-88-1" name="__codelineno-88-1" href="#__codelineno-88-1"></a>udp-cicd bind RESOURCE_NAME [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a>udp-cicd bind RESOURCE_NAME [OPTIONS]
 </code></pre></div>
 <h4 id="arguments_2">Arguments<a class="headerlink" href="#arguments_2" title="Permanent link">&para;</a></h4>
 <table>
@@ -5851,17 +5893,17 @@
 </tbody>
 </table>
 <h4 id="examples_19">Examples<a class="headerlink" href="#examples_19" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a>udp-cicd<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>ingest_notebook<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;sales-analytics-dev&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a>udp-cicd<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>ingest_notebook<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;sales-analytics-dev&quot;</span>
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a>Bound: ingest_notebook
-<a id="__codelineno-90-2" name="__codelineno-90-2" href="#__codelineno-90-2"></a>  Type:      Notebook
-<a id="__codelineno-90-3" name="__codelineno-90-3" href="#__codelineno-90-3"></a>  Item ID:   abc123-def456-...
-<a id="__codelineno-90-4" name="__codelineno-90-4" href="#__codelineno-90-4"></a>  Workspace: sales-analytics-dev
-<a id="__codelineno-90-5" name="__codelineno-90-5" href="#__codelineno-90-5"></a>  Recorded to state. Visible in &#39;udp-cicd status&#39;.
-<a id="__codelineno-90-6" name="__codelineno-90-6" href="#__codelineno-90-6"></a>
-<a id="__codelineno-90-7" name="__codelineno-90-7" href="#__codelineno-90-7"></a>  This resource will be managed by the deployment on the next deploy.
-<a id="__codelineno-90-8" name="__codelineno-90-8" href="#__codelineno-90-8"></a>  Changes to udp.yml will be applied to the existing item.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a>Bound: ingest_notebook
+<a id="__codelineno-91-2" name="__codelineno-91-2" href="#__codelineno-91-2"></a>  Type:      Notebook
+<a id="__codelineno-91-3" name="__codelineno-91-3" href="#__codelineno-91-3"></a>  Item ID:   abc123-def456-...
+<a id="__codelineno-91-4" name="__codelineno-91-4" href="#__codelineno-91-4"></a>  Workspace: sales-analytics-dev
+<a id="__codelineno-91-5" name="__codelineno-91-5" href="#__codelineno-91-5"></a>  Recorded to state. Visible in &#39;udp-cicd status&#39;.
+<a id="__codelineno-91-6" name="__codelineno-91-6" href="#__codelineno-91-6"></a>
+<a id="__codelineno-91-7" name="__codelineno-91-7" href="#__codelineno-91-7"></a>  This resource will be managed by the deployment on the next deploy.
+<a id="__codelineno-91-8" name="__codelineno-91-8" href="#__codelineno-91-8"></a>  Changes to udp.yml will be applied to the existing item.
 </code></pre></div>
 <blockquote>
 <p><strong>Important</strong></p>
@@ -5872,7 +5914,7 @@
 <h3 id="75-import">7.5 import<a class="headerlink" href="#75-import" title="Permanent link">&para;</a></h3>
 <p>Import existing resources into udp-cicd management from a Terraform state file or a live Fabric workspace.</p>
 <h4 id="syntax_20">Syntax<a class="headerlink" href="#syntax_20" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a>udp-cicd import [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a>udp-cicd import [OPTIONS]
 </code></pre></div>
 <h4 id="options_17">Options<a class="headerlink" href="#options_17" title="Permanent link">&para;</a></h4>
 <table>
@@ -5922,23 +5964,23 @@
 </blockquote>
 <h4 id="examples_20">Examples<a class="headerlink" href="#examples_20" title="Permanent link">&para;</a></h4>
 <p><strong>Import from Terraform state:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>--from-terraform<span class="w"> </span>./terraform.tfstate<span class="w"> </span>--target<span class="w"> </span>prod
+<div class="highlight"><pre><span></span><code><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>--from-terraform<span class="w"> </span>./terraform.tfstate<span class="w"> </span>--target<span class="w"> </span>prod
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a>Found 4 Fabric resources in Terraform state
-<a id="__codelineno-93-2" name="__codelineno-93-2" href="#__codelineno-93-2"></a>  lakehouse            bronze_lakehouse
-<a id="__codelineno-93-3" name="__codelineno-93-3" href="#__codelineno-93-3"></a>  lakehouse            gold_lakehouse
-<a id="__codelineno-93-4" name="__codelineno-93-4" href="#__codelineno-93-4"></a>  notebook             ingest_notebook
-<a id="__codelineno-93-5" name="__codelineno-93-5" href="#__codelineno-93-5"></a>  datapipeline         daily_pipeline
-<a id="__codelineno-93-6" name="__codelineno-93-6" href="#__codelineno-93-6"></a>
-<a id="__codelineno-93-7" name="__codelineno-93-7" href="#__codelineno-93-7"></a>Imported 4 resources to udp-cicd state.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a>Found 4 Fabric resources in Terraform state
+<a id="__codelineno-94-2" name="__codelineno-94-2" href="#__codelineno-94-2"></a>  lakehouse            bronze_lakehouse
+<a id="__codelineno-94-3" name="__codelineno-94-3" href="#__codelineno-94-3"></a>  lakehouse            gold_lakehouse
+<a id="__codelineno-94-4" name="__codelineno-94-4" href="#__codelineno-94-4"></a>  notebook             ingest_notebook
+<a id="__codelineno-94-5" name="__codelineno-94-5" href="#__codelineno-94-5"></a>  datapipeline         daily_pipeline
+<a id="__codelineno-94-6" name="__codelineno-94-6" href="#__codelineno-94-6"></a>
+<a id="__codelineno-94-7" name="__codelineno-94-7" href="#__codelineno-94-7"></a>Imported 4 resources to udp-cicd state.
 </code></pre></div>
 <p><strong>Import from a live workspace:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Workspace&quot;</span><span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Workspace&quot;</span><span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a>Found 6 items in workspace &#39;My Workspace&#39;
-<a id="__codelineno-95-2" name="__codelineno-95-2" href="#__codelineno-95-2"></a>Imported 6 resources to udp-cicd state.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-96-1" name="__codelineno-96-1" href="#__codelineno-96-1"></a>Found 6 items in workspace &#39;My Workspace&#39;
+<a id="__codelineno-96-2" name="__codelineno-96-2" href="#__codelineno-96-2"></a>Imported 6 resources to udp-cicd state.
 </code></pre></div>
 <blockquote>
 <p><strong>Tip</strong></p>
@@ -5955,7 +5997,7 @@
 <h3 id="81-admin-plan">8.1 admin plan<a class="headerlink" href="#81-admin-plan" title="Permanent link">&para;</a></h3>
 <p>Preview the difference between the tenant settings declared under <code>admin.tenant_settings</code> and the live tenant. Read-only — makes no changes.</p>
 <h4 id="syntax_21">Syntax<a class="headerlink" href="#syntax_21" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-96-1" name="__codelineno-96-1" href="#__codelineno-96-1"></a>udp-cicd admin plan [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a>udp-cicd admin plan [OPTIONS]
 </code></pre></div>
 <h4 id="options_18">Options<a class="headerlink" href="#options_18" title="Permanent link">&para;</a></h4>
 <table>
@@ -5979,24 +6021,24 @@
 </tbody>
 </table>
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>plan
+<div class="highlight"><pre><span></span><code><a id="__codelineno-98-1" name="__codelineno-98-1" href="#__codelineno-98-1"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>plan
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-98-1" name="__codelineno-98-1" href="#__codelineno-98-1"></a>Tenant Settings Plan
-<a id="__codelineno-98-2" name="__codelineno-98-2" href="#__codelineno-98-2"></a>
-<a id="__codelineno-98-3" name="__codelineno-98-3" href="#__codelineno-98-3"></a>  ~  PublishToWeb  Publish to web
-<a id="__codelineno-98-4" name="__codelineno-98-4" href="#__codelineno-98-4"></a>      enabled: enabled -&gt; disabled
-<a id="__codelineno-98-5" name="__codelineno-98-5" href="#__codelineno-98-5"></a>  =  DevelopmentTenantSettings  no change
-<a id="__codelineno-98-6" name="__codelineno-98-6" href="#__codelineno-98-6"></a>  !  PublishToWebb  (unknown setting)
-<a id="__codelineno-98-7" name="__codelineno-98-7" href="#__codelineno-98-7"></a>      setting not found in this tenant — check the settingName
-<a id="__codelineno-98-8" name="__codelineno-98-8" href="#__codelineno-98-8"></a>
-<a id="__codelineno-98-9" name="__codelineno-98-9" href="#__codelineno-98-9"></a>  Summary: 1 to update, 1 unchanged, 1 unknown
+<div class="highlight"><pre><span></span><code><a id="__codelineno-99-1" name="__codelineno-99-1" href="#__codelineno-99-1"></a>Tenant Settings Plan
+<a id="__codelineno-99-2" name="__codelineno-99-2" href="#__codelineno-99-2"></a>
+<a id="__codelineno-99-3" name="__codelineno-99-3" href="#__codelineno-99-3"></a>  ~  PublishToWeb  Publish to web
+<a id="__codelineno-99-4" name="__codelineno-99-4" href="#__codelineno-99-4"></a>      enabled: enabled -&gt; disabled
+<a id="__codelineno-99-5" name="__codelineno-99-5" href="#__codelineno-99-5"></a>  =  DevelopmentTenantSettings  no change
+<a id="__codelineno-99-6" name="__codelineno-99-6" href="#__codelineno-99-6"></a>  !  PublishToWebb  (unknown setting)
+<a id="__codelineno-99-7" name="__codelineno-99-7" href="#__codelineno-99-7"></a>      setting not found in this tenant — check the settingName
+<a id="__codelineno-99-8" name="__codelineno-99-8" href="#__codelineno-99-8"></a>
+<a id="__codelineno-99-9" name="__codelineno-99-9" href="#__codelineno-99-9"></a>  Summary: 1 to update, 1 unchanged, 1 unknown
 </code></pre></div>
 <p>Markers: <code>~</code> change, <code>=</code> no change, <code>!</code> unknown settingName.</p>
 <h3 id="82-admin-apply">8.2 admin apply<a class="headerlink" href="#82-admin-apply" title="Permanent link">&para;</a></h3>
 <p>Apply the declared tenant settings to the tenant. Prompts for confirmation because the changes are organization-wide.</p>
 <h4 id="syntax_22">Syntax<a class="headerlink" href="#syntax_22" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-99-1" name="__codelineno-99-1" href="#__codelineno-99-1"></a>udp-cicd admin apply [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-100-1" name="__codelineno-100-1" href="#__codelineno-100-1"></a>udp-cicd admin apply [OPTIONS]
 </code></pre></div>
 <h4 id="options_19">Options<a class="headerlink" href="#options_19" title="Permanent link">&para;</a></h4>
 <table>
@@ -6035,30 +6077,30 @@
 </table>
 <p><code>admin apply</code> refuses to run while any declared <code>settingName</code> is <strong>unknown</strong>, so a typo cannot silently no-op.</p>
 <h4 id="examples_21">Examples<a class="headerlink" href="#examples_21" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-100-1" name="__codelineno-100-1" href="#__codelineno-100-1"></a><span class="c1"># Preview, then apply with confirmation</span>
-<a id="__codelineno-100-2" name="__codelineno-100-2" href="#__codelineno-100-2"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply
-<a id="__codelineno-100-3" name="__codelineno-100-3" href="#__codelineno-100-3"></a>
-<a id="__codelineno-100-4" name="__codelineno-100-4" href="#__codelineno-100-4"></a><span class="c1"># Non-interactive (CI)</span>
-<a id="__codelineno-100-5" name="__codelineno-100-5" href="#__codelineno-100-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
-<a id="__codelineno-100-6" name="__codelineno-100-6" href="#__codelineno-100-6"></a>
-<a id="__codelineno-100-7" name="__codelineno-100-7" href="#__codelineno-100-7"></a><span class="c1"># Preview without writing</span>
-<a id="__codelineno-100-8" name="__codelineno-100-8" href="#__codelineno-100-8"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>--dry-run
+<div class="highlight"><pre><span></span><code><a id="__codelineno-101-1" name="__codelineno-101-1" href="#__codelineno-101-1"></a><span class="c1"># Preview, then apply with confirmation</span>
+<a id="__codelineno-101-2" name="__codelineno-101-2" href="#__codelineno-101-2"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply
+<a id="__codelineno-101-3" name="__codelineno-101-3" href="#__codelineno-101-3"></a>
+<a id="__codelineno-101-4" name="__codelineno-101-4" href="#__codelineno-101-4"></a><span class="c1"># Non-interactive (CI)</span>
+<a id="__codelineno-101-5" name="__codelineno-101-5" href="#__codelineno-101-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
+<a id="__codelineno-101-6" name="__codelineno-101-6" href="#__codelineno-101-6"></a>
+<a id="__codelineno-101-7" name="__codelineno-101-7" href="#__codelineno-101-7"></a><span class="c1"># Preview without writing</span>
+<a id="__codelineno-101-8" name="__codelineno-101-8" href="#__codelineno-101-8"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>--dry-run
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-101-1" name="__codelineno-101-1" href="#__codelineno-101-1"></a>Tenant Settings Plan
-<a id="__codelineno-101-2" name="__codelineno-101-2" href="#__codelineno-101-2"></a>
-<a id="__codelineno-101-3" name="__codelineno-101-3" href="#__codelineno-101-3"></a>  ~  PublishToWeb  Publish to web
-<a id="__codelineno-101-4" name="__codelineno-101-4" href="#__codelineno-101-4"></a>      enabled: enabled -&gt; disabled
-<a id="__codelineno-101-5" name="__codelineno-101-5" href="#__codelineno-101-5"></a>
-<a id="__codelineno-101-6" name="__codelineno-101-6" href="#__codelineno-101-6"></a>  Summary: 1 to update, 0 unchanged
-<a id="__codelineno-101-7" name="__codelineno-101-7" href="#__codelineno-101-7"></a>
-<a id="__codelineno-101-8" name="__codelineno-101-8" href="#__codelineno-101-8"></a>WARNING: These changes apply tenant-wide and affect every user in the organization.
-<a id="__codelineno-101-9" name="__codelineno-101-9" href="#__codelineno-101-9"></a>Apply these tenant setting changes? [y/n]: y
-<a id="__codelineno-101-10" name="__codelineno-101-10" href="#__codelineno-101-10"></a>
-<a id="__codelineno-101-11" name="__codelineno-101-11" href="#__codelineno-101-11"></a>  ~ Updated: PublishToWeb
-<a id="__codelineno-101-12" name="__codelineno-101-12" href="#__codelineno-101-12"></a>
-<a id="__codelineno-101-13" name="__codelineno-101-13" href="#__codelineno-101-13"></a>Apply complete. Updated: 1 setting(s).
-<a id="__codelineno-101-14" name="__codelineno-101-14" href="#__codelineno-101-14"></a>Note: tenant setting changes can take up to 15 minutes to take effect.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-102-1" name="__codelineno-102-1" href="#__codelineno-102-1"></a>Tenant Settings Plan
+<a id="__codelineno-102-2" name="__codelineno-102-2" href="#__codelineno-102-2"></a>
+<a id="__codelineno-102-3" name="__codelineno-102-3" href="#__codelineno-102-3"></a>  ~  PublishToWeb  Publish to web
+<a id="__codelineno-102-4" name="__codelineno-102-4" href="#__codelineno-102-4"></a>      enabled: enabled -&gt; disabled
+<a id="__codelineno-102-5" name="__codelineno-102-5" href="#__codelineno-102-5"></a>
+<a id="__codelineno-102-6" name="__codelineno-102-6" href="#__codelineno-102-6"></a>  Summary: 1 to update, 0 unchanged
+<a id="__codelineno-102-7" name="__codelineno-102-7" href="#__codelineno-102-7"></a>
+<a id="__codelineno-102-8" name="__codelineno-102-8" href="#__codelineno-102-8"></a>WARNING: These changes apply tenant-wide and affect every user in the organization.
+<a id="__codelineno-102-9" name="__codelineno-102-9" href="#__codelineno-102-9"></a>Apply these tenant setting changes? [y/n]: y
+<a id="__codelineno-102-10" name="__codelineno-102-10" href="#__codelineno-102-10"></a>
+<a id="__codelineno-102-11" name="__codelineno-102-11" href="#__codelineno-102-11"></a>  ~ Updated: PublishToWeb
+<a id="__codelineno-102-12" name="__codelineno-102-12" href="#__codelineno-102-12"></a>
+<a id="__codelineno-102-13" name="__codelineno-102-13" href="#__codelineno-102-13"></a>Apply complete. Updated: 1 setting(s).
+<a id="__codelineno-102-14" name="__codelineno-102-14" href="#__codelineno-102-14"></a>Note: tenant setting changes can take up to 15 minutes to take effect.
 </code></pre></div>
 <hr />
 <h2 id="9-exit-codes">9. Exit codes<a class="headerlink" href="#9-exit-codes" title="Permanent link">&para;</a></h2>
