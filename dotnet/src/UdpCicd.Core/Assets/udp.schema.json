@@ -21,7 +21,12 @@
         "name": { "type": "string" },
         "workspace_id": { "type": "string" },
         "capacity": { "type": "string" },
-        "description": { "type": "string" }
+        "capacity_id": { "type": "string" },
+        "description": { "type": "string" },
+        "folders_by_type": {
+          "type": "boolean",
+          "description": "Organize deployed items into Fabric workspace folders by type (Notebooks, Pipelines, Lakehouses, Reports, Models, Databases, ...). A per-resource 'folder' overrides the type folder."
+        }
       }
     },
     "include": {

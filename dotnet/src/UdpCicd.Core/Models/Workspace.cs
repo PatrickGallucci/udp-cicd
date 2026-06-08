@@ -40,6 +40,14 @@ public sealed partial class WorkspaceConfig
     public string? Description { get; set; }
     public GitIntegrationConfig? GitIntegration { get; set; }
 
+    /// <summary>
+    /// When true, deployed items are organized into Fabric workspace folders by
+    /// type (Notebooks, Pipelines, Lakehouses, Reports, Models, Databases, …).
+    /// A per-resource <c>folder</c> always takes precedence over the type folder.
+    /// Null/false leaves items at the workspace root (the default).
+    /// </summary>
+    public bool? FoldersByType { get; set; }
+
     [GeneratedRegex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", RegexOptions.IgnoreCase)]
     private static partial Regex GuidPattern();
 

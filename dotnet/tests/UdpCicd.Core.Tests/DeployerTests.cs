@@ -221,6 +221,54 @@ public class DeployerTests
         }
     }
 
+    [Fact]
+    public void FoldersByType_Creates_Type_Folders_And_Assigns_Items()
+    {
+        var dir = MakeProject();
+        try
+        {
+            var deployment = Loader.LoadDeployment(Path.Combine(dir, "udp.yml"));
+            deployment.Workspace.FoldersByType = true; // opt in to per-type workspace folders (bool?)
+            var plan = Planner.CreatePlan(deployment);
+
+            var bodies = new List<string>();
+            var folderCreates = new List<string>();
+            var handler = new RouteHandlerCapturing((method, path, body) =>
+            {
+                bodies.Add($"{method} {path} :: {body}");
+                if (method == "GET" && path.EndsWith("/items")) return Json("""{"value":[]}""");
+                if (method == "GET" && path.EndsWith("/folders")) return Json("""{"value":[]}""");
+                if (method == "POST" && path.EndsWith("/folders"))
+                {
+                    folderCreates.Add(body ?? "");
+                    var id = (body ?? "").Contains("Lakehouses") ? "fid-lh" : "fid-nb";
+                    return Json($$"""{"id":"{{id}}","displayName":"x"}""");
+                }
+                if (method == "POST" && (path.EndsWith("/lakehouses") || path.EndsWith("/notebooks")))
+                    return Json("""{"id":"new-item-id"}""");
+                return Json("{}");
+            });
+            var client = new FabricClient(new FabricAuth { Credential = new FakeCredential() }, new HttpClient(handler));
+
+            var deployer = new Deployer(client, deployment, dir, SilentConsole(), dryRun: false);
+            var result = deployer.Execute(plan);
+
+            Assert.True(result.Success, string.Join("; ", result.Errors));
+            Assert.Equal(2, result.ItemsCreated);
+            // One folder per type is created (Lakehouses, Notebooks).
+            Assert.Equal(2, folderCreates.Count);
+            Assert.Contains(folderCreates, b => b.Contains("Lakehouses"));
+            Assert.Contains(folderCreates, b => b.Contains("Notebooks"));
+            // Each item create carries the folderId of its type folder.
+            Assert.Contains(bodies, b => b.Contains("/lakehouses ::") && b.Contains("\"folderId\""));
+            Assert.Contains(bodies, b => b.Contains("/notebooks ::") && b.Contains("\"folderId\""));
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
     private sealed class RouteHandlerCapturing : HttpMessageHandler
     {
         private readonly Func<string, string, string?, HttpResponseMessage> _route;

@@ -130,6 +130,7 @@ public sealed class DeploymentDefinition
                 Capacity = tw.Capacity ?? baseWs.Capacity,
                 Description = tw.Description ?? baseWs.Description,
                 GitIntegration = tw.GitIntegration ?? baseWs.GitIntegration,
+                FoldersByType = tw.FoldersByType ?? baseWs.FoldersByType,
             };
         }
         return baseWs;

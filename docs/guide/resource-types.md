@@ -19,6 +19,12 @@ Resources deploy in dependency order, resolved automatically by the engine:
 
 You do not declare this ordering in `udp.yml`; the Resolver derives it from resource references (for example, a notebook's `default_lakehouse` or a report's `semantic_model`).
 
+!!! tip "Workspace folders by type"
+    Every resource type belongs to a workspace folder category (Notebooks,
+    Pipelines, Lakehouses, Models, Databases, Real-Time, …). Set
+    [`workspace.folders_by_type: true`](udp-yml.md#44-workspace-folders-by-type)
+    to have `deploy` group items into those folders automatically.
+
 ---
 
 ## 2. Supported types

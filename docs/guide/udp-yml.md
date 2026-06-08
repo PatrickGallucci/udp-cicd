@@ -88,6 +88,7 @@ Default workspace configuration. Targets can override these values.
 | `capacity_id` | String | No | | Fabric capacity GUID. Required when creating a new workspace. Must be a valid GUID format (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) or a variable reference (`${var.capacity_id}`). |
 | `capacity` | String | No | | **Deprecated.** Use `capacity_id` instead. |
 | `description` | String | No | | Workspace description. |
+| `folders_by_type` | Boolean | No | `false` | When `true`, `deploy` organizes items into Fabric workspace folders by type (`Notebooks`, `Pipelines`, `Lakehouses`, `Reports`, `Models`, `Databases`, `Warehouses`, `Environments`, `Agents`, `Variables`). A per-resource `folder` always overrides the type folder. Folders are created on item creation; existing items are not moved. |
 | `git_integration` | Object | No | | Git integration settings for the workspace. See [git_integration](#43-git_integration). |
 
 ### 4.2 Example
@@ -132,6 +133,58 @@ workspace:
     branch: main
     directory: /workspace
 ```
+
+### 4.4 Workspace folders by type
+
+Set `folders_by_type: true` to have `deploy` organize items into Fabric
+workspace folders grouped by type. The folder is chosen automatically per
+resource type; a per-resource `folder:` always takes precedence.
+
+```yaml
+workspace:
+  capacity_id: "${var.capacity_id}"
+  folders_by_type: true
+```
+
+**Every** resource type is assigned a folder — including any type added in a
+future release, which falls back to `Other` until it is given a category — so no
+item is ever left ungrouped. The mapping:
+
+| Folder | Resource types |
+|---|---|
+| `Lakehouses` | `lakehouses` |
+| `Notebooks` | `notebooks` |
+| `Pipelines` | `pipelines` |
+| `Warehouses` | `warehouses` |
+| `Databases` | `sql_databases`, `kql_databases`, `mirrored_databases`, `snowflake_databases`, `cosmosdb_databases`, `mirrored_databricks_catalogs`, `mirrored_warehouses`, `datamarts` |
+| `Models` | `semantic_models`, `ml_models`, `ml_experiments` |
+| `Reports` | `reports`, `paginated_reports`, `dashboards` |
+| `Agents` | `data_agents`, `operations_agents` |
+| `Environments` | `environments` |
+| `Variables` | `variable_libraries` |
+| `Data Engineering` | `graphql_apis`, `spark_job_definitions`, `user_data_functions` |
+| `Data Factory` | `dataflows`, `copy_jobs`, `airflow_jobs`, `mounted_data_factories`, `dbt_jobs` |
+| `Real-Time` | `eventhouses`, `eventstreams`, `kql_dashboards`, `kql_querysets`, `reflex`, `anomaly_detectors`, `digital_twin_builders`, `digital_twin_builder_flows`, `event_schema_sets`, `ontologies` |
+| `Graph` | `graphs`, `graph_models`, `graph_query_sets` |
+| `Maps` | `map_items` |
+| `Healthcare` | `hls_cohorts` |
+
+To override the folder for a single item, set `folder:` on that resource (the
+`folder` field is available on notebooks, pipelines, warehouses, semantic models
+and reports):
+
+```yaml
+resources:
+  notebooks:
+    ad_hoc_analysis:
+      path: ./notebooks/ad_hoc.py
+      folder: "Scratch"   # overrides the default "Notebooks" folder
+```
+
+!!! note
+    Folders are created/assigned when an item is **created**. Existing items are
+    not moved into folders on a subsequent `update`. `folders_by_type` can also
+    be set per [target](targets-variables.md).
 
 ---
 

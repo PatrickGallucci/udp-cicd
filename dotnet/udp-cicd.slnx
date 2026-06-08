@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/UdpCicd.Cli/UdpCicd.Cli.csproj" />
     <Project Path="src/UdpCicd.Core/UdpCicd.Core.csproj" />
+    <Project Path="src/UdpCicd.Editor/UdpCicd.Editor.csproj" />
     <Project Path="src/UdpCicd.Mcp/UdpCicd.Mcp.csproj" />
   </Folder>
   <Folder Name="/tests/">

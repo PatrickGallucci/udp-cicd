@@ -6,6 +6,9 @@ deployment:
 workspace:
   # Your Fabric capacity GUID — find it in the Fabric Admin Portal → Capacities
   capacity_id: ${{capacity_id}}
+  # Organize deployed items into Fabric workspace folders by type
+  # (Notebooks, Pipelines, Lakehouses, Models, Warehouses, …).
+  folders_by_type: true
 
 variables:
   source_connection:

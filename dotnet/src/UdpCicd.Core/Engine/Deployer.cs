@@ -39,6 +39,8 @@ public sealed partial class Deployer
     private GraphClient? _graphClient;
     private string? _currentWorkspaceId;
     private bool _forceDeploy;
+    private bool _foldersByType;
+    private Dictionary<string, string>? _folderIdsByName;
 
     public StateManager? StateManager { get; set; }
 
@@ -1194,6 +1196,79 @@ public sealed partial class Deployer
         return workspaceId;
     }
 
+    /// <summary>
+    /// The workspace folder a resource should be placed in: an explicit per-item
+    /// <c>folder</c> wins; otherwise the per-type folder when
+    /// <c>workspace.folders_by_type</c> is enabled; otherwise null (workspace root).
+    /// </summary>
+    private string? EffectiveFolderName(PlanItem item, string? resourceTypeName)
+    {
+        if (resourceTypeName is null)
+        {
+            return null;
+        }
+        var resource = _deployment.Resources.GetResourceObject(resourceTypeName, item.ResourceKey);
+        if (resource?.GetType().GetProperty("Folder")?.GetValue(resource) is string explicitFolder
+            && !string.IsNullOrEmpty(explicitFolder))
+        {
+            return explicitFolder;
+        }
+        return _foldersByType ? ResourceTypeRegistry.FolderFor(resourceTypeName) : null;
+    }
+
+    /// <summary>Resolve (creating if needed) the folder id a new item should be created under.</summary>
+    private string? ResolveItemFolderId(string workspaceId, PlanItem item, string? resourceTypeName)
+    {
+        var folderName = EffectiveFolderName(item, resourceTypeName);
+        if (string.IsNullOrEmpty(folderName))
+        {
+            return null;
+        }
+        try
+        {
+            return EnsureFolder(workspaceId, folderName);
+        }
+        catch (Exception e)
+        {
+            // Folders are organizational only — never fail a deployment over one.
+            _console.MarkupLine($"  [yellow]Warning:[/] could not place '{Markup.Escape(item.ResourceKey)}' in folder '{Markup.Escape(folderName)}': {Markup.Escape(e.Message)} — created at workspace root.");
+            return null;
+        }
+    }
+
+    /// <summary>Return the id of a workspace folder, creating it on first use and caching by name.</summary>
+    private string? EnsureFolder(string workspaceId, string name)
+    {
+        if (_folderIdsByName is null)
+        {
+            _folderIdsByName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var folder in _client.ListFolders(workspaceId))
+            {
+                var displayName = folder["displayName"]?.GetValue<string>();
+                var folderId = folder["id"]?.GetValue<string>();
+                if (!string.IsNullOrEmpty(displayName) && !string.IsNullOrEmpty(folderId))
+                {
+                    _folderIdsByName[displayName] = folderId;
+                }
+            }
+        }
+
+        if (_folderIdsByName.TryGetValue(name, out var existing))
+        {
+            return existing;
+        }
+
+        var created = _client.CreateFolder(workspaceId, name);
+        var newId = created["id"]?.GetValue<string>();
+        if (!string.IsNullOrEmpty(newId))
+        {
+            _folderIdsByName[name] = newId;
+            _console.MarkupLine($"  [green]+[/] Created folder: {Markup.Escape(name)}");
+            return newId;
+        }
+        return null;
+    }
+
     /// <summary>Deploy a single item. Returns true on success, false on failure, null if skipped.</summary>
     private bool? DeployItem(string workspaceId, PlanItem item, Dictionary<string, Dictionary<string, object?>> existingItems)
     {
@@ -1223,7 +1298,9 @@ public sealed partial class Deployer
 
             if (_dryRun)
             {
-                _console.MarkupLine($"  [green]+[/] Would create {item.ResourceType}: {Markup.Escape(item.ResourceKey)}");
+                var plannedFolder = EffectiveFolderName(item, resourceTypeName);
+                var folderSuffix = string.IsNullOrEmpty(plannedFolder) ? "" : $" → folder '{plannedFolder}'";
+                _console.MarkupLine($"  [green]+[/] Would create {item.ResourceType}: {Markup.Escape(item.ResourceKey)}{Markup.Escape(folderSuffix)}");
                 return true;
             }
 
@@ -1297,8 +1374,9 @@ public sealed partial class Deployer
                 }
             }
 
+            var folderId = ResolveItemFolderId(workspaceId, item, resourceTypeName);
             var result = _client.CreateItem(workspaceId, item.ResourceKey, item.ResourceType,
-                definition: definition, description: description, creationPayload: creationPayload);
+                definition: definition, description: description, creationPayload: creationPayload, folderId: folderId);
 
             string? itemId;
             var opUrl = result["operation_url"]?.GetValue<string>();
@@ -1427,6 +1505,8 @@ public sealed partial class Deployer
         {
             workspaceId = EnsureWorkspace(targetName);
             _currentWorkspaceId = workspaceId;
+            _foldersByType = _deployment.GetEffectiveWorkspace(targetName).FoldersByType ?? false;
+            _folderIdsByName = null; // reload the folder cache per deployment run
         }
         catch (Exception e)
         {

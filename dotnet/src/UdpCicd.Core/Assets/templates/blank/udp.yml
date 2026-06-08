@@ -3,6 +3,11 @@ deployment:
   version: "1.0.0"
   description: "A Fabric Automation Deployment project"
 
+workspace:
+  # Organize deployed items into Fabric workspace folders by type
+  # (Notebooks, Pipelines, Lakehouses, …). A per-item `folder:` overrides this.
+  folders_by_type: true
+
 resources:
   # Spark environment with libraries
   environments:

@@ -12,6 +12,11 @@ deployment:
 
 workspace:
   capacity_id: "${var.capacity_id}"
+  # Group every deployed item into a Fabric workspace folder by type. With all
+  # 45 types present, this creates folders: Agents, Data Engineering,
+  # Data Factory, Databases, Environments, Graph, Healthcare, Lakehouses, Maps,
+  # Models, Notebooks, Pipelines, Real-Time, Reports, Variables, Warehouses.
+  folders_by_type: true
 
 variables:
   capacity_id:

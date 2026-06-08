@@ -10,6 +10,11 @@ deployment:
   version: "1.0.0"
   description: "Bronze/Silver/Gold lakehouse architecture with scheduled ETL"
 
+workspace:
+  # Group deployed items into Fabric workspace folders by type
+  # (Lakehouses, Notebooks, Pipelines, Warehouses, Models, Agents, Environments).
+  folders_by_type: true
+
 resources:
   environments:
     spark_env:
