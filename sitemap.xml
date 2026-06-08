@@ -2,110 +2,114 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/troubleshooting/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/advanced/drift/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/advanced/policies/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/advanced/state/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/blog/medium-launch/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/cicd/azure-devops/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/cicd/github-actions/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/cicd/overview/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/cli/commands/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/getting-started/first-deployment/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/getting-started/installation/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/getting-started/quickstart/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/admin-settings/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/declarative-model/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/development-workflows/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
+    </url>
+    <url>
+         <loc>https://PatrickGallucci.github.io/udp-cicd/guide/editor/</loc>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/mcp-server/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/migrate-from-fabric-cicd/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/migrate-from-terraform/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/resource-types/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/secrets/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/security/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/service-principal/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/targets-variables/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/templates/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/guide/udp-yml/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
     <url>
          <loc>https://PatrickGallucci.github.io/udp-cicd/reference/environment-variables/</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-08</lastmod>
     </url>
 </urlset>

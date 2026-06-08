@@ -1807,6 +1807,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../editor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    udp.yml Editor (Windows)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../migrate-from-terraform/" class="md-nav__link">
         
   
@@ -3229,6 +3257,13 @@
 </tbody>
 </table>
 <p>You do not declare this ordering in <code>udp.yml</code>; the Resolver derives it from resource references (for example, a notebook's <code>default_lakehouse</code> or a report's <code>semantic_model</code>).</p>
+<div class="admonition tip">
+<p class="admonition-title">Workspace folders by type</p>
+<p>Every resource type belongs to a workspace folder category (Notebooks,
+Pipelines, Lakehouses, Models, Databases, Real-Time, …). Set
+<a href="../udp-yml/#44-workspace-folders-by-type"><code>workspace.folders_by_type: true</code></a>
+to have <code>deploy</code> group items into those folders automatically.</p>
+</div>
 <hr />
 <h2 id="2-supported-types">2. Supported types<a class="headerlink" href="#2-supported-types" title="Permanent link">&para;</a></h2>
 <h3 id="21-data-engineering">2.1 Data Engineering<a class="headerlink" href="#21-data-engineering" title="Permanent link">&para;</a></h3>

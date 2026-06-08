@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/admin-settings/">
+        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/editor/">
       
       
-        <link rel="prev" href="../security/">
+        <link rel="prev" href="../mcp-server/">
       
       
-        <link rel="next" href="../secrets/">
+        <link rel="next" href="../migrate-from-terraform/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Admin / Tenant Settings - Unified Data Platform Deployment</title>
+        <title>udp.yml Editor (Windows) - Unified Data Platform Deployment</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#admin-tenant-settings" class="md-skip">
+        <a href="#udpyml-editor-windows" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Admin / Tenant Settings
+              udp.yml Editor (Windows)
             
           </span>
         </div>
@@ -825,37 +825,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Admin / Tenant Settings
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../admin-settings/" class="md-nav__link">
         
   
   
@@ -871,109 +844,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-how-it-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. How it works
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-finding-the-settingname" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Finding the settingName
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-declaring-settings-in-udpyml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Declaring settings in udp.yml
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Declaring settings in udp.yml">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#fields" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fields
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Commands
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-why-not-part-of-deploy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Why not part of deploy?
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1095,10 +965,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../editor/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    udp.yml Editor (Windows)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1114,6 +1011,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing-and-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing and running
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The window
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workspace-folders-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace folders by type
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-maps-to-udpyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it maps to udp.yml
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1704,10 +1698,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-how-it-works" class="md-nav__link">
+  <a href="#installing-and-running" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. How it works
+        Installing and running
       
     </span>
   </a>
@@ -1715,10 +1709,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-finding-the-settingname" class="md-nav__link">
+  <a href="#the-window" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Finding the settingName
+        The window
       
     </span>
   </a>
@@ -1726,38 +1720,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-declaring-settings-in-udpyml" class="md-nav__link">
+  <a href="#editing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Declaring settings in udp.yml
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Declaring settings in udp.yml">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#fields" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fields
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Commands
+        Editing
       
     </span>
   </a>
@@ -1765,10 +1731,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-prerequisites" class="md-nav__link">
+  <a href="#tools" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Prerequisites
+        Tools
       
     </span>
   </a>
@@ -1776,10 +1742,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-why-not-part-of-deploy" class="md-nav__link">
+  <a href="#workspace-folders-by-type" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Why not part of deploy?
+        Workspace folders by type
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-maps-to-udpyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it maps to udp.yml
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
       
     </span>
   </a>
@@ -1806,172 +1794,139 @@
   
 
 
-<h1 id="admin-tenant-settings">Admin / Tenant Settings<a class="headerlink" href="#admin-tenant-settings" title="Permanent link">&para;</a></h1>
-<p>Declaratively manage <strong>Fabric tenant (admin) settings</strong> — the org-wide switches in the Admin portal's <strong>Tenant settings</strong> page — from your <code>udp.yml</code>, then apply them with a single gated command.</p>
-<p>Unlike everything else in <code>udp.yml</code>, tenant settings are <strong>not workspace items</strong>. They apply tenant-wide through the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/update-tenant-setting">Fabric Admin API</a>, not per workspace. Because a single change affects every user in the organization, they live <strong>outside</strong> the normal <code>deploy</code> flow and are applied only by the explicit <code>udp-cicd admin apply</code> command.</p>
-<hr />
-<h2 id="1-how-it-works">1. How it works<a class="headerlink" href="#1-how-it-works" title="Permanent link">&para;</a></h2>
-<p>You declare the <strong>desired state</strong> of each setting keyed by its API <strong><code>settingName</code></strong> (for example <code>PublishToWeb</code>). On <code>admin plan</code>/<code>apply</code>, udp-cicd:</p>
-<ol>
-<li>Reads your tenant's live settings via the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/list-tenant-settings">List Tenant Settings API</a>.</li>
-<li>Validates every declared <code>settingName</code> against that live list — unknown names are reported, not silently ignored.</li>
-<li>Diffs declared vs. live state and shows exactly what would change.</li>
-<li>(<code>apply</code> only) Applies each change via the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/update-tenant-setting">Update Tenant Setting API</a>, paced under the API's 25-requests/minute limit.</li>
-</ol>
-<p>Only settings you <strong>explicitly declare</strong> are touched. Security groups and properties are managed only when you declare them — udp-cicd never clears them implicitly.</p>
-<hr />
-<h2 id="2-finding-the-settingname">2. Finding the <code>settingName</code><a class="headerlink" href="#2-finding-the-settingname" title="Permanent link">&para;</a></h2>
-<div class="admonition important">
-<p class="admonition-title">Titles vs. identifiers</p>
-<p>The <a href="https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index">tenant settings index</a> lists <strong>display titles</strong> ("Publish to web", "Web content on dashboard tiles"), <strong>not</strong> the API <code>settingName</code> identifiers the Admin API requires. The authoritative list of identifiers comes from <strong>your tenant</strong>.</p>
+<h1 id="udpyml-editor-windows">udp.yml Editor (Windows)<a class="headerlink" href="#udpyml-editor-windows" title="Permanent link">&para;</a></h1>
+<p>The <strong>udp.yml Editor</strong> is a standalone Windows desktop application for creating
+and updating <a href="../udp-yml/"><code>udp.yml</code></a> deployment definitions through a graphical
+tree + property-grid interface — no hand-editing of YAML required.</p>
+<p>It is built on the same <code>UdpCicd.Core</code> model and serializer that power the
+<code>udp-cicd</code> CLI and MCP server, so:</p>
+<ul>
+<li>it understands <strong>all 45 supported resource types</strong> automatically;</li>
+<li>the files it writes are byte-compatible with <code>udp-cicd deploy</code>/<code>validate</code>;</li>
+<li>it runs the <strong>same validation</strong> as <code>udp-cicd validate</code>.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Windows only</p>
+<p>The editor targets <code>net9.0-windows</code> and uses Windows Forms. The CLI and MCP
+server remain cross-platform; only this GUI is Windows-specific.</p>
 </div>
-<p>Get the real identifiers for your tenant:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>az<span class="w"> </span>rest<span class="w"> </span>--method<span class="w"> </span>get<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>--url<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com/v1/admin/tenantsettings&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--resource<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;tenantSettings[].{name:settingName, title:title, enabled:enabled}&quot;</span><span class="w"> </span>-o<span class="w"> </span>table
+<h2 id="installing-and-running">Installing and running<a class="headerlink" href="#installing-and-running" title="Permanent link">&para;</a></h2>
+<p>The editor ships in the repository as the <code>UdpCicd.Editor</code> project.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># from the dotnet/ folder of the repo</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">dotnet</span> <span class="n">run</span> <span class="p">-</span><span class="n">-project</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Editor</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c"># open an existing file directly</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">dotnet</span> <span class="n">run</span> <span class="p">-</span><span class="n">-project</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Editor</span> <span class="p">--</span> <span class="p">..\</span><span class="n">examples</span><span class="p">\</span><span class="n">02-medallion-lakehouse</span><span class="p">\</span><span class="n">udp</span><span class="p">.</span><span class="n">yml</span>
 </code></pre></div>
-<p>Each row's <code>name</code> is what you put in <code>udp.yml</code>; <code>title</code> matches the <a href="https://learn.microsoft.com/en-us/fabric/admin/tenant-settings-index">tenant settings index</a> so you can map a description to its identifier. The documented worked example is <code>PublishToWeb</code> (the "Publish to web" setting).</p>
-<p><code>udp-cicd admin plan</code> also validates your names directly — any identifier that doesn't exist in your tenant is flagged as <strong>unknown</strong> so you get immediate feedback.</p>
-<hr />
-<h2 id="3-declaring-settings-in-udpyml">3. Declaring settings in <code>udp.yml</code><a class="headerlink" href="#3-declaring-settings-in-udpyml" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">admin</span><span class="p">:</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">tenant_settings</span><span class="p">:</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="c1"># Disable Publish to web org-wide</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">PublishToWeb</span><span class="p">:</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="c1"># Enable a setting only for specific security groups</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">SomeFeatureSwitch</span><span class="p">:</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="nt">enabled_security_groups</span><span class="p">:</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">graph_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;f51b705f-a409-4d40-9197-c5d5f349e2f0&quot;</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Data</span><span class="nv"> </span><span class="s">Engineers&quot;</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">excluded_security_groups</span><span class="p">:</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">graph_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a1b2c3d4-0000-0000-0000-000000000000&quot;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Contractors&quot;</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="c1"># Allow workspace admins to override, and set a typed property</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="nt">DevelopmentTenantSettings</span><span class="p">:</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">      </span><span class="nt">delegate_to_workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MaxItems&quot;</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500&quot;</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Integer</span>
+<p>To produce a runnable build:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Editor</span> <span class="n">-c</span> <span class="n">Release</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c"># → src/UdpCicd.Editor/bin/Release/net9.0-windows/UdpCicd.Editor.exe</span>
 </code></pre></div>
-<h3 id="fields">Fields<a class="headerlink" href="#fields" title="Permanent link">&para;</a></h3>
+<p>You can also launch the <code>.exe</code> directly and pass a <code>udp.yml</code> path as the first
+argument.</p>
+<h2 id="the-window">The window<a class="headerlink" href="#the-window" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌──────────────────────────────┬───────────────────────────────────────┐
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│ Deployment: medallion         │  Name            medallion-analytics   │
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│ Workspace                     │  Version         1.0.0                  │
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│ Variables (2)                 │  Description      Bronze/Silver/Gold…   │
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│ Resources                     │  Folders By Type  True                  │
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│   notebooks (3)               │                                         │
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│   lakehouses (3)              │   ← property grid edits the item        │
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│   pipelines (1)               │     selected on the left                │
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│ Security roles (2)            │                                         │
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│ Connections (0)               │                                         │
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│ Targets (3)                   │                                         │
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│ Admin / tenant settings (0)   │                                         │
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│ Advanced                      │                                         │
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>└──────────────────────────────┴───────────────────────────────────────┘
+</code></pre></div>
+<ul>
+<li><strong>Left — tree.</strong> Every section of the deployment: <code>Deployment</code>, <code>Workspace</code>,
+  <code>Variables</code>, <code>Resources</code> (grouped by type, then by key), <code>Security</code>,
+  <code>Connections</code>, <code>Targets</code>, <code>Admin / tenant settings</code>, and an <code>Advanced</code> group
+  (<code>Policies</code>, <code>Notifications</code>, <code>State</code>).</li>
+<li><strong>Right — property grid.</strong> Edits the object selected in the tree: scalars,
+  enums (drop-downs), lists (collection editor), string maps (key/value dialog),
+  and nested objects (inline or via a dialog that can create a missing section).</li>
+</ul>
+<h2 id="editing">Editing<a class="headerlink" href="#editing" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Type</th>
-<th>Description</th>
+<th>Task</th>
+<th>How</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>enabled</code></td>
-<td>boolean (required)</td>
-<td>Turn the setting on or off</td>
+<td>Edit a field</td>
+<td>Select a node, change the value in the property grid</td>
 </tr>
 <tr>
-<td><code>delegate_to_capacity</code></td>
-<td>boolean</td>
-<td>Allow a capacity admin to override</td>
+<td>Add a resource</td>
+<td><strong>Edit ▸ Add Resource…</strong> (<code>Ctrl+R</code>), pick a type and key</td>
 </tr>
 <tr>
-<td><code>delegate_to_domain</code></td>
-<td>boolean</td>
-<td>Allow a domain admin to override</td>
+<td>Add a variable / connection / target / tenant setting</td>
+<td><strong>Edit ▸ Add …</strong></td>
 </tr>
 <tr>
-<td><code>delegate_to_workspace</code></td>
-<td>boolean</td>
-<td>Allow a workspace admin to override</td>
+<td>Rename a key</td>
+<td>Select the node and press <strong>F2</strong> (or right-click ▸ Rename)</td>
 </tr>
 <tr>
-<td><code>enabled_security_groups</code></td>
-<td>list</td>
-<td>Groups the setting is enabled for (<code>graph_id</code> + <code>name</code>)</td>
+<td>Remove an item</td>
+<td>Select the node and press <strong>Delete</strong></td>
 </tr>
 <tr>
-<td><code>excluded_security_groups</code></td>
-<td>list</td>
-<td>Groups explicitly excluded</td>
+<td>Edit a list (e.g. shortcuts, security roles)</td>
+<td>Click the <strong>…</strong> collection editor on the property</td>
 </tr>
 <tr>
-<td><code>properties</code></td>
-<td>list</td>
-<td>Typed properties some settings require (<code>name</code>, <code>value</code>, <code>type</code>)</td>
+<td>Edit a key/value map (e.g. spark properties, parameters)</td>
+<td>Click the <strong>…</strong> map editor on the property</td>
 </tr>
 </tbody>
 </table>
-<p><code>type</code> is one of <code>FreeText</code>, <code>Url</code>, <code>Boolean</code>, <code>MailEnabledSecurityGroup</code>, <code>Integer</code>. The <code>delegate_to_*</code> fields are only diffed/applied when you declare them, so you can leave them out to manage just <code>enabled</code>.</p>
-<p><code>${var.*}</code> substitution works inside any string value — handy for security-group GUIDs that differ per tenant.</p>
-<hr />
-<h2 id="4-commands">4. Commands<a class="headerlink" href="#4-commands" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Preview changes against the live tenant (read-only)</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>plan
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Apply — prompts for confirmation (tenant-wide!)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Apply non-interactively (CI)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Preview via apply without writing</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>--dry-run
+<h2 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Tools ▸ Validate</strong> (<code>F5</code>) — runs the same cross-reference and naming checks
+  as <code>udp-cicd validate</code> and lists any issues.</li>
+<li><strong>Tools ▸ View YAML</strong> — previews exactly what will be written to disk.</li>
+<li><strong>Tools ▸ Group items into workspace folders by type</strong> — sets
+  <code>workspace.folders_by_type</code> so <code>deploy</code> organizes items into Fabric workspace
+  folders by type. See <a href="#workspace-folders-by-type">Workspace folders by type</a>.</li>
+</ul>
+<h2 id="workspace-folders-by-type">Workspace folders by type<a class="headerlink" href="#workspace-folders-by-type" title="Permanent link">&para;</a></h2>
+<p>Toggling <strong>Group items into workspace folders by type</strong> sets
+<code>workspace.folders_by_type: true</code>. On deploy, each item is created inside a
+Fabric workspace folder named after its type category. A per-item <code>folder:</code>
+value always overrides the type folder. See the
+<a href="../udp-yml/#44-workspace-folders-by-type"><code>folders_by_type</code> reference</a> for the
+full type → folder mapping.</p>
+<h2 id="how-it-maps-to-udpyml">How it maps to <code>udp.yml</code><a class="headerlink" href="#how-it-maps-to-udpyml" title="Permanent link">&para;</a></h2>
+<p>The editor round-trips the <strong>literal</strong> source:</p>
+<ul>
+<li>It does <strong>not</strong> resolve <code>${var.*}</code> references or merge <code>include</code> / <code>extends</code> —
+  those stay verbatim, as an editor should preserve them.</li>
+<li>Output omits nulls and empty collections, so unused resource maps never
+  clutter the file; meaningful defaults (e.g. <code>enable_schemas: true</code>) are kept.</li>
+</ul>
+<p>Because it uses the production model, anything the editor saves can be deployed
+directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">udp-cicd</span> <span class="n">validate</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">udp-cicd</span> <span class="n">plan</span> <span class="n">-t</span> <span class="n">dev</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">udp-cicd</span> <span class="n">deploy</span> <span class="n">-t</span> <span class="n">dev</span>
 </code></pre></div>
-<p>Sample <code>admin plan</code> output:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Tenant Settings Plan
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  ~  PublishToWeb  Publish to web
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>      enabled: enabled -&gt; disabled
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  =  DevelopmentTenantSettings  no change
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  !  PublishToWebb  (unknown setting)
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>      setting not found in this tenant — check the settingName
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  Summary: 1 to update, 1 unchanged, 1 unknown
-</code></pre></div>
-<p><code>admin apply</code> refuses to run while any setting is <strong>unknown</strong>, so a typo can't silently no-op.</p>
-<hr />
-<h2 id="5-prerequisites">5. Prerequisites<a class="headerlink" href="#5-prerequisites" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Requirement</th>
-<th>Detail</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Permissions</td>
-<td>A <strong>Fabric administrator</strong>, or a service principal with the <code>Tenant.ReadWrite.All</code> delegated scope</td>
-</tr>
-<tr>
-<td>API status</td>
-<td>The Update Tenant Setting API is <strong>Preview</strong></td>
-</tr>
-<tr>
-<td>Rate limit</td>
-<td>25 requests/minute (udp-cicd paces <code>apply</code> automatically)</td>
-</tr>
-<tr>
-<td>Propagation</td>
-<td>Changes can take <strong>up to 15 minutes</strong> to take effect across the org</td>
-</tr>
-</tbody>
-</table>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Service principal (CI)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span>...
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span>...
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span>...
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
-</code></pre></div>
-<hr />
-<h2 id="6-why-not-part-of-deploy">6. Why not part of <code>deploy</code>?<a class="headerlink" href="#6-why-not-part-of-deploy" title="Permanent link">&para;</a></h2>
-<p><code>deploy</code> targets a single workspace and is safe to run per environment. Tenant settings are <strong>tenant-global</strong> — applying them on every <code>deploy --target dev</code> would repeatedly rewrite org-wide policy. Keeping them in a separate, explicitly-confirmed <code>admin apply</code> makes the blast radius obvious and lets you gate them behind a dedicated approval in CI.</p>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Windows only (Windows Forms).</li>
+<li>Loading a file that contains a value the model cannot represent (for example
+  an unknown <code>connections.*.type</code>) reports a precise error rather than silently
+  dropping it — fix the value and reopen.</li>
+<li>Folder assignment applies when items are <strong>created</strong>; existing items are not
+  moved into folders on update.</li>
+</ul>
 
 
 
