@@ -44,6 +44,7 @@ The project exists to close the **orchestration gap** in Microsoft Fabric. The F
 | State and drift | Tracks deployed resources in `deployment-state.json`; detects out-of-band portal changes |
 | Multi-targeting | Environment-specific configuration (capacities, workspace names, variables) for dev/staging/prod |
 | Resource coverage | 45 Fabric item types across all workloads, plus OneLake shortcuts |
+| Multi-platform | Declare **Entra** groups/apps (Microsoft Graph) and **Azure** resources (Bicep via `az`) in the same `udp.yml` |
 | Reverse generation | Scan an existing workspace and produce a `udp.yml` you can customize |
 | AI agent integration | MCP server exposes 12 deployment tools to Claude Code and GitHub Copilot |
 

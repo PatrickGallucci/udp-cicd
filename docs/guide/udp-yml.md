@@ -12,7 +12,8 @@ This topic is the complete reference for the `udp.yml` schema: every top-level k
 deployment:          # Required. Project metadata.
 workspace:       # Default workspace configuration.
 variables:       # Variable definitions with optional defaults.
-resources:       # All Fabric resource definitions (45 types).
+resources:       # Resource definitions — Fabric (45 types), Entra, and Azure.
+azure:           # Azure deployment defaults (subscription, location).
 security:        # Workspace and OneLake role assignments.
 connections:     # Data source connection definitions.
 policies:        # Validation and governance rules.
@@ -321,6 +322,19 @@ The following table lists every supported resource type. Click a type name for d
 | **IoT & Digital Twin** | `digital_twin_builders` | Digital Twin Builder resources. |
 | | `digital_twin_builder_flows` | Digital Twin Builder Flow resources. |
 | **Healthcare** | `hls_cohorts` | HLS Cohort (Healthcare) resources. |
+
+In addition to the 45 Fabric item types, `resources` accepts **Entra** and
+**Azure** types, deployed through Microsoft Graph and Bicep respectively:
+
+| Platform | Resource type key | Description |
+|---|---|---|
+| **Entra** | `entra_groups` | Microsoft Entra security groups. |
+| | `entra_apps` | Entra app registrations (+ optional service principal). |
+| **Azure** | `azure_resource_groups` | Azure resource groups (subscription-scope Bicep). |
+| | `azure_storage_accounts` | Azure Storage accounts (resource-group-scope Bicep). |
+| | `azure_deployments` | Generic Bicep deployments (any ARM resource). |
+
+See the [Multi-platform guide](multi-platform.md) and [Resource Types §5](resource-types.md#5-beyond-fabric-entra-and-azure).
 
 The following sections document the most commonly used resource types.
 

@@ -1,24 +1,54 @@
 namespace UdpCicd.Core.Models;
 
 /// <summary>
+/// The control plane a resource type is deployed through. Each platform has its
+/// own provider (client, auth scope, create/delete semantics). Defaults to
+/// <see cref="Fabric"/> so existing Fabric rows need no extra argument.
+/// </summary>
+public enum ResourcePlatform
+{
+    /// <summary>Microsoft Fabric items, deployed via the Fabric REST API into a workspace.</summary>
+    Fabric,
+
+    /// <summary>Azure ARM resources, deployed via Bicep/ARM deployments at subscription or resource-group scope.</summary>
+    Azure,
+
+    /// <summary>Microsoft Entra (Azure AD) directory objects, deployed via Microsoft Graph at tenant scope.</summary>
+    Entra,
+}
+
+/// <summary>
 /// Metadata for a single resource type. <see cref="FieldName"/> is the
 /// snake_case key used in <c>udp.yml</c> (and reported by diagnostics);
 /// <see cref="PropertyName"/> is the corresponding <see cref="ResourcesConfig"/>
-/// property; <see cref="FabricType"/> is the Microsoft Fabric item-type name;
-/// <see cref="Folder"/> is the workspace folder the type is grouped under when
-/// <c>workspace.folders_by_type</c> is enabled.
+/// property; <see cref="ProviderType"/> is the platform-specific type identifier
+/// (a Fabric item-type name, an ARM resource type, or a Graph entity type);
+/// <see cref="Platform"/> selects the provider that deploys it; <see cref="Folder"/>
+/// is the workspace folder the type is grouped under when
+/// <c>workspace.folders_by_type</c> is enabled (Fabric-only).
 /// </summary>
 /// <remarks>
 /// <see cref="Folder"/> defaults to <c>"Other"</c>, so a newly added resource
 /// type is always assigned a folder even if the author forgets to pick one —
-/// no type can ever be left unfoldered.
+/// no type can ever be left unfoldered. <see cref="Platform"/> defaults to
+/// <see cref="ResourcePlatform.Fabric"/> so the 45 original Fabric rows are
+/// unchanged.
 /// </remarks>
 public sealed record ResourceTypeInfo(
     string FieldName,
     string PropertyName,
-    string FabricType,
+    string ProviderType,
     bool StrictNaming,
-    string Folder = "Other");
+    ResourcePlatform Platform = ResourcePlatform.Fabric,
+    string Folder = "Other")
+{
+    /// <summary>
+    /// Back-compat alias for <see cref="ProviderType"/>. Only meaningful when
+    /// <see cref="Platform"/> is <see cref="ResourcePlatform.Fabric"/>, where it
+    /// is the Microsoft Fabric item-type name.
+    /// </summary>
+    public string FabricType => ProviderType;
+}
 
 /// <summary>
 /// Single source of truth for the 45 supported resource types. Centralizes the
@@ -77,11 +107,43 @@ public static class ResourceTypeRegistry
         new("map_items", "MapItems", "Map", false, Folder: "Maps"),
         new("graph_models", "GraphModels", "GraphModel", false, Folder: "Graph"),
         new("hls_cohorts", "HlsCohorts", "HLSCohort", false, Folder: "Healthcare"),
+
+        // --- Microsoft Entra (Graph, tenant scope). No Fabric workspace/folder. ---
+        new("entra_groups", "EntraGroups", "group", StrictNaming: false, Platform: ResourcePlatform.Entra),
+        new("entra_apps", "EntraApps", "application", StrictNaming: false, Platform: ResourcePlatform.Entra),
+
+        // --- Azure (ARM via Bicep). No Fabric workspace/folder. ---
+        new("azure_resource_groups", "AzureResourceGroups", "Microsoft.Resources/resourceGroups", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_storage_accounts", "AzureStorageAccounts", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_deployments", "AzureDeployments", "Microsoft.Resources/deployments", StrictNaming: false, Platform: ResourcePlatform.Azure),
     ];
 
-    /// <summary>Fabric item type name for a snake_case resource field name.</summary>
+    /// <summary>Resource types for a single platform (provider).</summary>
+    public static IEnumerable<ResourceTypeInfo> ForPlatform(ResourcePlatform platform) =>
+        All.Where(r => r.Platform == platform);
+
+    /// <summary>Lookup of resource metadata by its snake_case field name (globally unique).</summary>
+    public static readonly IReadOnlyDictionary<string, ResourceTypeInfo> ByField =
+        All.ToDictionary(r => r.FieldName);
+
+    /// <summary>
+    /// The platform that owns a snake_case field name. Falls back to
+    /// <see cref="ResourcePlatform.Fabric"/> for an unknown field name, matching
+    /// the historical assumption that every type is a Fabric item.
+    /// </summary>
+    public static ResourcePlatform PlatformFor(string fieldName) =>
+        ByField.TryGetValue(fieldName, out var info) ? info.Platform : ResourcePlatform.Fabric;
+
+    /// <summary>
+    /// Platform-native type identifier for a snake_case resource field name
+    /// (Fabric item type, ARM type, or Graph entity type). Keyed by field name,
+    /// which is globally unique across platforms, so the planner can stamp the
+    /// correct <see cref="ResourceTypeInfo.ProviderType"/> on every plan item
+    /// regardless of platform. (The <em>reverse</em> map in ReverseGenerator is
+    /// Fabric-scoped, since item-type names are only unique within Fabric.)
+    /// </summary>
     public static readonly IReadOnlyDictionary<string, string> ItemTypeMap =
-        All.ToDictionary(r => r.FieldName, r => r.FabricType);
+        All.ToDictionary(r => r.FieldName, r => r.ProviderType);
 
     /// <summary>
     /// Workspace folder name each resource type is grouped under when

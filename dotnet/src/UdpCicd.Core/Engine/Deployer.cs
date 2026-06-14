@@ -5,6 +5,7 @@ using Spectre.Console;
 using UdpCicd.Core.Engine.State;
 using UdpCicd.Core.Models;
 using UdpCicd.Core.Providers;
+using UdpCicd.Core.Providers.Platforms;
 
 namespace UdpCicd.Core.Engine;
 
@@ -41,6 +42,7 @@ public sealed partial class Deployer
     private bool _forceDeploy;
     private bool _foldersByType;
     private Dictionary<string, string>? _folderIdsByName;
+    private readonly Dictionary<ResourcePlatform, IResourcePlatformProvider> _platformProviders = [];
 
     public StateManager? StateManager { get; set; }
 
@@ -1269,6 +1271,64 @@ public sealed partial class Deployer
         return null;
     }
 
+    /// <summary>The platform that owns a plan item, resolved via its field name in the registry.</summary>
+    private ResourcePlatform ResolveItemPlatform(PlanItem item)
+    {
+        var fieldName = _deployment.Resources.GetResourceType(item.ResourceKey);
+        return fieldName is null ? ResourcePlatform.Fabric : ResourceTypeRegistry.PlatformFor(fieldName);
+    }
+
+    /// <summary>
+    /// Lazily resolve the provider for a non-Fabric platform. Returns <c>null</c>
+    /// for Fabric (handled inline by <see cref="DeployItem"/>) or for a platform
+    /// with no registered provider yet.
+    /// </summary>
+    private IResourcePlatformProvider? PlatformProviderFor(ResourcePlatform platform)
+    {
+        if (platform == ResourcePlatform.Fabric)
+        {
+            return null;
+        }
+        if (_platformProviders.TryGetValue(platform, out var existing))
+        {
+            return existing;
+        }
+        IResourcePlatformProvider? provider = platform switch
+        {
+            ResourcePlatform.Entra => new EntraResourceProvider(_graphClient ??= new GraphClient()),
+            ResourcePlatform.Azure => new AzureResourceProvider(),
+            _ => null,
+        };
+        if (provider is not null)
+        {
+            _platformProviders[platform] = provider;
+        }
+        return provider;
+    }
+
+    private PlatformDeployContext BuildPlatformContext() => new()
+    {
+        Deployment = _deployment,
+        ProjectDir = _projectDir,
+        Console = _console,
+        DryRun = _dryRun,
+        // Non-Fabric rollback is owned by each provider (it cannot reuse the
+        // Fabric delete-by-item-id stack). Placeholder until Stage 5 wires it.
+        RecordRollback = static (_, _) => { },
+    };
+
+    /// <summary>Deploy a single non-Fabric item through its platform provider.</summary>
+    private bool? DeployViaProvider(PlanItem item, ResourcePlatform platform)
+    {
+        var provider = PlatformProviderFor(platform);
+        if (provider is null)
+        {
+            _console.MarkupLine($"  [yellow]![/] {Markup.Escape(item.ResourceKey)}: no provider registered for platform {platform} — skipping");
+            return null;
+        }
+        return provider.Apply(item, BuildPlatformContext());
+    }
+
     /// <summary>Deploy a single item. Returns true on success, false on failure, null if skipped.</summary>
     private bool? DeployItem(string workspaceId, PlanItem item, Dictionary<string, Dictionary<string, object?>> existingItems)
     {
@@ -1534,7 +1594,10 @@ public sealed partial class Deployer
         {
             try
             {
-                var success = DeployItem(workspaceId, item, existingItems);
+                var platform = ResolveItemPlatform(item);
+                var success = platform == ResourcePlatform.Fabric
+                    ? DeployItem(workspaceId, item, existingItems)
+                    : DeployViaProvider(item, platform);
                 if (success is null)
                 {
                     result.ItemsSkipped++;

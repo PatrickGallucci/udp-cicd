@@ -61,7 +61,20 @@
         "data_agents": { "$ref": "#/definitions/resourceMap_data_agent" },
         "environments": { "$ref": "#/definitions/resourceMap_environment" },
         "eventhouses": { "$ref": "#/definitions/resourceMap_eventhouse" },
-        "eventstreams": { "$ref": "#/definitions/resourceMap_eventstream" }
+        "eventstreams": { "$ref": "#/definitions/resourceMap_eventstream" },
+        "entra_groups": { "$ref": "#/definitions/resourceMap_entra_group" },
+        "entra_apps": { "$ref": "#/definitions/resourceMap_entra_app" },
+        "azure_resource_groups": { "$ref": "#/definitions/resourceMap_azure_resource_group" },
+        "azure_storage_accounts": { "$ref": "#/definitions/resourceMap_azure_storage_account" },
+        "azure_deployments": { "$ref": "#/definitions/resourceMap_azure_deployment" }
+      }
+    },
+    "azure": {
+      "type": "object",
+      "description": "Azure deployment defaults (overridable per resource).",
+      "properties": {
+        "subscription": { "type": "string", "description": "Default Azure subscription id or name" },
+        "location": { "type": "string", "description": "Default Azure region, e.g. eastus" }
       }
     },
     "security": {
@@ -83,6 +96,77 @@
     }
   },
   "definitions": {
+    "resourceMap_entra_group": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "mail_nickname": { "type": "string" },
+          "security_enabled": { "type": "boolean", "default": true },
+          "mail_enabled": { "type": "boolean", "default": false },
+          "assignable_to_role": { "type": "boolean", "default": false },
+          "owners": { "type": "array", "items": { "type": "string" } },
+          "members": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "resourceMap_entra_app": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "sign_in_audience": { "type": "string", "default": "AzureADMyOrg" },
+          "redirect_uris": { "type": "array", "items": { "type": "string" } },
+          "identifier_uris": { "type": "array", "items": { "type": "string" } },
+          "create_service_principal": { "type": "boolean", "default": true }
+        }
+      }
+    },
+    "resourceMap_azure_resource_group": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "subscription": { "type": "string" },
+          "location": { "type": "string" },
+          "tags": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      }
+    },
+    "resourceMap_azure_storage_account": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["resource_group"],
+        "properties": {
+          "subscription": { "type": "string" },
+          "resource_group": { "type": "string" },
+          "location": { "type": "string" },
+          "sku": { "type": "string", "default": "Standard_LRS" },
+          "kind": { "type": "string", "default": "StorageV2" },
+          "access_tier": { "type": "string", "default": "Hot" },
+          "https_only": { "type": "boolean", "default": true },
+          "tags": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      }
+    },
+    "resourceMap_azure_deployment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["template_file"],
+        "properties": {
+          "scope": { "type": "string", "enum": ["group", "subscription"], "default": "group" },
+          "subscription": { "type": "string" },
+          "resource_group": { "type": "string" },
+          "location": { "type": "string" },
+          "template_file": { "type": "string" },
+          "parameters": { "type": "object" }
+        }
+      }
+    },
     "resourceMap_lakehouse": {
       "type": "object",
       "additionalProperties": {

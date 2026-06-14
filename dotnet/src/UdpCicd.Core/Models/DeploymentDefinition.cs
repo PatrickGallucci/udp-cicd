@@ -12,6 +12,7 @@ public sealed class DeploymentDefinition
     public string? Extends { get; set; }
     public Dictionary<string, VariableValue> Variables { get; set; } = [];
     public ResourcesConfig Resources { get; set; } = new();
+    public AzureConfig Azure { get; set; } = new();
     public SecurityConfig Security { get; set; } = new();
     public Dictionary<string, ConnectionConfig> Connections { get; set; } = [];
     public PolicyConfig Policies { get; set; } = new();

@@ -1,6 +1,12 @@
 # Resource Types
 
-This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in `udp.yml`, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 45 item types, of which 30 are verified against live Fabric workspaces.
+This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in `udp.yml`, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 45 Fabric item types, of which 30 are verified against live Fabric workspaces.
+
+!!! info "Beyond Fabric — Entra & Azure"
+    A single `udp.yml` can also declare **Microsoft Entra** directory objects and
+    **Azure** (ARM) resources alongside Fabric items. Those types are documented
+    in [§5](#5-beyond-fabric-entra-and-azure) and in the dedicated
+    [Multi-platform guide](multi-platform.md).
 
 ---
 
@@ -730,3 +736,93 @@ hls_cohorts:
     description: "Patient cohort for clinical analytics"
     path: ./cohorts/patient_definition.json
 ```
+
+---
+
+## 5. Beyond Fabric: Entra and Azure
+
+The same `udp.yml` can declare resources on two further control planes. Each type
+is tagged with a **platform** that selects the provider used to deploy it. Fabric
+is the default; the types below opt into Entra or Azure. See the
+[Multi-platform guide](multi-platform.md) for the end-to-end walkthrough and the
+[`10-azure-and-entra`](https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/10-azure-and-entra)
+example.
+
+| Platform | Deployed via | Scope | Auth |
+|---|---|---|---|
+| Fabric | Fabric REST API | Workspace | Fabric token |
+| Entra | Microsoft Graph | Tenant | Graph `*.ReadWrite.All` |
+| Azure | Bicep through `az` CLI | Subscription / resource group | `az login` |
+
+### 5.1 Microsoft Entra
+
+The resource key is the object's `displayName`. Create is idempotent — an existing
+object of the same display name is patched, not duplicated.
+
+| Resource | Type Key | Graph Entity |
+|----------|----------|--------------|
+| Security Group | `entra_groups` | group |
+| App Registration | `entra_apps` | application |
+
+```yaml
+resources:
+  entra_groups:
+    sg-analytics-readers:
+      description: "Read access to the analytics workload"
+      security_enabled: true
+      assignable_to_role: false
+      owners: []          # display names, UPNs, or object GUIDs
+      members: []
+
+  entra_apps:
+    analytics-ingest-app:
+      sign_in_audience: AzureADMyOrg
+      redirect_uris: ["https://localhost/callback"]
+      identifier_uris: ["api://analytics-ingest"]
+      create_service_principal: true
+```
+
+### 5.2 Azure (Bicep)
+
+Resource groups and storage accounts are emitted as generated Bicep; any other
+resource type is supplied as an author-written `.bicep` file via
+`azure_deployments`. Subscription and location default from the top-level
+`azure:` block and can be overridden per resource.
+
+| Resource | Type Key | ARM Type |
+|----------|----------|----------|
+| Resource Group | `azure_resource_groups` | Microsoft.Resources/resourceGroups |
+| Storage Account | `azure_storage_accounts` | Microsoft.Storage/storageAccounts |
+| Generic Bicep | `azure_deployments` | Microsoft.Resources/deployments |
+
+```yaml
+azure:
+  subscription: "${var.subscription_id}"
+  location: eastus
+
+resources:
+  azure_resource_groups:
+    rg-analytics-dev:
+      location: eastus
+      tags: { env: dev }
+
+  azure_storage_accounts:
+    saanalyticsdev01:               # 3–24 lowercase alphanumeric
+      resource_group: rg-analytics-dev
+      sku: Standard_LRS
+      kind: StorageV2
+      access_tier: Hot
+
+  azure_deployments:
+    keyvault-analytics:
+      scope: group                  # or "subscription"
+      resource_group: rg-analytics-dev
+      template_file: ./bicep/keyvault.bicep
+      parameters:
+        vaultName: kv-analytics-dev
+```
+
+!!! note "Workspace-centric orchestration"
+    The deploy engine is still workspace-oriented: a deployment containing **only**
+    Entra/Azure resources will still create a Fabric workspace. Mixed and
+    Fabric-only deployments are unaffected.

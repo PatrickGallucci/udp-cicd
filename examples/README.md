@@ -26,6 +26,7 @@ Working examples you can copy and deploy to your Fabric tenant.
 | 07 | [Shortcut Transformations](07-shortcut-transformations/) | CSV/JSON/Excel → Delta, AI summarize/translate/classify | Intermediate |
 | 08 | [All Resource Types](08-all-resource-types/) | Reference catalogue using all 45 supported item types | Reference |
 | 09 | [Tenant Settings](09-tenant-settings/) | Declarative org-wide Fabric admin/tenant settings | Advanced |
+| 10 | [Azure & Entra](10-azure-and-entra/) | Cross-plane: Fabric + Entra groups/apps + Azure resources via Bicep | Advanced |
 
 ## Finding Your Capacity GUID
 

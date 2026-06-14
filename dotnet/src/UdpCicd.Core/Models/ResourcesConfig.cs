@@ -52,6 +52,15 @@ public sealed partial class ResourcesConfig
     public Dictionary<string, GraphModelResource> GraphModels { get; set; } = [];
     public Dictionary<string, HLSCohortResource> HlsCohorts { get; set; } = [];
 
+    // --- Microsoft Entra (Graph, tenant scope) ---
+    public Dictionary<string, EntraGroupResource> EntraGroups { get; set; } = [];
+    public Dictionary<string, EntraAppResource> EntraApps { get; set; } = [];
+
+    // --- Azure (ARM via Bicep) ---
+    public Dictionary<string, AzureResourceGroupResource> AzureResourceGroups { get; set; } = [];
+    public Dictionary<string, AzureStorageAccountResource> AzureStorageAccounts { get; set; } = [];
+    public Dictionary<string, AzureBicepResource> AzureDeployments { get; set; } = [];
+
     private static readonly Dictionary<string, System.Reflection.PropertyInfo> PropByField =
         ResourceTypeRegistry.All.ToDictionary(
             r => r.FieldName,
@@ -104,6 +113,9 @@ public sealed partial class ResourcesConfig
     [GeneratedRegex("^[a-zA-Z0-9_ -]+$")]
     private static partial Regex GeneralNamePattern();
 
+    [GeneratedRegex("^[a-z0-9]{3,24}$")]
+    private static partial Regex StorageAccountNamePattern();
+
     /// <summary>
     /// Validate resource names follow Fabric naming rules per item type.
     /// Returns the list of warnings (same text as the Python implementation).
@@ -124,6 +136,22 @@ public sealed partial class ResourcesConfig
                 {
                     warnings.Add($"'{key}' has leading/trailing whitespace");
                 }
+
+                // Fabric item-name character rules don't apply to other platforms
+                // (Entra display names allow apostrophes/periods; Azure names have
+                // their own per-type rules that the ARM/Graph APIs enforce).
+                if (info.Platform != ResourcePlatform.Fabric)
+                {
+                    if (info.ProviderType == "Microsoft.Storage/storageAccounts"
+                        && !StorageAccountNamePattern().IsMatch(key))
+                    {
+                        warnings.Add(
+                            $"'{key}' ({info.FieldName}): storage account names must be 3–24 characters, " +
+                            "lowercase letters and numbers only.");
+                    }
+                    continue;
+                }
+
                 if (info.StrictNaming)
                 {
                     if (!StrictNamePattern().IsMatch(key))

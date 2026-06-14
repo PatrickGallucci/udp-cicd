@@ -12,9 +12,12 @@ namespace UdpCicd.Core.Generators;
 /// </summary>
 public static class ReverseGenerator
 {
-    // Fabric item type -> our snake_case resource field name.
+    // Fabric item type -> our snake_case resource field name. Scoped to Fabric:
+    // `generate` reverse-engineers a Fabric workspace, so Azure/Entra rows (which
+    // share no item-type namespace) must not appear here.
     private static readonly IReadOnlyDictionary<string, string> ReverseTypeMap =
-        ResourceTypeRegistry.All.ToDictionary(r => r.FabricType, r => r.FieldName);
+        ResourceTypeRegistry.ForPlatform(ResourcePlatform.Fabric)
+            .ToDictionary(r => r.FabricType, r => r.FieldName);
 
     private static string SanitizeKey(string name) =>
         name.ToLowerInvariant().Replace(" ", "-").Replace("_", "-");
