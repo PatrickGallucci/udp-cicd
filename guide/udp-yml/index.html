@@ -1859,6 +1859,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-platform (Entra + Azure)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../targets-variables/" class="md-nav__link">
         
   
@@ -3728,16 +3756,17 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">deployment</span><span class="p">:</span><span class="w">          </span><span class="c1"># Required. Project metadata.</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">workspace</span><span class="p">:</span><span class="w">       </span><span class="c1"># Default workspace configuration.</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">variables</span><span class="p">:</span><span class="w">       </span><span class="c1"># Variable definitions with optional defaults.</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">resources</span><span class="p">:</span><span class="w">       </span><span class="c1"># All Fabric resource definitions (45 types).</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">security</span><span class="p">:</span><span class="w">        </span><span class="c1"># Workspace and OneLake role assignments.</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">connections</span><span class="p">:</span><span class="w">     </span><span class="c1"># Data source connection definitions.</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nt">policies</span><span class="p">:</span><span class="w">        </span><span class="c1"># Validation and governance rules.</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nt">notifications</span><span class="p">:</span><span class="w">   </span><span class="c1"># Deployment notification hooks.</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nt">state</span><span class="p">:</span><span class="w">           </span><span class="c1"># Remote state backend configuration.</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nt">admin</span><span class="p">:</span><span class="w">           </span><span class="c1"># Tenant-level (admin) settings, applied tenant-wide.</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nt">targets</span><span class="p">:</span><span class="w">         </span><span class="c1"># Environment-specific overrides (dev, staging, prod).</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nt">include</span><span class="p">:</span><span class="w">         </span><span class="c1"># Additional YAML files to merge into the deployment.</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nt">extends</span><span class="p">:</span><span class="w">         </span><span class="c1"># Parent deployment to inherit from.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">resources</span><span class="p">:</span><span class="w">       </span><span class="c1"># Resource definitions — Fabric (45 types), Entra, and Azure.</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">azure</span><span class="p">:</span><span class="w">           </span><span class="c1"># Azure deployment defaults (subscription, location).</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">security</span><span class="p">:</span><span class="w">        </span><span class="c1"># Workspace and OneLake role assignments.</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nt">connections</span><span class="p">:</span><span class="w">     </span><span class="c1"># Data source connection definitions.</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nt">policies</span><span class="p">:</span><span class="w">        </span><span class="c1"># Validation and governance rules.</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nt">notifications</span><span class="p">:</span><span class="w">   </span><span class="c1"># Deployment notification hooks.</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nt">state</span><span class="p">:</span><span class="w">           </span><span class="c1"># Remote state backend configuration.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nt">admin</span><span class="p">:</span><span class="w">           </span><span class="c1"># Tenant-level (admin) settings, applied tenant-wide.</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nt">targets</span><span class="p">:</span><span class="w">         </span><span class="c1"># Environment-specific overrides (dev, staging, prod).</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nt">include</span><span class="p">:</span><span class="w">         </span><span class="c1"># Additional YAML files to merge into the deployment.</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nt">extends</span><span class="p">:</span><span class="w">         </span><span class="c1"># Parent deployment to inherit from.</span>
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -4378,6 +4407,45 @@ be set per <a href="../targets-variables/">target</a>.</p>
 </tr>
 </tbody>
 </table>
+<p>In addition to the 45 Fabric item types, <code>resources</code> accepts <strong>Entra</strong> and
+<strong>Azure</strong> types, deployed through Microsoft Graph and Bicep respectively:</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Resource type key</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Entra</strong></td>
+<td><code>entra_groups</code></td>
+<td>Microsoft Entra security groups.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>entra_apps</code></td>
+<td>Entra app registrations (+ optional service principal).</td>
+</tr>
+<tr>
+<td><strong>Azure</strong></td>
+<td><code>azure_resource_groups</code></td>
+<td>Azure resource groups (subscription-scope Bicep).</td>
+</tr>
+<tr>
+<td></td>
+<td><code>azure_storage_accounts</code></td>
+<td>Azure Storage accounts (resource-group-scope Bicep).</td>
+</tr>
+<tr>
+<td></td>
+<td><code>azure_deployments</code></td>
+<td>Generic Bicep deployments (any ARM resource).</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="../multi-platform/">Multi-platform guide</a> and <a href="../resource-types/#5-beyond-fabric-entra-and-azure">Resource Types §5</a>.</p>
 <p>The following sections document the most commonly used resource types.</p>
 <h3 id="62-lakehouses">6.2 lakehouses<a class="headerlink" href="#62-lakehouses" title="Permanent link">&para;</a></h3>
 <p>Fabric Lakehouse resources with optional OneLake shortcuts and Delta table definitions.</p>

@@ -16,7 +16,7 @@
         <link rel="prev" href="../udp-yml/">
       
       
-        <link rel="next" href="../targets-variables/">
+        <link rel="next" href="../multi-platform/">
       
       
         
@@ -1595,10 +1595,77 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#5-beyond-fabric-entra-and-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Beyond Fabric: Entra and Azure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Beyond Fabric: Entra and Azure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-microsoft-entra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Microsoft Entra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-azure-bicep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Azure (Bicep)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-platform (Entra + Azure)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -3204,6 +3271,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#5-beyond-fabric-entra-and-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Beyond Fabric: Entra and Azure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Beyond Fabric: Entra and Azure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-microsoft-entra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Microsoft Entra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-azure-bicep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Azure (Bicep)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3225,7 +3331,14 @@
 
 
 <h1 id="resource-types">Resource Types<a class="headerlink" href="#resource-types" title="Permanent link">&para;</a></h1>
-<p>This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in <code>udp.yml</code>, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 45 item types, of which 30 are verified against live Fabric workspaces.</p>
+<p>This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in <code>udp.yml</code>, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 45 Fabric item types, of which 30 are verified against live Fabric workspaces.</p>
+<div class="admonition info">
+<p class="admonition-title">Beyond Fabric — Entra &amp; Azure</p>
+<p>A single <code>udp.yml</code> can also declare <strong>Microsoft Entra</strong> directory objects and
+<strong>Azure</strong> (ARM) resources alongside Fabric items. Those types are documented
+in <a href="#5-beyond-fabric-entra-and-azure">§5</a> and in the dedicated
+<a href="../multi-platform/">Multi-platform guide</a>.</p>
+</div>
 <hr />
 <h2 id="1-coverage-and-deployment-order">1. Coverage and deployment order<a class="headerlink" href="#1-coverage-and-deployment-order" title="Permanent link">&para;</a></h2>
 <p>udp-cicd supports 45 Fabric item types. 30 of these are verified live; the remainder are defined against the published Fabric REST API and pending live verification. A small number of types are list-only because the Fabric API does not support creating them.</p>
@@ -4114,6 +4227,146 @@ to have <code>deploy</code> group items into those folders automatically.</p>
 <a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patient</span><span class="nv"> </span><span class="s">cohort</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">clinical</span><span class="nv"> </span><span class="s">analytics&quot;</span>
 <a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./cohorts/patient_definition.json</span>
 </code></pre></div>
+<hr />
+<h2 id="5-beyond-fabric-entra-and-azure">5. Beyond Fabric: Entra and Azure<a class="headerlink" href="#5-beyond-fabric-entra-and-azure" title="Permanent link">&para;</a></h2>
+<p>The same <code>udp.yml</code> can declare resources on two further control planes. Each type
+is tagged with a <strong>platform</strong> that selects the provider used to deploy it. Fabric
+is the default; the types below opt into Entra or Azure. See the
+<a href="../multi-platform/">Multi-platform guide</a> for the end-to-end walkthrough and the
+<a href="https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/10-azure-and-entra"><code>10-azure-and-entra</code></a>
+example.</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Deployed via</th>
+<th>Scope</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fabric</td>
+<td>Fabric REST API</td>
+<td>Workspace</td>
+<td>Fabric token</td>
+</tr>
+<tr>
+<td>Entra</td>
+<td>Microsoft Graph</td>
+<td>Tenant</td>
+<td>Graph <code>*.ReadWrite.All</code></td>
+</tr>
+<tr>
+<td>Azure</td>
+<td>Bicep through <code>az</code> CLI</td>
+<td>Subscription / resource group</td>
+<td><code>az login</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="51-microsoft-entra">5.1 Microsoft Entra<a class="headerlink" href="#51-microsoft-entra" title="Permanent link">&para;</a></h3>
+<p>The resource key is the object's <code>displayName</code>. Create is idempotent — an existing
+object of the same display name is patched, not duplicated.</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Type Key</th>
+<th>Graph Entity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security Group</td>
+<td><code>entra_groups</code></td>
+<td>group</td>
+</tr>
+<tr>
+<td>App Registration</td>
+<td><code>entra_apps</code></td>
+<td>application</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="nt">resources</span><span class="p">:</span>
+<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a><span class="w">  </span><span class="nt">entra_groups</span><span class="p">:</span>
+<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a><span class="w">    </span><span class="nt">sg-analytics-readers</span><span class="p">:</span>
+<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Read</span><span class="nv"> </span><span class="s">access</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">analytics</span><span class="nv"> </span><span class="s">workload&quot;</span>
+<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a><span class="w">      </span><span class="nt">security_enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a><span class="w">      </span><span class="nt">assignable_to_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a><span class="w">      </span><span class="nt">owners</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">          </span><span class="c1"># display names, UPNs, or object GUIDs</span>
+<a id="__codelineno-48-8" name="__codelineno-48-8" href="#__codelineno-48-8"></a><span class="w">      </span><span class="nt">members</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<a id="__codelineno-48-9" name="__codelineno-48-9" href="#__codelineno-48-9"></a>
+<a id="__codelineno-48-10" name="__codelineno-48-10" href="#__codelineno-48-10"></a><span class="w">  </span><span class="nt">entra_apps</span><span class="p">:</span>
+<a id="__codelineno-48-11" name="__codelineno-48-11" href="#__codelineno-48-11"></a><span class="w">    </span><span class="nt">analytics-ingest-app</span><span class="p">:</span>
+<a id="__codelineno-48-12" name="__codelineno-48-12" href="#__codelineno-48-12"></a><span class="w">      </span><span class="nt">sign_in_audience</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AzureADMyOrg</span>
+<a id="__codelineno-48-13" name="__codelineno-48-13" href="#__codelineno-48-13"></a><span class="w">      </span><span class="nt">redirect_uris</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;https://localhost/callback&quot;</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-48-14" name="__codelineno-48-14" href="#__codelineno-48-14"></a><span class="w">      </span><span class="nt">identifier_uris</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;api://analytics-ingest&quot;</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-48-15" name="__codelineno-48-15" href="#__codelineno-48-15"></a><span class="w">      </span><span class="nt">create_service_principal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<h3 id="52-azure-bicep">5.2 Azure (Bicep)<a class="headerlink" href="#52-azure-bicep" title="Permanent link">&para;</a></h3>
+<p>Resource groups and storage accounts are emitted as generated Bicep; any other
+resource type is supplied as an author-written <code>.bicep</code> file via
+<code>azure_deployments</code>. Subscription and location default from the top-level
+<code>azure:</code> block and can be overridden per resource.</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Type Key</th>
+<th>ARM Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource Group</td>
+<td><code>azure_resource_groups</code></td>
+<td>Microsoft.Resources/resourceGroups</td>
+</tr>
+<tr>
+<td>Storage Account</td>
+<td><code>azure_storage_accounts</code></td>
+<td>Microsoft.Storage/storageAccounts</td>
+</tr>
+<tr>
+<td>Generic Bicep</td>
+<td><code>azure_deployments</code></td>
+<td>Microsoft.Resources/deployments</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="nt">azure</span><span class="p">:</span>
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="w">  </span><span class="nt">subscription</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${var.subscription_id}&quot;</span>
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a><span class="w">  </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus</span>
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a>
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a><span class="nt">resources</span><span class="p">:</span>
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a><span class="w">  </span><span class="nt">azure_resource_groups</span><span class="p">:</span>
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="w">    </span><span class="nt">rg-analytics-dev</span><span class="p">:</span>
+<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a><span class="w">      </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus</span>
+<a id="__codelineno-49-9" name="__codelineno-49-9" href="#__codelineno-49-9"></a><span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> env</span><span class="p">:</span><span class="w"> </span><span class="nv">dev</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-49-10" name="__codelineno-49-10" href="#__codelineno-49-10"></a>
+<a id="__codelineno-49-11" name="__codelineno-49-11" href="#__codelineno-49-11"></a><span class="w">  </span><span class="nt">azure_storage_accounts</span><span class="p">:</span>
+<a id="__codelineno-49-12" name="__codelineno-49-12" href="#__codelineno-49-12"></a><span class="w">    </span><span class="nt">saanalyticsdev01</span><span class="p">:</span><span class="w">               </span><span class="c1"># 3–24 lowercase alphanumeric</span>
+<a id="__codelineno-49-13" name="__codelineno-49-13" href="#__codelineno-49-13"></a><span class="w">      </span><span class="nt">resource_group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rg-analytics-dev</span>
+<a id="__codelineno-49-14" name="__codelineno-49-14" href="#__codelineno-49-14"></a><span class="w">      </span><span class="nt">sku</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Standard_LRS</span>
+<a id="__codelineno-49-15" name="__codelineno-49-15" href="#__codelineno-49-15"></a><span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StorageV2</span>
+<a id="__codelineno-49-16" name="__codelineno-49-16" href="#__codelineno-49-16"></a><span class="w">      </span><span class="nt">access_tier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hot</span>
+<a id="__codelineno-49-17" name="__codelineno-49-17" href="#__codelineno-49-17"></a>
+<a id="__codelineno-49-18" name="__codelineno-49-18" href="#__codelineno-49-18"></a><span class="w">  </span><span class="nt">azure_deployments</span><span class="p">:</span>
+<a id="__codelineno-49-19" name="__codelineno-49-19" href="#__codelineno-49-19"></a><span class="w">    </span><span class="nt">keyvault-analytics</span><span class="p">:</span>
+<a id="__codelineno-49-20" name="__codelineno-49-20" href="#__codelineno-49-20"></a><span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">group</span><span class="w">                  </span><span class="c1"># or &quot;subscription&quot;</span>
+<a id="__codelineno-49-21" name="__codelineno-49-21" href="#__codelineno-49-21"></a><span class="w">      </span><span class="nt">resource_group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rg-analytics-dev</span>
+<a id="__codelineno-49-22" name="__codelineno-49-22" href="#__codelineno-49-22"></a><span class="w">      </span><span class="nt">template_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./bicep/keyvault.bicep</span>
+<a id="__codelineno-49-23" name="__codelineno-49-23" href="#__codelineno-49-23"></a><span class="w">      </span><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-49-24" name="__codelineno-49-24" href="#__codelineno-49-24"></a><span class="w">        </span><span class="nt">vaultName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kv-analytics-dev</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Workspace-centric orchestration</p>
+<p>The deploy engine is still workspace-oriented: a deployment containing <strong>only</strong>
+Entra/Azure resources will still create a Fabric workspace. Mixed and
+Fabric-only deployments are unaffected.</p>
+</div>
 
 
 

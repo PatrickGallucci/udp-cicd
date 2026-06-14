@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/migrate-from-terraform/">
+        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/multi-platform/">
       
       
-        <link rel="prev" href="../editor/">
+        <link rel="prev" href="../resource-types/">
       
       
-        <link rel="next" href="../migrate-from-fabric-cicd/">
+        <link rel="next" href="../targets-variables/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Migrate from Terraform - Unified Data Platform Deployment</title>
+        <title>Multi-platform (Entra + Azure) - Unified Data Platform Deployment</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#migrate-from-terraform" class="md-skip">
+        <a href="#multi-platform-resources-fabric-entra-azure" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Migrate from Terraform
+              Multi-platform (Entra + Azure)
             
           </span>
         </div>
@@ -769,10 +769,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../multi-platform/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-platform (Entra + Azure)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -788,6 +815,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#microsoft-entra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Entra
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-bicep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure (Bicep)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known limitation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1021,37 +1112,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migrate from Terraform
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../migrate-from-terraform/" class="md-nav__link">
         
   
   
@@ -1067,120 +1131,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-why-migrate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Why migrate
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-adoption-flows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Adoption flows
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-step-by-step-migration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Step-by-step migration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Step-by-step migration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#31-import-existing-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.1 Import existing state
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#32-generate-udpyml" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.2 Generate udp.yml
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#33-validate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.3 Validate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#34-deploy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.4 Deploy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#35-remove-terraform" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.5 Remove Terraform
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1743,10 +1693,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-why-migrate" class="md-nav__link">
+  <a href="#microsoft-entra" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Why migrate
+        Microsoft Entra
       
     </span>
   </a>
@@ -1754,10 +1704,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-adoption-flows" class="md-nav__link">
+  <a href="#azure-bicep" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Adoption flows
+        Azure (Bicep)
       
     </span>
   </a>
@@ -1765,74 +1715,24 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-step-by-step-migration" class="md-nav__link">
+  <a href="#naming-rules" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Step-by-step migration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Step-by-step migration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#31-import-existing-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.1 Import existing state
+        Naming rules
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#32-generate-udpyml" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#known-limitation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Generate udp.yml
+        Known limitation
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#33-validate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.3 Validate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#34-deploy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.4 Deploy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#35-remove-terraform" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.5 Remove Terraform
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1856,147 +1756,103 @@
   
 
 
-<h1 id="migrate-from-terraform">Migrate from Terraform<a class="headerlink" href="#migrate-from-terraform" title="Permanent link">&para;</a></h1>
-<p>This page describes how to migrate from the <a href="https://registry.terraform.io/providers/microsoft/fabric/latest/docs">Terraform Fabric Provider</a> to udp-cicd: the differences between the two tools, the three adoption flows for bringing existing resources under management, and the step-by-step migration procedure.</p>
-<hr />
-<h2 id="1-why-migrate">1. Why migrate<a class="headerlink" href="#1-why-migrate" title="Permanent link">&para;</a></h2>
+<h1 id="multi-platform-resources-fabric-entra-azure">Multi-platform resources (Fabric + Entra + Azure)<a class="headerlink" href="#multi-platform-resources-fabric-entra-azure" title="Permanent link">&para;</a></h1>
+<p>A single <code>udp.yml</code> can declare resources across three control planes. Each
+resource type is tagged with a <strong>platform</strong> that selects the provider used to
+deploy it:</p>
 <table>
 <thead>
 <tr>
-<th>Capability</th>
-<th>Terraform</th>
-<th>udp-cicd</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Language</td>
-<td>HCL</td>
-<td>YAML</td>
-</tr>
-<tr>
-<td>State</td>
-<td>Remote (S3, Blob, etc.)</td>
-<td>Local JSON (stable); Azure Blob and OneLake/ADLS Gen2 (beta)</td>
-</tr>
-<tr>
-<td>Learning curve</td>
-<td>High (HCL, providers, modules)</td>
-<td>Low (single YAML file)</td>
-</tr>
-<tr>
-<td>Drift detection</td>
-<td><code>terraform plan</code></td>
-<td><code>udp-cicd drift</code></td>
-</tr>
-<tr>
-<td>Rollback</td>
-<td>Manual state manipulation</td>
-<td><code>udp-cicd rollback</code></td>
-</tr>
-<tr>
-<td>Fabric-specific</td>
-<td>Generic provider</td>
-<td>Purpose-built for Fabric</td>
-</tr>
-<tr>
-<td>MCP support</td>
-<td>No</td>
-<td>Yes (14 tools)</td>
-</tr>
-<tr>
-<td>Item types</td>
-<td>~15</td>
-<td>45</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="2-adoption-flows">2. Adoption flows<a class="headerlink" href="#2-adoption-flows" title="Permanent link">&para;</a></h2>
-<p>udp-cicd ships three complementary commands for bringing existing resources under management. Pick the one that matches your starting point:</p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>Use when</th>
+<th>Platform</th>
+<th>Control plane</th>
+<th>Deployed via</th>
 <th>Scope</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../../cli/commands/#import"><code>udp-cicd import --from-terraform</code></a></td>
-<td>You already manage Fabric with Terraform and want to migrate in bulk.</td>
-<td>Reads <code>terraform.tfstate</code>, extracts all <code>fabric_*</code> resources, and seeds udp-cicd state.</td>
+<td><strong>Fabric</strong></td>
+<td>Microsoft Fabric items</td>
+<td>Fabric REST API</td>
+<td>Workspace</td>
 </tr>
 <tr>
-<td><a href="../../cli/commands/#generate"><code>udp-cicd generate</code></a></td>
-<td>You have a workspace but no declaration yet and want to reverse-engineer a <code>udp.yml</code>.</td>
-<td>Scans a live workspace and writes <code>udp.yml</code> plus item content (notebook source, etc.).</td>
+<td><strong>Entra</strong></td>
+<td>Directory objects</td>
+<td>Microsoft Graph</td>
+<td>Tenant</td>
 </tr>
 <tr>
-<td><a href="../../cli/commands/#bind"><code>udp-cicd bind</code></a></td>
-<td>You wrote the declaration by hand and want to attach it to an existing item without recreating it.</td>
-<td>Per-resource; binds one entry in <code>udp.yml</code> to one live item by ID.</td>
+<td><strong>Azure</strong></td>
+<td>ARM resources</td>
+<td>Bicep through the <code>az</code> CLI</td>
+<td>Subscription / resource group</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><strong>Compared to Databricks Asset Bundles</strong></p>
-<p><code>databricks bundle generate</code> exists but is per-resource-type and requires the existing item's ID. <code>databricks bundle deployment bind</code> is the direct analog of <code>udp-cicd bind</code>. DABs have <strong>no equivalent of <code>udp-cicd import --from-terraform</code></strong>; migrating from Terraform on Databricks is a manual <code>generate</code> + <code>bind</code> per resource. Bulk <code>tfstate</code> ingestion is unique to udp-cicd.</p>
-</blockquote>
-<hr />
-<h2 id="3-step-by-step-migration">3. Step-by-step migration<a class="headerlink" href="#3-step-by-step-migration" title="Permanent link">&para;</a></h2>
-<h3 id="31-import-existing-state">3.1 Import existing state<a class="headerlink" href="#31-import-existing-state" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>--from-terraform<span class="w"> </span>terraform.tfstate<span class="w"> </span>--target<span class="w"> </span>dev
+<p>Fabric remains the default — every existing resource type is a Fabric item and
+needs no extra configuration. Entra and Azure types are addressed by their own
+top-level resource keys.</p>
+<p>See the worked example in <a href="https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/10-azure-and-entra"><code>examples/10-azure-and-entra</code></a>.</p>
+<h2 id="microsoft-entra">Microsoft Entra<a class="headerlink" href="#microsoft-entra" title="Permanent link">&para;</a></h2>
+<p>The resource key is the object's <code>displayName</code>. Create is idempotent — an
+existing object with the same display name is patched, not duplicated.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">resources</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">entra_groups</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">sg-analytics-readers</span><span class="p">:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Read</span><span class="nv"> </span><span class="s">access</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">analytics</span><span class="nv"> </span><span class="s">workload&quot;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">security_enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="nt">members</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">            </span><span class="c1"># display names, UPNs, or object GUIDs</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">entra_apps</span><span class="p">:</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">analytics-ingest-app</span><span class="p">:</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="nt">sign_in_audience</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AzureADMyOrg</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">      </span><span class="nt">create_service_principal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-<p>This reads your Terraform state and creates a udp-cicd state file.</p>
-<h3 id="32-generate-udpyml">3.2 Generate udp.yml<a class="headerlink" href="#32-generate-udpyml" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>--workspace<span class="w"> </span><span class="s2">&quot;your-workspace-name&quot;</span>
+<p><strong>Permissions:</strong> the deploying identity needs Microsoft Graph
+<code>Group.ReadWrite.All</code> and/or <code>Application.ReadWrite.All</code>.</p>
+<h2 id="azure-bicep">Azure (Bicep)<a class="headerlink" href="#azure-bicep" title="Permanent link">&para;</a></h2>
+<p>Azure resources are deployed as Bicep. Resource groups and storage accounts are
+emitted as generated Bicep templates; anything else is supplied as an
+author-written <code>.bicep</code> file via <code>azure_deployments</code>. Subscription and location
+default from the top-level <code>azure:</code> block and can be overridden per resource.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">azure</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">subscription</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${var.subscription_id}&quot;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nt">resources</span><span class="p">:</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">azure_resource_groups</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">rg-analytics-dev</span><span class="p">:</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> env</span><span class="p">:</span><span class="w"> </span><span class="nv">dev</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">azure_storage_accounts</span><span class="p">:</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nt">saanalyticsdev01</span><span class="p">:</span><span class="w">               </span><span class="c1"># 3–24 lowercase alphanumeric</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">resource_group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rg-analytics-dev</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="nt">sku</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Standard_LRS</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StorageV2</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">  </span><span class="nt">azure_deployments</span><span class="p">:</span><span class="w">                </span><span class="c1"># generic escape hatch — any Bicep template</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="nt">keyvault-analytics</span><span class="p">:</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">group</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">      </span><span class="nt">resource_group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rg-analytics-dev</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">      </span><span class="nt">template_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./bicep/keyvault.bicep</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">      </span><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">        </span><span class="nt">vaultName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kv-analytics-dev</span>
 </code></pre></div>
-<p>Or manually map your Terraform resources:</p>
-<table>
-<thead>
-<tr>
-<th>Terraform</th>
-<th>udp.yml</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>fabric_workspace</code></td>
-<td><code>targets.dev.workspace</code></td>
-</tr>
-<tr>
-<td><code>fabric_lakehouse</code></td>
-<td><code>resources.lakehouses</code></td>
-</tr>
-<tr>
-<td><code>fabric_notebook</code></td>
-<td><code>resources.notebooks</code></td>
-</tr>
-<tr>
-<td><code>fabric_warehouse</code></td>
-<td><code>resources.warehouses</code></td>
-</tr>
-<tr>
-<td><code>fabric_environment</code></td>
-<td><code>resources.environments</code></td>
-</tr>
-<tr>
-<td><code>fabric_data_pipeline</code></td>
-<td><code>resources.pipelines</code></td>
-</tr>
-</tbody>
-</table>
-<h3 id="33-validate">3.3 Validate<a class="headerlink" href="#33-validate" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>udp-cicd<span class="w"> </span>validate
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--target<span class="w"> </span>dev
-</code></pre></div>
-<h3 id="34-deploy">3.4 Deploy<a class="headerlink" href="#34-deploy" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
-</code></pre></div>
-<h3 id="35-remove-terraform">3.5 Remove Terraform<a class="headerlink" href="#35-remove-terraform" title="Permanent link">&para;</a></h3>
-<p>Once udp-cicd is managing your resources, remove the Terraform config. Keep the Terraform state file as a backup until you are confident.</p>
+<p><strong>Prerequisites:</strong> <code>az login</code> with rights on the target subscription. The
+provider uses <code>az deployment {sub,group} create --template-file *.bicep</code>, which
+compiles Bicep in-process — no separate Bicep toolchain is required.</p>
+<h2 id="naming-rules">Naming rules<a class="headerlink" href="#naming-rules" title="Permanent link">&para;</a></h2>
+<p>Fabric item-name character rules are <strong>not</strong> applied to Entra or Azure names —
+those platforms validate server-side. The one client-side check kept is for
+storage account names (3–24 lowercase alphanumeric), which fail fast.</p>
+<h2 id="known-limitation">Known limitation<a class="headerlink" href="#known-limitation" title="Permanent link">&para;</a></h2>
+<p>The deploy orchestration is still workspace-centric: a deployment that contains
+<strong>only</strong> Entra/Azure resources will still create a Fabric workspace. Mixed
+deployments (the intended use) and Fabric-only deployments are unaffected.
+Gating workspace creation when no Fabric items are present is tracked as
+follow-up work.</p>
 
 
 
