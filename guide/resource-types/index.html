@@ -4466,6 +4466,233 @@ See the full catalogue in <a href="https://github.com/PatrickGallucci/udp-cicd/t
 </tr>
 </tbody>
 </table>
+<p><strong>Governance / security / AI</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Type Key</th>
+<th>ARM Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft Purview</td>
+<td><code>azure_purview_accounts</code></td>
+<td>Microsoft.Purview/accounts</td>
+</tr>
+<tr>
+<td>Key Vault</td>
+<td><code>azure_key_vaults</code></td>
+<td>Microsoft.KeyVault/vaults</td>
+</tr>
+<tr>
+<td>Azure Policy</td>
+<td><code>azure_policy_assignments</code></td>
+<td>Microsoft.Authorization/policyAssignments</td>
+</tr>
+<tr>
+<td>Defender for Cloud</td>
+<td><code>azure_defender_plans</code></td>
+<td>Microsoft.Security/pricings</td>
+</tr>
+<tr>
+<td>Machine Learning</td>
+<td><code>azure_machine_learning_workspaces</code></td>
+<td>Microsoft.MachineLearningServices/workspaces</td>
+</tr>
+<tr>
+<td>AI Foundry</td>
+<td><code>azure_ai_foundry</code></td>
+<td>Microsoft.MachineLearningServices/workspaces</td>
+</tr>
+<tr>
+<td>Sentinel</td>
+<td><code>azure_sentinel</code></td>
+<td>Microsoft.SecurityInsights/onboardingStates</td>
+</tr>
+<tr>
+<td>AI Video Indexer</td>
+<td><code>azure_video_indexer</code></td>
+<td>Microsoft.VideoIndexer/accounts</td>
+</tr>
+<tr>
+<td>OpenAI</td>
+<td><code>azure_openai</code></td>
+<td>Microsoft.CognitiveServices/accounts</td>
+</tr>
+<tr>
+<td>Load Testing</td>
+<td><code>azure_load_testing</code></td>
+<td>Microsoft.LoadTestService/loadTests</td>
+</tr>
+<tr>
+<td>Agent identities</td>
+<td><code>azure_agent_ids</code></td>
+<td>Microsoft.ManagedIdentity/userAssignedIdentities</td>
+</tr>
+<tr>
+<td>Service Groups</td>
+<td><code>azure_service_groups</code></td>
+<td>Microsoft.Management/serviceGroups</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Monitoring / observability</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Type Key</th>
+<th>ARM Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monitor (App Insights)</td>
+<td><code>azure_monitor_components</code></td>
+<td>Microsoft.Insights/components</td>
+</tr>
+<tr>
+<td>Alerts</td>
+<td><code>azure_alerts</code></td>
+<td>Microsoft.Insights/metricAlerts</td>
+</tr>
+<tr>
+<td>Diagnostic Settings</td>
+<td><code>azure_diagnostic_settings</code></td>
+<td>Microsoft.Insights/diagnosticSettings</td>
+</tr>
+<tr>
+<td>Log Analytics Workspace</td>
+<td><code>azure_log_analytics_workspaces</code></td>
+<td>Microsoft.OperationalInsights/workspaces</td>
+</tr>
+<tr>
+<td>Metrics (DCR)</td>
+<td><code>azure_metrics</code></td>
+<td>Microsoft.Insights/dataCollectionRules</td>
+</tr>
+<tr>
+<td>Workbooks</td>
+<td><code>azure_workbooks</code></td>
+<td>Microsoft.Insights/workbooks</td>
+</tr>
+<tr>
+<td>Activity Log</td>
+<td><code>azure_activity_logs</code></td>
+<td>Microsoft.Insights/diagnosticSettings</td>
+</tr>
+<tr>
+<td>Database Watchers</td>
+<td><code>azure_database_watchers</code></td>
+<td>Microsoft.DatabaseWatcher/watchers</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Networking</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Type Key</th>
+<th>ARM Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Network Watcher</td>
+<td><code>azure_network_watchers</code></td>
+<td>Microsoft.Network/networkWatchers</td>
+</tr>
+<tr>
+<td>DNS Zones</td>
+<td><code>azure_dns_zones</code></td>
+<td>Microsoft.Network/dnsZones</td>
+</tr>
+<tr>
+<td>Network Interfaces</td>
+<td><code>azure_network_interfaces</code></td>
+<td>Microsoft.Network/networkInterfaces</td>
+</tr>
+<tr>
+<td>Private DNS Zones</td>
+<td><code>azure_private_dns_zones</code></td>
+<td>Microsoft.Network/privateDnsZones</td>
+</tr>
+<tr>
+<td>Public IP Address</td>
+<td><code>azure_public_ip_addresses</code></td>
+<td>Microsoft.Network/publicIPAddresses</td>
+</tr>
+<tr>
+<td>Route Tables</td>
+<td><code>azure_route_tables</code></td>
+<td>Microsoft.Network/routeTables</td>
+</tr>
+<tr>
+<td>Virtual Network</td>
+<td><code>azure_virtual_networks</code></td>
+<td>Microsoft.Network/virtualNetworks</td>
+</tr>
+<tr>
+<td>Local Network Gateway</td>
+<td><code>azure_local_network_gateways</code></td>
+<td>Microsoft.Network/localNetworkGateways</td>
+</tr>
+<tr>
+<td>Peering Services</td>
+<td><code>azure_peering_services</code></td>
+<td>Microsoft.Network/peeringServices</td>
+</tr>
+<tr>
+<td>Peering</td>
+<td><code>azure_peerings</code></td>
+<td>Microsoft.Peering/peerings</td>
+</tr>
+<tr>
+<td>Virtual Network Gateway</td>
+<td><code>azure_virtual_network_gateways</code></td>
+<td>Microsoft.Network/virtualNetworkGateways</td>
+</tr>
+<tr>
+<td>Virtual WAN</td>
+<td><code>azure_virtual_wans</code></td>
+<td>Microsoft.Network/virtualWans</td>
+</tr>
+<tr>
+<td>DDoS Protection</td>
+<td><code>azure_ddos_protection_plans</code></td>
+<td>Microsoft.Network/ddosProtectionPlans</td>
+</tr>
+<tr>
+<td>Firewall</td>
+<td><code>azure_firewalls</code></td>
+<td>Microsoft.Network/azureFirewalls</td>
+</tr>
+<tr>
+<td>IP Groups</td>
+<td><code>azure_ip_groups</code></td>
+<td>Microsoft.Network/ipGroups</td>
+</tr>
+<tr>
+<td>Network Security Group</td>
+<td><code>azure_network_security_groups</code></td>
+<td>Microsoft.Network/networkSecurityGroups</td>
+</tr>
+<tr>
+<td>Application Gateway</td>
+<td><code>azure_application_gateways</code></td>
+<td>Microsoft.Network/applicationGateways</td>
+</tr>
+<tr>
+<td>Application Security Group</td>
+<td><code>azure_application_security_groups</code></td>
+<td>Microsoft.Network/applicationSecurityGroups</td>
+</tr>
+</tbody>
+</table>
+<p>Catalogue: <a href="https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/12-azure-platform-services"><code>12-azure-platform-services</code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Storage-family naming &amp; child resources</p>
 <p>The five storage-family services deploy as storage accounts, so their names
