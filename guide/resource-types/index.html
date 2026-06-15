@@ -4336,6 +4336,143 @@ resource type is supplied as an author-written <code>.bicep</code> file via
 </tr>
 </tbody>
 </table>
+<p>In addition, these <strong>first-class service types</strong> each deploy as a single ARM
+resource via a generated, resource-group-scope Bicep template. They share the
+same shape (<code>resource_group</code>, <code>location</code>, optional <code>sku</code>/<code>kind</code>/<code>properties</code>/<code>tags</code>).
+See the full catalogue in <a href="https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/11-azure-data-services"><code>11-azure-data-services</code></a>.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Type Key</th>
+<th>ARM Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Factory</td>
+<td><code>azure_data_factories</code></td>
+<td>Microsoft.DataFactory/factories</td>
+</tr>
+<tr>
+<td>Databricks</td>
+<td><code>azure_databricks_workspaces</code></td>
+<td>Microsoft.Databricks/workspaces</td>
+</tr>
+<tr>
+<td>Databricks Structured Streaming</td>
+<td><code>azure_databricks_structured_streaming</code></td>
+<td>Microsoft.Databricks/workspaces</td>
+</tr>
+<tr>
+<td>Event Hubs</td>
+<td><code>azure_event_hub_namespaces</code></td>
+<td>Microsoft.EventHub/namespaces</td>
+</tr>
+<tr>
+<td>Event Grid</td>
+<td><code>azure_event_grid_topics</code></td>
+<td>Microsoft.EventGrid/topics</td>
+</tr>
+<tr>
+<td>Stream Analytics</td>
+<td><code>azure_stream_analytics_jobs</code></td>
+<td>Microsoft.StreamAnalytics/streamingjobs</td>
+</tr>
+<tr>
+<td>IoT Hub</td>
+<td><code>azure_iot_hubs</code></td>
+<td>Microsoft.Devices/IotHubs</td>
+</tr>
+<tr>
+<td>Logic Apps</td>
+<td><code>azure_logic_apps</code></td>
+<td>Microsoft.Logic/workflows</td>
+</tr>
+<tr>
+<td>Functions</td>
+<td><code>azure_functions</code></td>
+<td>Microsoft.Web/sites</td>
+</tr>
+<tr>
+<td>Blob Storage</td>
+<td><code>azure_blob_storage</code></td>
+<td>Microsoft.Storage/storageAccounts</td>
+</tr>
+<tr>
+<td>Data Lake Storage Gen2</td>
+<td><code>azure_data_lake_storage</code></td>
+<td>Microsoft.Storage/storageAccounts</td>
+</tr>
+<tr>
+<td>Files</td>
+<td><code>azure_files</code></td>
+<td>Microsoft.Storage/storageAccounts</td>
+</tr>
+<tr>
+<td>Queue Storage</td>
+<td><code>azure_queue_storage</code></td>
+<td>Microsoft.Storage/storageAccounts</td>
+</tr>
+<tr>
+<td>Table Storage</td>
+<td><code>azure_table_storage</code></td>
+<td>Microsoft.Storage/storageAccounts</td>
+</tr>
+<tr>
+<td>SQL Database</td>
+<td><code>azure_sql_databases</code></td>
+<td>Microsoft.Sql/servers/databases</td>
+</tr>
+<tr>
+<td>SQL Managed Instance</td>
+<td><code>azure_sql_managed_instances</code></td>
+<td>Microsoft.Sql/managedInstances</td>
+</tr>
+<tr>
+<td>SQL Server on VMs</td>
+<td><code>azure_sql_virtual_machines</code></td>
+<td>Microsoft.SqlVirtualMachine/sqlVirtualMachines</td>
+</tr>
+<tr>
+<td>Database for PostgreSQL</td>
+<td><code>azure_postgresql</code></td>
+<td>Microsoft.DBforPostgreSQL/flexibleServers</td>
+</tr>
+<tr>
+<td>Database for MySQL</td>
+<td><code>azure_mysql</code></td>
+<td>Microsoft.DBforMySQL/flexibleServers</td>
+</tr>
+<tr>
+<td>Database for MariaDB</td>
+<td><code>azure_mariadb</code></td>
+<td>Microsoft.DBforMariaDB/servers</td>
+</tr>
+<tr>
+<td>Cosmos DB</td>
+<td><code>azure_cosmosdb_accounts</code></td>
+<td>Microsoft.DocumentDB/databaseAccounts</td>
+</tr>
+<tr>
+<td>Cache for Redis</td>
+<td><code>azure_redis_cache</code></td>
+<td>Microsoft.Cache/Redis</td>
+</tr>
+<tr>
+<td>Data Box</td>
+<td><code>azure_data_box</code></td>
+<td>Microsoft.DataBox/jobs</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Storage-family naming &amp; child resources</p>
+<p>The five storage-family services deploy as storage accounts, so their names
+must be <strong>3–24 lowercase alphanumeric</strong>. Child resources such as
+<code>azure_sql_databases</code> may need a parent server — name the database
+<code>"&lt;server&gt;/&lt;database&gt;"</code> or use <code>azure_deployments</code> for full control.</p>
+</div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="nt">azure</span><span class="p">:</span>
 <a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="w">  </span><span class="nt">subscription</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${var.subscription_id}&quot;</span>
 <a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a><span class="w">  </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus</span>
