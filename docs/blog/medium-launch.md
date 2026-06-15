@@ -185,7 +185,7 @@ Someone “just made a quick change in the portal”? `udp-cicd drift` tells you
 
 Let’s be specific about why this is worth your time.
 
-### 🧱 45 item types, across every Fabric workload
+### 🧱 46 item types, across every Fabric workload
 Lakehouses, Warehouses, Notebooks, Data Pipelines, Spark Job Definitions, Semantic Models, Reports, Eventhouses, KQL Databases, Eventstreams, Reflexes, ML Models, ML Experiments, Data Agents, Operations Agents, Anomaly Detectors, Ontologies, Variable Libraries, GraphQL APIs, User Data Functions, OneLake Shortcuts… **30 of them are verified end-to-end against the live Fabric API today.** The rest are wired in and progressing through verification.
 
 ### 🌍 Multi-environment, the way it should be

@@ -11,12 +11,15 @@ udp-cicd init --template medallion --name udp-analytics
 cd udp-analytics
 ```
 
-Project templates are rendered from `Assets/templates/` using `${{ variable }}` placeholder substitution. Two templates are available:
+Project templates are rendered from `Assets/templates/` using `${{ variable }}` placeholder substitution. Five templates are available (see the [Templates guide](../guide/templates.md)):
 
 | Template | Contents |
 |---|---|
 | `medallion` | A complete medallion-architecture project (see below). |
 | `blank` | A minimal `udp.yml` with no resources, for starting from scratch. |
+| `all-resource-types` | Reference catalogue declaring all 46 Fabric item types. |
+| `realtime-governance` | IoT → Eventhouse → Eventstream → Activator + lakehouse, Data Agent, materialized lake views, and Azure governance; ships an Azure DevOps pipeline. |
+| `streaming-lakehouse-governance` | Event Hub → Databricks → Lakehouse + Data Agent, with Azure governance; ships an Azure DevOps pipeline. |
 
 The `medallion` template creates a project containing:
 

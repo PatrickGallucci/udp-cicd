@@ -13,9 +13,9 @@ This page describes how to migrate from the [Terraform Fabric Provider](https://
 | Learning curve | High (HCL, providers, modules) | Low (single YAML file) |
 | Drift detection | `terraform plan` | `udp-cicd drift` |
 | Rollback | Manual state manipulation | `udp-cicd rollback` |
-| Fabric-specific | Generic provider | Purpose-built for Fabric |
+| Fabric-specific | Generic provider | Purpose-built for Fabric (+ Entra & Azure) |
 | MCP support | No | Yes (14 tools) |
-| Item types | ~15 | 45 |
+| Item types | ~15 | 46 Fabric + Entra + 64 Azure |
 
 ---
 

@@ -7,7 +7,7 @@
 [![Docs](https://img.shields.io/badge/docs-PatrickGallucci.github.io-teal)](https://PatrickGallucci.github.io/udp-cicd/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PatrickGallucci/udp-cicd)
 
-> **Public Preview** — 30 Fabric item types verified against the live API; core workflows are production-ready. Entra and Azure resource providers are new in 1.9 and validated end-to-end in tests. See [9.2 Tested Item Types](#92-tested-item-types).
+> **Public Preview** — 30 Fabric item types verified against the live API; core workflows are production-ready. The Microsoft Entra and Azure resource providers are validated end-to-end in tests. See [9.2 Tested Item Types](#92-tested-item-types).
 
 ---
 
@@ -49,11 +49,8 @@ The project exists to close the **orchestration gap** across a Microsoft data pl
 | Reverse generation | Scan an existing workspace and produce a `udp.yml` you can customize |
 | AI agent integration | MCP server exposes 14 deployment tools to Claude Code and GitHub Copilot |
 
-### 1.3 Lineage and Credit
 
-`udp-cicd` began as a .NET port of [**fabric-automation-bundles**](https://github.com/dereknguyenio/fabric-automation-bundles) by **Derek Nguyen** — the Python `fab-bundle` tool that pioneered the declarative, single-manifest model for Microsoft Fabric (one `fabric.yml`, topological dependency resolution, plan/deploy, drift, reverse generation, MCP). udp-cicd reimplements that model on .NET 9 and **extends it across two further control planes** (Microsoft Entra and Azure). The engine layout deliberately mirrors the original (`Loader` / `Resolver` / `Planner` / `Deployer` / providers / generators). Full acknowledgment in [§10](#10-acknowledgments).
-
-### 1.4 System Architecture
+### 1.3 System Architecture
 
 The solution is built on **.NET 9** and divided into functional areas:
 

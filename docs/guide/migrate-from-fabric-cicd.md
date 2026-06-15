@@ -10,7 +10,7 @@ This page describes how to migrate from [fabric-cicd](https://github.com/microso
 |---|------------|-----------|
 | Approach | Git sync-based deployment | Declarative YAML + API |
 | Config | Python code | udp.yml |
-| Item support | Git-synced items only | 45 item types |
+| Item support | Git-synced items only | 46 Fabric item types + Entra + Azure |
 | Creates workspaces | No | Yes |
 | Creates lakehouses | No | Yes |
 | Creates environments | No | Yes |

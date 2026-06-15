@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-06-15
+
+### Changed
+
+- **Documentation refresh** to bring every page in line with the multi-platform
+  feature set:
+  - **Editor guide** (`guide/editor.md`) now documents the `Azure (defaults)`
+    node, platform-grouped Resources tree, and the platform filter in the Add
+    Resource dialog; coverage statement updated to all platforms (46 Fabric +
+    Entra + 64 Azure).
+  - **Quickstart** lists all five templates (was two).
+  - Migration guides (Terraform, fabric-cicd) and the launch post updated to
+    46 Fabric item types + Entra + 64 Azure; README preview note de-versioned.
+
 ## [1.11.0] - 2026-06-15
 
 ### Added

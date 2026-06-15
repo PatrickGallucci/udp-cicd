@@ -7,7 +7,9 @@ tree + property-grid interface — no hand-editing of YAML required.
 It is built on the same `UdpCicd.Core` model and serializer that power the
 `udp-cicd` CLI and MCP server, so:
 
-- it understands **all 45 supported resource types** automatically;
+- it understands **every resource type across all three platforms** automatically
+  — the 46 Fabric item types, Microsoft **Entra** groups/apps, and the 64 **Azure**
+  service types;
 - the files it writes are byte-compatible with `udp-cicd deploy`/`validate`;
 - it runs the **same validation** as `udp-cicd validate`.
 
@@ -43,23 +45,27 @@ argument.
 ┌──────────────────────────────┬───────────────────────────────────────┐
 │ Deployment: medallion         │  Name            medallion-analytics   │
 │ Workspace                     │  Version         1.0.0                  │
-│ Variables (2)                 │  Description      Bronze/Silver/Gold…   │
-│ Resources                     │  Folders By Type  True                  │
-│   notebooks (3)               │                                         │
-│   lakehouses (3)              │   ← property grid edits the item        │
-│   pipelines (1)               │     selected on the left                │
+│ Azure (defaults)              │  Description      Bronze/Silver/Gold…   │
+│ Variables (2)                 │  Folders By Type  True                  │
+│ Resources                     │                                         │
+│   notebooks (3)               │   ← property grid edits the item        │
+│   lakehouses (3)              │     selected on the left                │
+│   Entra (1)                   │                                         │
+│     entra_groups (1)          │                                         │
+│   Azure (3)                   │                                         │
+│     azure_key_vaults (1)      │                                         │
 │ Security roles (2)            │                                         │
-│ Connections (0)               │                                         │
 │ Targets (3)                   │                                         │
-│ Admin / tenant settings (0)   │                                         │
 │ Advanced                      │                                         │
 └──────────────────────────────┴───────────────────────────────────────┘
 ```
 
 - **Left — tree.** Every section of the deployment: `Deployment`, `Workspace`,
-  `Variables`, `Resources` (grouped by type, then by key), `Security`,
-  `Connections`, `Targets`, `Admin / tenant settings`, and an `Advanced` group
-  (`Policies`, `Notifications`, `State`).
+  `Azure (defaults)` (the `azure:` subscription/location defaults), `Variables`,
+  `Resources`, `Security`, `Connections`, `Targets`, `Admin / tenant settings`,
+  and an `Advanced` group (`Policies`, `Notifications`, `State`). Under
+  `Resources`, **Fabric** types sit at the top level; **Entra** and **Azure**
+  types are grouped under their platform so 100+ types stay navigable.
 - **Right — property grid.** Edits the object selected in the tree: scalars,
   enums (drop-downs), lists (collection editor), string maps (key/value dialog),
   and nested objects (inline or via a dialog that can create a missing section).
@@ -69,7 +75,8 @@ argument.
 | Task | How |
 |---|---|
 | Edit a field | Select a node, change the value in the property grid |
-| Add a resource | **Edit ▸ Add Resource…** (`Ctrl+R`), pick a type and key |
+| Add a resource | **Edit ▸ Add Resource…** (`Ctrl+R`); use the **platform filter** (Fabric / Entra / Azure) to narrow the type list, then pick a type and key |
+| Set Azure defaults | Select **Azure (defaults)**, set `subscription` / `location` for `azure_*` resources |
 | Add a variable / connection / target / tenant setting | **Edit ▸ Add …** |
 | Rename a key | Select the node and press **F2** (or right-click ▸ Rename) |
 | Remove an item | Select the node and press **Delete** |
