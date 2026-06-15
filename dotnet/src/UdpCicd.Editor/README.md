@@ -6,7 +6,7 @@ required.
 
 It references `UdpCicd.Core` and reuses the project's own model graph and
 YamlDotNet configuration, so the files it writes are byte-compatible with the
-`udp-cicd` CLI and MCP server, and it automatically supports **all 45 Fabric
+`udp-cicd` CLI and MCP server, and it automatically supports **all 46 Fabric
 resource types**.
 
 ## Running

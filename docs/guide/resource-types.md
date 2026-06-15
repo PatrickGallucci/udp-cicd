@@ -1,6 +1,6 @@
 # Resource Types
 
-This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in `udp.yml`, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 45 Fabric item types, of which 30 are verified against live Fabric workspaces.
+This page is the reference for every Fabric item type that udp-cicd can manage: the type key used in `udp.yml`, the underlying Fabric API type, the accepted definition formats, and a full YAML example for each resource. udp-cicd covers 46 Fabric item types, of which 30 are verified against live Fabric workspaces.
 
 !!! info "Beyond Fabric — Entra & Azure"
     A single `udp.yml` can also declare **Microsoft Entra** directory objects and
@@ -12,7 +12,7 @@ This page is the reference for every Fabric item type that udp-cicd can manage: 
 
 ## 1. Coverage and deployment order
 
-udp-cicd supports 45 Fabric item types. 30 of these are verified live; the remainder are defined against the published Fabric REST API and pending live verification. A small number of types are list-only because the Fabric API does not support creating them.
+udp-cicd supports 46 Fabric item types. 30 of these are verified live; the remainder are defined against the published Fabric REST API and pending live verification. A small number of types are list-only because the Fabric API does not support creating them.
 
 Resources deploy in dependency order, resolved automatically by the engine:
 
@@ -45,6 +45,7 @@ You do not declare this ordering in `udp.yml`; the Resolver derives it from reso
 | Spark Job Definition | `spark_job_definitions` | SparkJobDefinition | .py, .jar |
 | GraphQL API | `graphql_apis` | GraphQLApi | Schema file |
 | Snowflake Database | `snowflake_databases` | SnowflakeDatabase | Connection-based |
+| Materialized Lake View | `materialized_lake_views` | MaterializedLakeView | SQL definition |
 
 ### 2.2 Data Factory
 
@@ -310,6 +311,17 @@ snowflake_databases:
   snowflake_mirror:
     description: "Mirrored Snowflake data"
     connection: snowflake_conn
+```
+
+#### Materialized Lake View
+
+```yaml
+materialized_lake_views:
+  device_daily_summary:
+    description: "Daily per-device telemetry rollup"
+    path: ./sql/device_daily_summary.sql
+    default_lakehouse: telemetry_lakehouse
+    refresh_cron: "0 2 * * *"
 ```
 
 ### 4.2 Data Factory

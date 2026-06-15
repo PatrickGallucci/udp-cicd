@@ -54,6 +54,26 @@ public sealed class LakehouseResource
     public Dictionary<string, TableSchema> Tables { get; set; } = [];
 }
 
+/// <summary>
+/// A Fabric Materialized Lake View — a managed, incrementally-refreshed view
+/// over lakehouse Delta tables, defined by SQL. Bound to a parent lakehouse.
+/// </summary>
+public sealed class MaterializedLakeViewResource
+{
+    public string? Description { get; set; }
+
+    /// <summary>Path to the SQL/definition file for the view.</summary>
+    public string? Path { get; set; }
+
+    /// <summary>The lakehouse the materialized view is created in.</summary>
+    public string? DefaultLakehouse { get; set; }
+
+    /// <summary>Optional refresh schedule (cron) for the materialized view.</summary>
+    public string? RefreshCron { get; set; }
+
+    public string? Folder { get; set; }
+}
+
 public sealed class NotebookResource
 {
     public string Path { get; set; } = "";

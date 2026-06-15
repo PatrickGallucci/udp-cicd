@@ -42,7 +42,7 @@ Unified Data Platform Deployment fills that gap.
 
 | Feature | Description |
 |---|---|
-| 45 resource types | Every Fabric item type: Lakehouses, Notebooks, Pipelines, Warehouses, Semantic Models, Reports, Environments, Data Agents, KQL Databases, Eventhouses, dbt Jobs, and 34 more |
+| 46 Fabric item types | Lakehouses, Notebooks, Pipelines, Warehouses, Semantic Models, Reports, Environments, Data Agents, KQL Databases, Eventhouses, Materialized Lake Views, dbt Jobs, and 34 more |
 | Multi-platform | Entra groups/apps (Microsoft Graph) and Azure resources (Bicep via `az`) in the same `udp.yml` — see the [Multi-platform guide](guide/multi-platform.md) |
 | Dependency resolution | Automatic topological sort for deployment ordering |
 | Multi-environment | Dev, staging, and prod targets with variable overrides |

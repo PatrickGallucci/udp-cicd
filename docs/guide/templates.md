@@ -20,7 +20,8 @@ This creates a new directory with the project name containing a fully configured
 |----------|-------------|
 | `blank` | Minimal starting point: empty `udp.yml` plus the standard directory structure. |
 | `medallion` | Bronze/Silver/Gold lakehouse architecture with ETL notebooks, a data pipeline, and a Data Agent. |
-| `all-resource-types` | Reference catalogue: a `udp.yml` that declares all 45 supported Fabric item types. |
+| `all-resource-types` | Reference catalogue: a `udp.yml` that declares all 46 supported Fabric item types. |
+| `realtime-governance` | Real-time intelligence (IoT → Eventhouse → Eventstream → Activator) with a lakehouse, Data Agent, and materialized lake views, governed by Azure Key Vault, Policy, Defender, Monitor, and Sentinel — ships an Azure DevOps pipeline. |
 
 ### 2.1 `blank`
 
@@ -95,7 +96,7 @@ The template includes dev and prod targets with variable overrides for database 
 
 ### 2.3 `all-resource-types`
 
-A reference catalogue whose `udp.yml` declares **all 45 supported Fabric item types**, cross-referenced so the dependency graph is exercised. Use it to copy the exact schema for any item type — most projects keep only a handful and delete the rest.
+A reference catalogue whose `udp.yml` declares **all 46 supported Fabric item types**, cross-referenced so the dependency graph is exercised. Use it to copy the exact schema for any item type — most projects keep only a handful and delete the rest.
 
 ```bash
 udp-cicd init --template all-resource-types --name udp-catalogue
@@ -105,7 +106,7 @@ Creates a project with working stubs for the deployable text-based items (notebo
 
 ```
 udp-catalogue/
-├── udp.yml                 # all 45 item types
+├── udp.yml                 # all 46 item types
 ├── notebooks/ingest.py
 ├── spark/batch_job.py
 ├── sql/create_views.sql
@@ -118,7 +119,34 @@ udp-catalogue/
 └── .gitignore
 ```
 
-The generated `udp.yml` **validates out of the box** (`udp-cicd validate` → 46 resources). To `deploy`, set your `capacity_id` and supply the definition files for definition-required items — see the generated `README.md` and the [Resource Types guide](resource-types.md). Deploy incrementally; some types are capacity-gated or need external connections.
+The generated `udp.yml` **validates out of the box**. To `deploy`, set your `capacity_id` and supply the definition files for definition-required items — see the generated `README.md` and the [Resource Types guide](resource-types.md). Deploy incrementally; some types are capacity-gated or need external connections.
+
+### 2.4 `realtime-governance`
+
+A cross-platform real-time intelligence estate with Azure governance and a ready-made **Azure DevOps pipeline** (`azure-pipelines.yml`).
+
+```bash
+udp-cicd init --template realtime-governance --name my-realtime
+```
+
+Telemetry flows **IoT Hub → Eventstream → Eventhouse**; a curated **Lakehouse** feeds **Materialized Lake Views** and a **Data Agent**, while a **Reflex** activator watches for anomalies. The Azure governance resources wrap the estate:
+
+| Resource | Type | Plane |
+|----------|------|-------|
+| `iot-telemetry-hub` | IoT Hub | Azure |
+| `telemetry_eventhouse` | Eventhouse | Fabric |
+| `device_stream` | Eventstream | Fabric |
+| `anomaly_activator` | Real-Time Activator (Reflex) | Fabric |
+| `telemetry_lakehouse` | Lakehouse | Fabric |
+| `device_daily_summary` | Materialized Lake View | Fabric |
+| `telemetry_agent` | Data Agent | Fabric |
+| `kv-realtime` | Key Vault | Azure |
+| `require-resource-tags` | Policy | Azure |
+| `defender-servers` | Defender for Cloud | Azure |
+| `appi-realtime` | Monitor (App Insights) | Azure |
+| `sentinel-onboard` | Microsoft Sentinel | Azure |
+
+The bundled `azure-pipelines.yml` validates on PRs, deploys to **staging** on merge to `main`, then to **production** behind a manual approval gate. Create a variable group `udp-credentials` (`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`).
 
 ---
 

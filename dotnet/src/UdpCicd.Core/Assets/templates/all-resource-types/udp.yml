@@ -60,6 +60,13 @@ resources:
       default_lakehouse: curated_lakehouse
       args: ["--mode", "full"]
 
+  materialized_lake_views:
+    curated_daily_summary:
+      description: "Incrementally-refreshed daily rollup over the curated lakehouse"
+      path: ./sql/curated_daily_summary.sql
+      default_lakehouse: curated_lakehouse
+      refresh_cron: "0 3 * * *"
+
   graphql_apis:
     data_api:
       description: "GraphQL API over curated data"

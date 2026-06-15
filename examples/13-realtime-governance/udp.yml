@@ -1,0 +1,99 @@
+# Real-time intelligence + Azure governance — the concrete form of the
+# `realtime-governance` template (init it with:
+#   udp-cicd init --template realtime-governance --name my-realtime)
+#
+# Telemetry flows IoT Hub → Eventstream → Eventhouse; a curated lakehouse feeds
+# materialized lake views and a Data Agent; a Reflex activator watches for
+# anomalies; Azure Key Vault, Policy, Defender, Monitor, and Sentinel govern it.
+#
+#   udp-cicd validate
+#   udp-cicd deploy -t dev
+
+deployment:
+  name: realtime-governance-example
+  version: "1.0.0"
+  description: "Real-time intelligence + Azure governance (incl. Materialized Lake Views)"
+
+azure:
+  subscription: "${var.subscription_id}"
+  location: eastus
+
+resources:
+  # --- Azure: landing group + IoT + governance ---
+  azure_resource_groups:
+    rg-realtime-dev:
+      location: eastus
+      tags: { workload: realtime }
+  azure_iot_hubs:
+    iot-telemetry-hub:
+      resource_group: rg-realtime-dev
+      sku: S1
+  azure_key_vaults:
+    kv-realtime:
+      resource_group: rg-realtime-dev
+      properties:
+        sku: { family: A, name: standard }
+        enableRbacAuthorization: true
+  azure_policy_assignments:
+    require-resource-tags:
+      resource_group: rg-realtime-dev
+  azure_defender_plans:
+    defender-servers:
+      resource_group: rg-realtime-dev
+  azure_monitor_components:
+    appi-realtime:
+      resource_group: rg-realtime-dev
+      kind: web
+      properties: { Application_Type: web }
+  azure_sentinel:
+    sentinel-onboard:
+      resource_group: rg-realtime-dev
+
+  # --- Fabric: real-time intelligence + analytics ---
+  lakehouses:
+    telemetry_lakehouse:
+      description: "Curated device telemetry"
+      enable_schemas: true
+  eventhouses:
+    telemetry_eventhouse:
+      description: "KQL store for device telemetry"
+  eventstreams:
+    device_stream:
+      description: "Routes IoT Hub telemetry into the eventhouse"
+      sources:
+        - type: event_hub
+          name: iot-telemetry-hub
+      destinations:
+        - type: eventhouse
+          name: telemetry_eventhouse
+  reflex:
+    anomaly_activator:
+      description: "Alert when telemetry crosses thresholds"
+  materialized_lake_views:
+    device_daily_summary:
+      description: "Daily per-device telemetry rollup"
+      path: ./sql/device_daily_summary.sql
+      default_lakehouse: telemetry_lakehouse
+      refresh_cron: "0 2 * * *"
+  data_agents:
+    telemetry_agent:
+      description: "Natural-language interface over telemetry"
+      sources:
+        - telemetry_lakehouse
+      instructions: ./agent/instructions.md
+
+targets:
+  dev:
+    default: true
+    workspace:
+      name: realtime-governance-dev
+      capacity_id: "${var.capacity_id}"
+      folders_by_type: true
+
+variables:
+  capacity_id:
+    description: "Your Fabric capacity GUID"
+    default: "REPLACE-WITH-YOUR-CAPACITY-GUID"
+  subscription_id:
+    description: "Target Azure subscription id"
+    default: "REPLACE-WITH-YOUR-SUBSCRIPTION-ID"

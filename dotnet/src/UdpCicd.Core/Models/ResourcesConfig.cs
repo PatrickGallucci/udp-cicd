@@ -51,6 +51,7 @@ public sealed partial class ResourcesConfig
     public Dictionary<string, MapResource> MapItems { get; set; } = [];
     public Dictionary<string, GraphModelResource> GraphModels { get; set; } = [];
     public Dictionary<string, HLSCohortResource> HlsCohorts { get; set; } = [];
+    public Dictionary<string, MaterializedLakeViewResource> MaterializedLakeViews { get; set; } = [];
 
     // --- Microsoft Entra (Graph, tenant scope) ---
     public Dictionary<string, EntraGroupResource> EntraGroups { get; set; } = [];

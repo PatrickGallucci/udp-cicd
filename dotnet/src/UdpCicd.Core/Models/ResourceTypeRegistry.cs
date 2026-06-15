@@ -107,6 +107,7 @@ public static class ResourceTypeRegistry
         new("map_items", "MapItems", "Map", false, Folder: "Maps"),
         new("graph_models", "GraphModels", "GraphModel", false, Folder: "Graph"),
         new("hls_cohorts", "HlsCohorts", "HLSCohort", false, Folder: "Healthcare"),
+        new("materialized_lake_views", "MaterializedLakeViews", "MaterializedLakeView", false, Folder: "Data Engineering"),
 
         // --- Microsoft Entra (Graph, tenant scope). No Fabric workspace/folder. ---
         new("entra_groups", "EntraGroups", "group", StrictNaming: false, Platform: ResourcePlatform.Entra),

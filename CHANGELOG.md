@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-06-15
+
+### Added
+
+- **Fabric Materialized Lake Views** (`materialized_lake_views`) — a new Fabric
+  item type (46 Fabric types total): incrementally-refreshed SQL views over
+  lakehouse Delta tables, bound to a parent lakehouse, with an optional
+  `refresh_cron`.
+- **`realtime-governance` template** — a cross-platform real-time intelligence
+  estate (IoT Hub → Fabric Eventhouse → Eventstream → Real-Time Activator, plus
+  a Lakehouse, Data Agent, and Materialized Lake Views) governed by Azure Key
+  Vault, Policy, Defender for Cloud, Monitor, and Sentinel — and **ships an Azure
+  DevOps pipeline** (`azure-pipelines.yml`) with validate → staging → prod
+  approval-gated stages. Scaffold with
+  `udp-cicd init --template realtime-governance`.
+- New example [`examples/13-realtime-governance`](examples/13-realtime-governance);
+  `materialized_lake_views` added to the `all-resource-types` catalogue template.
+
+### Removed
+
+- **README §9 (comparison with fabric-automation-bundles)** — the standalone
+  comparison section was removed; the acknowledgment (now §10) is retained.
+
 ## [1.9.0] - 2026-06-15
 
 ### Added

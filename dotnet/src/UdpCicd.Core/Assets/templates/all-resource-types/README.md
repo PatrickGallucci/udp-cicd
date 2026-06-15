@@ -1,7 +1,7 @@
 # ${{ project_name }}
 
 Generated from the **all-resource-types** template — a reference catalogue whose
-`udp.yml` declares **all 45 supported Fabric item types**, cross-referenced so the
+`udp.yml` declares **all 46 supported Fabric item types**, cross-referenced so the
 dependency graph is exercised (notebooks → environment + lakehouse, reports →
 semantic model, KQL database → eventhouse, agents → sources, and so on).
 

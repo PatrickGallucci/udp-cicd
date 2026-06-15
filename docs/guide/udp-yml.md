@@ -12,7 +12,7 @@ This topic is the complete reference for the `udp.yml` schema: every top-level k
 deployment:          # Required. Project metadata.
 workspace:       # Default workspace configuration.
 variables:       # Variable definitions with optional defaults.
-resources:       # Resource definitions — Fabric (45 types), Entra, and Azure.
+resources:       # Resource definitions — Fabric (46 types), Entra, and Azure.
 azure:           # Azure deployment defaults (subscription, location).
 security:        # Workspace and OneLake role assignments.
 connections:     # Data source connection definitions.
@@ -271,7 +271,7 @@ notifications:
 
 All Fabric resource definitions organized by type. Each resource type is a dictionary where keys are the resource display names and values define the resource configuration.
 
-### 6.1 Supported resource types (45 types)
+### 6.1 Supported resource types (46 types)
 
 The following table lists every supported resource type. Click a type name for details in the [resource type reference](resource-types.md).
 
@@ -281,6 +281,7 @@ The following table lists every supported resource type. Click a type name for d
 | | `notebooks` | Spark notebooks (.py, .ipynb). |
 | | `environments` | Spark runtime environments with library dependencies. |
 | | `spark_job_definitions` | Spark Job Definition resources (.py, .jar). |
+| | `materialized_lake_views` | Materialized Lake Views (SQL views over lakehouse Delta tables). |
 | | `pipelines` | Data Pipelines with activities and schedules. |
 | | `dataflows` | Dataflow Gen2 definitions. |
 | | `copy_jobs` | Copy Job resources. |
@@ -323,7 +324,7 @@ The following table lists every supported resource type. Click a type name for d
 | | `digital_twin_builder_flows` | Digital Twin Builder Flow resources. |
 | **Healthcare** | `hls_cohorts` | HLS Cohort (Healthcare) resources. |
 
-In addition to the 45 Fabric item types, `resources` accepts **Entra** and
+In addition to the 46 Fabric item types, `resources` accepts **Entra** and
 **Azure** types, deployed through Microsoft Graph and Bicep respectively:
 
 | Platform | Resource type key | Description |

@@ -7,7 +7,7 @@
 [![Docs](https://img.shields.io/badge/docs-PatrickGallucci.github.io-teal)](https://PatrickGallucci.github.io/udp-cicd/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PatrickGallucci/udp-cicd)
 
-> **Public Preview** — 30 Fabric item types verified against the live API; core workflows are production-ready. Entra and Azure resource providers are new in 1.9 and validated end-to-end in tests. See [10.2 Tested Item Types](#102-tested-item-types).
+> **Public Preview** — 30 Fabric item types verified against the live API; core workflows are production-ready. Entra and Azure resource providers are new in 1.9 and validated end-to-end in tests. See [9.2 Tested Item Types](#92-tested-item-types).
 
 ---
 
@@ -45,13 +45,13 @@ The project exists to close the **orchestration gap** across a Microsoft data pl
 | Dependency management | Automatic topological sorting of resources for correct deployment order |
 | State and drift | Tracks deployed resources in `deployment-state.json`; detects out-of-band portal changes |
 | Multi-targeting | Environment-specific configuration (capacities, workspace names, variables) for dev/staging/prod |
-| Resource coverage | 45 Fabric item types + Entra groups/apps + **64 Azure service types** |
+| Resource coverage | 46 Fabric item types + Entra groups/apps + **64 Azure service types** |
 | Reverse generation | Scan an existing workspace and produce a `udp.yml` you can customize |
 | AI agent integration | MCP server exposes 14 deployment tools to Claude Code and GitHub Copilot |
 
 ### 1.3 Lineage and Credit
 
-`udp-cicd` began as a .NET port of [**fabric-automation-bundles**](https://github.com/dereknguyenio/fabric-automation-bundles) by **Derek Nguyen** — the Python `fab-bundle` tool that pioneered the declarative, single-manifest model for Microsoft Fabric (one `fabric.yml`, topological dependency resolution, plan/deploy, drift, reverse generation, MCP). udp-cicd reimplements that model on .NET 9 and **extends it across two further control planes** (Microsoft Entra and Azure). The engine layout deliberately mirrors the original (`Loader` / `Resolver` / `Planner` / `Deployer` / providers / generators). Full acknowledgment in [§11](#11-acknowledgments); a side-by-side comparison in [§9](#9-comparison-with-fabric-automation-bundles).
+`udp-cicd` began as a .NET port of [**fabric-automation-bundles**](https://github.com/dereknguyenio/fabric-automation-bundles) by **Derek Nguyen** — the Python `fab-bundle` tool that pioneered the declarative, single-manifest model for Microsoft Fabric (one `fabric.yml`, topological dependency resolution, plan/deploy, drift, reverse generation, MCP). udp-cicd reimplements that model on .NET 9 and **extends it across two further control planes** (Microsoft Entra and Azure). The engine layout deliberately mirrors the original (`Loader` / `Resolver` / `Planner` / `Deployer` / providers / generators). Full acknowledgment in [§10](#10-acknowledgments).
 
 ### 1.4 System Architecture
 
@@ -132,7 +132,7 @@ udp-cicd init
 udp-cicd init --template medallion --name udp-analytics
 ```
 
-Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 45 Fabric item types).
+Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 46 Fabric item types), `realtime-governance` (IoT → Eventhouse → Eventstream + Azure governance, with an Azure DevOps pipeline).
 
 Retrieve your Fabric capacity GUID, update the `workspace` section, then run the standard lifecycle:
 
@@ -345,7 +345,7 @@ include:
 
 ### 4.5 Templates
 
-**`medallion`** — Bronze/Silver/Gold lakehouse with ETL notebooks, a dependency-chained pipeline, semantic model and dashboard, a Data Agent, security roles, and dev/staging/prod targets. **`blank`** — minimal structure. **`all-resource-types`** — reference catalogue declaring all 45 Fabric item types. Custom templates use Scriban scaffolding.
+**`medallion`** — Bronze/Silver/Gold lakehouse with ETL notebooks, a dependency-chained pipeline, semantic model and dashboard, a Data Agent, security roles, and dev/staging/prod targets. **`blank`** — minimal structure. **`all-resource-types`** — reference catalogue declaring all 46 Fabric item types. **`realtime-governance`** — IoT Hub → Fabric Eventhouse/Eventstream/Activator + Lakehouse, Data Agent, Materialized Lake Views, and Azure governance (Key Vault, Policy, Defender, Monitor, Sentinel), shipping an Azure DevOps pipeline. Custom templates use Scriban scaffolding.
 
 ### 4.6 VS Code Integration
 
@@ -511,11 +511,11 @@ Copy `cicd/azure-devops.yml` to your repo as a YAML pipeline — validate, stagi
 
 ## 8. Supported Resource Types
 
-### 8.1 Microsoft Fabric (45 item types)
+### 8.1 Microsoft Fabric (46 item types)
 
 | Category | Types |
 |----------|-------|
-| Data Engineering | Lakehouse, Notebook, Environment, SparkJobDefinition, GraphQLApi, SnowflakeDatabase |
+| Data Engineering | Lakehouse, Notebook, Environment, SparkJobDefinition, GraphQLApi, SnowflakeDatabase, MaterializedLakeView |
 | Data Factory | DataPipeline, CopyJob, MountedDataFactory, ApacheAirflowJob, dbt Job |
 | Data Warehouse | Warehouse, SQLDatabase, MirroredDatabase, MirroredWarehouse, MirroredDatabricksCatalog, CosmosDB, Datamart |
 | Power BI | SemanticModel, Report, PaginatedReport, Dashboard, Dataflow |
@@ -546,33 +546,9 @@ See the [Resource Types Guide](https://PatrickGallucci.github.io/udp-cicd/guide/
 
 ---
 
-## 9. Comparison with fabric-automation-bundles
+## 9. Reference
 
-udp-cicd shares its declarative model and engine shape with the original Python tool, and extends it across additional control planes.
-
-| Aspect | fabric-automation-bundles (`fab-bundle`) | udp-cicd |
-|--------|------------------------------------------|----------|
-| Author | Derek Nguyen | Patrick Gallucci (port + extensions) |
-| Language / runtime | Python (Click, Pydantic, Jinja2) | .NET 9 (System.CommandLine, YamlDotNet, Scriban) |
-| Manifest | `fabric.yml` | `udp.yml` |
-| Distribution | `pip` | `dotnet tool` (NuGet) |
-| Control planes | Microsoft Fabric | **Fabric + Entra + Azure** |
-| Fabric item types | 45 | 45 |
-| Entra (groups / apps) | — | ✓ (Microsoft Graph) |
-| Azure resources | — | ✓ **64 service types** (Bicep via `az`) |
-| Templates | medallion, osdu-analytics | medallion, blank, all-resource-types |
-| MCP server | ✓ | ✓ (14 tools) |
-| State / drift / reverse-gen | ✓ | ✓ |
-| Tenant/admin settings | — | ✓ (`admin plan`/`apply`) |
-| GUI editor | — | ✓ (WinForms, Windows) |
-
-The shared lineage is intentional: the `Loader → Resolver → Planner → Deployer` pipeline, providers, and generators mirror the Python originals so concepts transfer directly between the two tools.
-
----
-
-## 10. Reference
-
-### 10.1 Environment Variables
+### 9.1 Environment Variables
 
 | Variable | Purpose |
 |----------|---------|
@@ -583,7 +559,7 @@ The shared lineage is intentional: the `Loader → Resolver → Planner → Depl
 | `FABRIC_CAPACITY_ID` | Capacity GUID for workspace creation during `deploy`/`init` |
 | `AZURE_STORAGE_ACCOUNT_NAME` | Used with `azureblob` or `adls` state backends |
 
-### 10.2 Tested Item Types
+### 9.2 Tested Item Types
 
 30 Fabric item types verified against a live workspace:
 
@@ -593,7 +569,7 @@ The shared lineage is intentional: the `Loader → Resolver → Planner → Depl
 | **List-only** (5) | Datamart, Dashboard, MirroredWarehouse, PaginatedReport, Dataflow |
 | **Needs definition files** (4) | SemanticModel (TMDL), Report (PBIR), MirroredDatabase, MountedDataFactory |
 
-### 10.3 Feature Stability
+### 9.3 Feature Stability
 
 | Feature | Status | Notes |
 |---------|--------|-------|
@@ -609,13 +585,13 @@ The shared lineage is intentional: the `Loader → Resolver → Planner → Depl
 
 ---
 
-## 11. Acknowledgments
+## 10. Acknowledgments
 
 udp-cicd is a .NET reimplementation of [**fabric-automation-bundles**](https://github.com/dereknguyenio/fabric-automation-bundles) by **Derek Nguyen**. That project established the declarative, single-manifest model for Microsoft Fabric — schema-validated config, topological dependency resolution, plan/deploy/drift, reverse generation from existing workspaces, and MCP-based AI assistance. udp-cicd ports those ideas to .NET 9 and extends them across Microsoft Entra and Azure. Thank you to Derek for the original design and tooling.
 
 ---
 
-## 12. Contributing
+## 11. Contributing
 
 Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -626,6 +602,6 @@ dotnet build
 dotnet test
 ```
 
-## 13. License
+## 12. License
 
 MIT

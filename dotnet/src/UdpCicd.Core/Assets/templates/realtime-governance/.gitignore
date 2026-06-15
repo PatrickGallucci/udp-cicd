@@ -1,0 +1,10 @@
+# udp-cicd state (machine-specific)
+.udp-cicd/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
