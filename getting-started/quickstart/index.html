@@ -1929,7 +1929,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>udp-cicd<span class="w"> </span>init<span class="w"> </span>--template<span class="w"> </span>medallion<span class="w"> </span>--name<span class="w"> </span>udp-analytics
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>udp-analytics
 </code></pre></div>
-<p>Project templates are rendered from <code>Assets/templates/</code> using <code>${{ variable }}</code> placeholder substitution. Two templates are available:</p>
+<p>Project templates are rendered from <code>Assets/templates/</code> using <code>${{ variable }}</code> placeholder substitution. Five templates are available (see the <a href="../../guide/templates/">Templates guide</a>):</p>
 <table>
 <thead>
 <tr>
@@ -1945,6 +1945,18 @@
 <tr>
 <td><code>blank</code></td>
 <td>A minimal <code>udp.yml</code> with no resources, for starting from scratch.</td>
+</tr>
+<tr>
+<td><code>all-resource-types</code></td>
+<td>Reference catalogue declaring all 46 Fabric item types.</td>
+</tr>
+<tr>
+<td><code>realtime-governance</code></td>
+<td>IoT → Eventhouse → Eventstream → Activator + lakehouse, Data Agent, materialized lake views, and Azure governance; ships an Azure DevOps pipeline.</td>
+</tr>
+<tr>
+<td><code>streaming-lakehouse-governance</code></td>
+<td>Event Hub → Databricks → Lakehouse + Data Agent, with Azure governance; ships an Azure DevOps pipeline.</td>
 </tr>
 </tbody>
 </table>

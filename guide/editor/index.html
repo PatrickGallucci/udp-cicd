@@ -1829,7 +1829,9 @@ tree + property-grid interface — no hand-editing of YAML required.</p>
 <p>It is built on the same <code>UdpCicd.Core</code> model and serializer that power the
 <code>udp-cicd</code> CLI and MCP server, so:</p>
 <ul>
-<li>it understands <strong>all 45 supported resource types</strong> automatically;</li>
+<li>it understands <strong>every resource type across all three platforms</strong> automatically
+  — the 46 Fabric item types, Microsoft <strong>Entra</strong> groups/apps, and the 64 <strong>Azure</strong>
+  service types;</li>
 <li>the files it writes are byte-compatible with <code>udp-cicd deploy</code>/<code>validate</code>;</li>
 <li>it runs the <strong>same validation</strong> as <code>udp-cicd validate</code>.</li>
 </ul>
@@ -1856,23 +1858,27 @@ argument.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌──────────────────────────────┬───────────────────────────────────────┐
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│ Deployment: medallion         │  Name            medallion-analytics   │
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│ Workspace                     │  Version         1.0.0                  │
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│ Variables (2)                 │  Description      Bronze/Silver/Gold…   │
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│ Resources                     │  Folders By Type  True                  │
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│   notebooks (3)               │                                         │
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│   lakehouses (3)              │   ← property grid edits the item        │
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│   pipelines (1)               │     selected on the left                │
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│ Security roles (2)            │                                         │
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│ Connections (0)               │                                         │
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│ Targets (3)                   │                                         │
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│ Admin / tenant settings (0)   │                                         │
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│ Advanced                      │                                         │
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>└──────────────────────────────┴───────────────────────────────────────┘
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│ Azure (defaults)              │  Description      Bronze/Silver/Gold…   │
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│ Variables (2)                 │  Folders By Type  True                  │
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│ Resources                     │                                         │
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│   notebooks (3)               │   ← property grid edits the item        │
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│   lakehouses (3)              │     selected on the left                │
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│   Entra (1)                   │                                         │
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│     entra_groups (1)          │                                         │
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│   Azure (3)                   │                                         │
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│     azure_key_vaults (1)      │                                         │
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│ Security roles (2)            │                                         │
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>│ Targets (3)                   │                                         │
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>│ Advanced                      │                                         │
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>└──────────────────────────────┴───────────────────────────────────────┘
 </code></pre></div>
 <ul>
 <li><strong>Left — tree.</strong> Every section of the deployment: <code>Deployment</code>, <code>Workspace</code>,
-  <code>Variables</code>, <code>Resources</code> (grouped by type, then by key), <code>Security</code>,
-  <code>Connections</code>, <code>Targets</code>, <code>Admin / tenant settings</code>, and an <code>Advanced</code> group
-  (<code>Policies</code>, <code>Notifications</code>, <code>State</code>).</li>
+  <code>Azure (defaults)</code> (the <code>azure:</code> subscription/location defaults), <code>Variables</code>,
+  <code>Resources</code>, <code>Security</code>, <code>Connections</code>, <code>Targets</code>, <code>Admin / tenant settings</code>,
+  and an <code>Advanced</code> group (<code>Policies</code>, <code>Notifications</code>, <code>State</code>). Under
+  <code>Resources</code>, <strong>Fabric</strong> types sit at the top level; <strong>Entra</strong> and <strong>Azure</strong>
+  types are grouped under their platform so 100+ types stay navigable.</li>
 <li><strong>Right — property grid.</strong> Edits the object selected in the tree: scalars,
   enums (drop-downs), lists (collection editor), string maps (key/value dialog),
   and nested objects (inline or via a dialog that can create a missing section).</li>
@@ -1892,7 +1898,11 @@ argument.</p>
 </tr>
 <tr>
 <td>Add a resource</td>
-<td><strong>Edit ▸ Add Resource…</strong> (<code>Ctrl+R</code>), pick a type and key</td>
+<td><strong>Edit ▸ Add Resource…</strong> (<code>Ctrl+R</code>); use the <strong>platform filter</strong> (Fabric / Entra / Azure) to narrow the type list, then pick a type and key</td>
+</tr>
+<tr>
+<td>Set Azure defaults</td>
+<td>Select <strong>Azure (defaults)</strong>, set <code>subscription</code> / <code>location</code> for <code>azure_*</code> resources</td>
 </tr>
 <tr>
 <td>Add a variable / connection / target / tenant setting</td>
