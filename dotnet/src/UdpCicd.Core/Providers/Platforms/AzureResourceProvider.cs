@@ -214,6 +214,48 @@ public sealed class AzureResourceProvider : IResourcePlatformProvider
         ["Microsoft.DocumentDB/databaseAccounts"] = "2024-05-15",
         ["Microsoft.Cache/Redis"] = "2023-08-01",
         ["Microsoft.DataBox/jobs"] = "2022-12-01",
+
+        // Governance / security / AI
+        ["Microsoft.Purview/accounts"] = "2021-12-01",
+        ["Microsoft.KeyVault/vaults"] = "2023-07-01",
+        ["Microsoft.Authorization/policyAssignments"] = "2022-06-01",
+        ["Microsoft.Security/pricings"] = "2024-01-01",
+        ["Microsoft.MachineLearningServices/workspaces"] = "2024-04-01",
+        ["Microsoft.SecurityInsights/onboardingStates"] = "2024-03-01",
+        ["Microsoft.VideoIndexer/accounts"] = "2024-01-01",
+        ["Microsoft.CognitiveServices/accounts"] = "2024-10-01",
+        ["Microsoft.LoadTestService/loadTests"] = "2022-12-01",
+        ["Microsoft.ManagedIdentity/userAssignedIdentities"] = "2023-01-31",
+        ["Microsoft.Management/serviceGroups"] = "2024-02-01-preview",
+
+        // Monitoring / observability
+        ["Microsoft.Insights/components"] = "2020-02-02",
+        ["Microsoft.Insights/metricAlerts"] = "2018-03-01",
+        ["Microsoft.Insights/diagnosticSettings"] = "2021-05-01-preview",
+        ["Microsoft.OperationalInsights/workspaces"] = "2023-09-01",
+        ["Microsoft.Insights/dataCollectionRules"] = "2023-03-11",
+        ["Microsoft.Insights/workbooks"] = "2023-06-01",
+        ["Microsoft.DatabaseWatcher/watchers"] = "2023-09-01-preview",
+
+        // Networking
+        ["Microsoft.Network/networkWatchers"] = "2023-11-01",
+        ["Microsoft.Network/dnsZones"] = "2018-05-01",
+        ["Microsoft.Network/networkInterfaces"] = "2023-11-01",
+        ["Microsoft.Network/privateDnsZones"] = "2020-06-01",
+        ["Microsoft.Network/publicIPAddresses"] = "2023-11-01",
+        ["Microsoft.Network/routeTables"] = "2023-11-01",
+        ["Microsoft.Network/virtualNetworks"] = "2023-11-01",
+        ["Microsoft.Network/localNetworkGateways"] = "2023-11-01",
+        ["Microsoft.Network/peeringServices"] = "2022-10-01",
+        ["Microsoft.Peering/peerings"] = "2022-10-01",
+        ["Microsoft.Network/virtualNetworkGateways"] = "2023-11-01",
+        ["Microsoft.Network/virtualWans"] = "2023-11-01",
+        ["Microsoft.Network/ddosProtectionPlans"] = "2023-11-01",
+        ["Microsoft.Network/azureFirewalls"] = "2023-11-01",
+        ["Microsoft.Network/ipGroups"] = "2023-11-01",
+        ["Microsoft.Network/networkSecurityGroups"] = "2023-11-01",
+        ["Microsoft.Network/applicationGateways"] = "2023-11-01",
+        ["Microsoft.Network/applicationSecurityGroups"] = "2023-11-01",
     };
 
     private bool? ApplyGenericService(PlanItem item, PlatformDeployContext ctx, string field)

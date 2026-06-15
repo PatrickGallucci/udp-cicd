@@ -826,6 +826,61 @@ See the full catalogue in [`11-azure-data-services`](https://github.com/PatrickG
 | Cache for Redis | `azure_redis_cache` | Microsoft.Cache/Redis |
 | Data Box | `azure_data_box` | Microsoft.DataBox/jobs |
 
+**Governance / security / AI**
+
+| Service | Type Key | ARM Type |
+|---------|----------|----------|
+| Microsoft Purview | `azure_purview_accounts` | Microsoft.Purview/accounts |
+| Key Vault | `azure_key_vaults` | Microsoft.KeyVault/vaults |
+| Azure Policy | `azure_policy_assignments` | Microsoft.Authorization/policyAssignments |
+| Defender for Cloud | `azure_defender_plans` | Microsoft.Security/pricings |
+| Machine Learning | `azure_machine_learning_workspaces` | Microsoft.MachineLearningServices/workspaces |
+| AI Foundry | `azure_ai_foundry` | Microsoft.MachineLearningServices/workspaces |
+| Sentinel | `azure_sentinel` | Microsoft.SecurityInsights/onboardingStates |
+| AI Video Indexer | `azure_video_indexer` | Microsoft.VideoIndexer/accounts |
+| OpenAI | `azure_openai` | Microsoft.CognitiveServices/accounts |
+| Load Testing | `azure_load_testing` | Microsoft.LoadTestService/loadTests |
+| Agent identities | `azure_agent_ids` | Microsoft.ManagedIdentity/userAssignedIdentities |
+| Service Groups | `azure_service_groups` | Microsoft.Management/serviceGroups |
+
+**Monitoring / observability**
+
+| Service | Type Key | ARM Type |
+|---------|----------|----------|
+| Monitor (App Insights) | `azure_monitor_components` | Microsoft.Insights/components |
+| Alerts | `azure_alerts` | Microsoft.Insights/metricAlerts |
+| Diagnostic Settings | `azure_diagnostic_settings` | Microsoft.Insights/diagnosticSettings |
+| Log Analytics Workspace | `azure_log_analytics_workspaces` | Microsoft.OperationalInsights/workspaces |
+| Metrics (DCR) | `azure_metrics` | Microsoft.Insights/dataCollectionRules |
+| Workbooks | `azure_workbooks` | Microsoft.Insights/workbooks |
+| Activity Log | `azure_activity_logs` | Microsoft.Insights/diagnosticSettings |
+| Database Watchers | `azure_database_watchers` | Microsoft.DatabaseWatcher/watchers |
+
+**Networking**
+
+| Service | Type Key | ARM Type |
+|---------|----------|----------|
+| Network Watcher | `azure_network_watchers` | Microsoft.Network/networkWatchers |
+| DNS Zones | `azure_dns_zones` | Microsoft.Network/dnsZones |
+| Network Interfaces | `azure_network_interfaces` | Microsoft.Network/networkInterfaces |
+| Private DNS Zones | `azure_private_dns_zones` | Microsoft.Network/privateDnsZones |
+| Public IP Address | `azure_public_ip_addresses` | Microsoft.Network/publicIPAddresses |
+| Route Tables | `azure_route_tables` | Microsoft.Network/routeTables |
+| Virtual Network | `azure_virtual_networks` | Microsoft.Network/virtualNetworks |
+| Local Network Gateway | `azure_local_network_gateways` | Microsoft.Network/localNetworkGateways |
+| Peering Services | `azure_peering_services` | Microsoft.Network/peeringServices |
+| Peering | `azure_peerings` | Microsoft.Peering/peerings |
+| Virtual Network Gateway | `azure_virtual_network_gateways` | Microsoft.Network/virtualNetworkGateways |
+| Virtual WAN | `azure_virtual_wans` | Microsoft.Network/virtualWans |
+| DDoS Protection | `azure_ddos_protection_plans` | Microsoft.Network/ddosProtectionPlans |
+| Firewall | `azure_firewalls` | Microsoft.Network/azureFirewalls |
+| IP Groups | `azure_ip_groups` | Microsoft.Network/ipGroups |
+| Network Security Group | `azure_network_security_groups` | Microsoft.Network/networkSecurityGroups |
+| Application Gateway | `azure_application_gateways` | Microsoft.Network/applicationGateways |
+| Application Security Group | `azure_application_security_groups` | Microsoft.Network/applicationSecurityGroups |
+
+Catalogue: [`12-azure-platform-services`](https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/12-azure-platform-services).
+
 !!! note "Storage-family naming & child resources"
     The five storage-family services deploy as storage accounts, so their names
     must be **3–24 lowercase alphanumeric**. Child resources such as

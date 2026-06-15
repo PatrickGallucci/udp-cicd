@@ -336,6 +336,9 @@ In addition to the 45 Fabric item types, `resources` accepts **Entra** and
 | **Azure services** | `azure_data_factories`, `azure_databricks_workspaces`, `azure_databricks_structured_streaming`, `azure_event_hub_namespaces`, `azure_event_grid_topics`, `azure_stream_analytics_jobs`, `azure_iot_hubs`, `azure_logic_apps`, `azure_functions` | Integration / streaming / compute. |
 | | `azure_blob_storage`, `azure_data_lake_storage`, `azure_files`, `azure_queue_storage`, `azure_table_storage` | Storage family (deploy as storage accounts). |
 | | `azure_sql_databases`, `azure_sql_managed_instances`, `azure_sql_virtual_machines`, `azure_postgresql`, `azure_mysql`, `azure_mariadb`, `azure_cosmosdb_accounts`, `azure_redis_cache`, `azure_data_box` | Databases & data movement. |
+| | `azure_purview_accounts`, `azure_key_vaults`, `azure_policy_assignments`, `azure_defender_plans`, `azure_machine_learning_workspaces`, `azure_ai_foundry`, `azure_sentinel`, `azure_video_indexer`, `azure_openai`, `azure_load_testing`, `azure_agent_ids`, `azure_service_groups` | Governance / security / AI. |
+| | `azure_monitor_components`, `azure_alerts`, `azure_diagnostic_settings`, `azure_log_analytics_workspaces`, `azure_metrics`, `azure_workbooks`, `azure_activity_logs`, `azure_database_watchers` | Monitoring / observability. |
+| | `azure_network_watchers`, `azure_dns_zones`, `azure_network_interfaces`, `azure_private_dns_zones`, `azure_public_ip_addresses`, `azure_route_tables`, `azure_virtual_networks`, `azure_local_network_gateways`, `azure_peering_services`, `azure_peerings`, `azure_virtual_network_gateways`, `azure_virtual_wans`, `azure_ddos_protection_plans`, `azure_firewalls`, `azure_ip_groups`, `azure_network_security_groups`, `azure_application_gateways`, `azure_application_security_groups` | Networking. |
 
 See the [Multi-platform guide](multi-platform.md) and [Resource Types §5](resource-types.md#5-beyond-fabric-entra-and-azure).
 

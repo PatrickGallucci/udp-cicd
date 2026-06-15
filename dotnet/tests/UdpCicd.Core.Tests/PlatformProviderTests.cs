@@ -43,7 +43,7 @@ public class PlatformProviderTests
     public void Platform_Partitioning_Has_Expected_Counts()
     {
         Assert.Equal(2, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Entra).Count());
-        Assert.Equal(26, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Azure).Count());
+        Assert.Equal(64, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Azure).Count());
         Assert.All(ResourceTypeRegistry.ForPlatform(ResourcePlatform.Fabric),
             r => Assert.Equal(ResourcePlatform.Fabric, r.Platform));
     }

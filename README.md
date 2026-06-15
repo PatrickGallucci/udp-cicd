@@ -7,18 +7,18 @@
 [![Docs](https://img.shields.io/badge/docs-PatrickGallucci.github.io-teal)](https://PatrickGallucci.github.io/udp-cicd/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PatrickGallucci/udp-cicd)
 
-> **Public Preview** — 30 item types verified against the live Fabric API. Core workflows are production-ready. See [8.2 Tested Item Types](#82-tested-item-types).
+> **Public Preview** — 30 Fabric item types verified against the live API; core workflows are production-ready. Entra and Azure resource providers are new in 1.9 and validated end-to-end in tests. See [10.2 Tested Item Types](#102-tested-item-types).
 
 ---
 
 ## 1. Overview
 
-Unified Data Platform Deployment (`udp-cicd`) is a declarative, Infrastructure-as-Code toolset for managing Microsoft Fabric projects. It allows data engineers to define their entire Fabric estate — lakehouses, notebooks, pipelines, semantic models, Data Agents, security roles, and environment targets — in a single manifest file (`udp.yml`), then validate, plan, and deploy with one command, ensuring reproducible deployments across development, staging, and production.
+Unified Data Platform Deployment (`udp-cicd`) is a declarative, Infrastructure-as-Code toolset for managing a Microsoft data estate from a single manifest. You define your **Microsoft Fabric** items — lakehouses, notebooks, pipelines, semantic models, Data Agents — together with the **Microsoft Entra** identities and **Azure** resources they depend on, in one `udp.yml`, then validate, plan, and deploy with one command across dev, staging, and production.
 
 ```bash
 udp-cicd init --template medallion --name udp-project
 udp-cicd validate
-udp-cicd plan
+udp-cicd plan --target prod
 udp-cicd deploy --target prod
 ```
 
@@ -26,39 +26,44 @@ udp-cicd deploy --target prod
 
 ### 1.1 Purpose and Scope
 
-The project exists to close the **orchestration gap** in Microsoft Fabric. The Fabric CLI can export and import items, `fabric-cicd` can deploy across workspaces, and Terraform/Bicep can provision infrastructure — but none of them describe:
+The project exists to close the **orchestration gap** across a Microsoft data platform. The Fabric CLI can import and export items, `fabric-cicd` can deploy across workspaces, and Terraform/Bicep can provision infrastructure — but none of them describe, in one place:
 
-- What resources your project needs (lakehouses, notebooks, pipelines, semantic models, Data Agents)
+- What resources your project needs — Fabric items, Entra groups/apps, Azure services
 - How those resources depend on each other
 - How configuration varies across environments (dev/staging/prod)
 - What security roles and permissions are required
-- How to deploy everything in the correct order
+- How to deploy everything, in the correct order, idempotently
 
-`udp-cicd` provides a unified model that understands the dependencies between Fabric items and manages their lifecycle as a single project.
+`udp-cicd` provides a unified model that understands those dependencies and manages their lifecycle as a single project.
 
 ### 1.2 Key Capabilities
 
 | Capability | Description |
 |------------|-------------|
-| Declarative manifests | Define desired state in `udp.yml`; the engine reconciles the workspace to match |
+| Declarative manifests | Define desired state in `udp.yml`; the engine reconciles each control plane to match |
+| Multi-platform | One manifest spans **Fabric** (REST), **Entra** (Microsoft Graph), and **Azure** (Bicep via `az`) |
 | Dependency management | Automatic topological sorting of resources for correct deployment order |
 | State and drift | Tracks deployed resources in `deployment-state.json`; detects out-of-band portal changes |
 | Multi-targeting | Environment-specific configuration (capacities, workspace names, variables) for dev/staging/prod |
-| Resource coverage | 45 Fabric item types across all workloads, plus OneLake shortcuts |
-| Multi-platform | Declare **Entra** groups/apps (Microsoft Graph) and **Azure** resources (Bicep via `az`) in the same `udp.yml` |
+| Resource coverage | 45 Fabric item types + Entra groups/apps + **64 Azure service types** |
 | Reverse generation | Scan an existing workspace and produce a `udp.yml` you can customize |
-| AI agent integration | MCP server exposes 12 deployment tools to Claude Code and GitHub Copilot |
+| AI agent integration | MCP server exposes 14 deployment tools to Claude Code and GitHub Copilot |
 
-### 1.3 System Architecture
+### 1.3 Lineage and Credit
 
-The solution is built on **.NET 9** and divided into three functional areas:
+`udp-cicd` began as a .NET port of [**fabric-automation-bundles**](https://github.com/dereknguyenio/fabric-automation-bundles) by **Derek Nguyen** — the Python `fab-bundle` tool that pioneered the declarative, single-manifest model for Microsoft Fabric (one `fabric.yml`, topological dependency resolution, plan/deploy, drift, reverse generation, MCP). udp-cicd reimplements that model on .NET 9 and **extends it across two further control planes** (Microsoft Entra and Azure). The engine layout deliberately mirrors the original (`Loader` / `Resolver` / `Planner` / `Deployer` / providers / generators). Full acknowledgment in [§11](#11-acknowledgments); a side-by-side comparison in [§9](#9-comparison-with-fabric-automation-bundles).
+
+### 1.4 System Architecture
+
+The solution is built on **.NET 9** and divided into functional areas:
 
 | Project | Path | Responsibility |
 |---------|------|----------------|
-| **Core Engine** | `dotnet/src/UdpCicd.Core` | YAML parsing, dependency resolution, planning, state, Fabric API communication |
-| **CLI Tool** | `dotnet/src/UdpCicd.Cli` | Command-line interface built with `System.CommandLine` for manual and automated execution |
+| **Core Engine** | `dotnet/src/UdpCicd.Core` | YAML parsing, dependency resolution, planning, state; Fabric / Graph / Azure providers |
+| **CLI Tool** | `dotnet/src/UdpCicd.Cli` | Command-line interface (`System.CommandLine`) for manual and automated runs |
 | **MCP Server** | `dotnet/src/UdpCicd.Mcp` | Model Context Protocol server exposing deployment tools to AI agents |
-| **Tests** | `dotnet/tests/UdpCicd.Core.Tests` | Unit and integration testing suite |
+| **Editor** | `dotnet/src/UdpCicd.Editor` | WinForms `udp.yml` editor (Windows) |
+| **Tests** | `dotnet/tests/UdpCicd.Core.Tests` | Unit and integration suite |
 
 > **CLI naming:** The standalone CLI is `udp-cicd`. The MCP companion is `udp-cicd-mcp`.
 
@@ -71,9 +76,11 @@ The solution is built on **.NET 9** and divided into three functional areas:
 | Category | Requirement | Minimum Version / Details |
 |----------|-------------|---------------------------|
 | System | .NET SDK | 9.0+ |
-| System | Azure CLI | 2.50+ (required for interactive auth) |
+| System | Azure CLI | 2.50+ (interactive auth; required for the Azure provider) |
 | Fabric | Capacity | Active Fabric capacity (F2 or higher) |
 | Fabric | Permissions | Admin or Contributor role on target workspace |
+| Entra | Permissions | Graph `Group.ReadWrite.All` / `Application.ReadWrite.All` (only if you declare `entra_*` resources) |
+| Azure | Permissions | Rights on the target subscription (only if you declare `azure_*` resources) |
 
 ### 2.2 Installation
 
@@ -87,7 +94,7 @@ dotnet tool install --global udp-cicd
 dotnet tool install --global udp-cicd-mcp
 ```
 
-Verify the installation with `diag`, which checks the .NET runtime, Azure CLI status, and Fabric API connectivity:
+Verify with `diag`, which checks the .NET runtime, Azure CLI status, and Fabric API connectivity:
 
 ```bash
 udp-cicd diag
@@ -100,6 +107,8 @@ The tool uses the Azure Identity library (`Azure.Identity`) to resolve credentia
 1. If `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET` are all present → `ClientSecretCredential` (service principal)
 2. Otherwise → `DefaultAzureCredential` (managed identity, environment, or active `az login` session)
 3. `FABRIC_USE_BROWSER=true` forces `InteractiveBrowserCredential`
+
+The same credential chain backs Fabric, Graph (Entra), and Key Vault. The Azure provider shells out to `az`, so it uses your active `az login` context.
 
 ```bash
 # Local development (interactive)
@@ -115,8 +124,6 @@ udp-cicd deploy --target prod -y
 
 ### 2.4 Quickstart: Template Project
 
-The fastest start is the `medallion` template, which scaffolds a Bronze/Silver/Gold architecture:
-
 ```bash
 # Interactive wizard — pick a template, name, and capacity
 udp-cicd init
@@ -125,9 +132,9 @@ udp-cicd init
 udp-cicd init --template medallion --name udp-analytics
 ```
 
-Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 45 item types).
+Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 45 Fabric item types).
 
-Retrieve your Fabric capacity GUID and update the `workspace` section of the generated `udp.yml`, then run the standard lifecycle:
+Retrieve your Fabric capacity GUID, update the `workspace` section, then run the standard lifecycle:
 
 ```bash
 udp-cicd validate
@@ -141,7 +148,7 @@ udp-cicd deploy --target dev
 udp-cicd generate --workspace "My Existing Workspace"
 ```
 
-This scans the workspace and produces a `udp.yml` you can customize — the fastest on-ramp for existing projects.
+Scans the workspace and produces a `udp.yml` you can customize — the fastest on-ramp for existing projects.
 
 ### 2.6 Quickstart: From Scratch
 
@@ -188,11 +195,7 @@ Deployment Plan: udp-analytics
   +  gold-lakehouse        Lakehouse      create    New resource
   +  spark-env             Environment    create    New resource
   +  etl-bronze            Notebook       create    New resource
-  +  etl-silver            Notebook       create    New resource
-  +  daily-refresh         DataPipeline   create    New resource
   ~  analytics-model       SemanticModel  update    Definition updated
-
-  Summary: 7 to create, 1 to update
 ```
 
 ---
@@ -233,19 +236,7 @@ Deployment Plan: udp-analytics
 dotnet tool install --global udp-cicd-mcp
 ```
 
-**GitHub Copilot** — add to `.github/copilot-mcp.json` in your repo root:
-
-```json
-{
-  "mcpServers": {
-    "udp-cicd": {
-      "command": "udp-cicd-mcp"
-    }
-  }
-}
-```
-
-**Claude Code** — add to `.claude/settings.json`:
+**GitHub Copilot** — add to `.github/copilot-mcp.json`; **Claude Code** — add to `.claude/settings.json`:
 
 ```json
 {
@@ -260,13 +251,6 @@ dotnet tool install --global udp-cicd-mcp
 Then just talk: *"Deploy to dev"*, *"Check for drift in prod"*, *"Run the ETL pipeline"*.
 
 **14 MCP tools:** validate, plan, deploy, destroy, status, drift, run, history, diag, list-templates, list-workspaces, list-capacities, export, generate.
-
-Copy the AI instructions file for your IDE to your project root:
-
-| IDE | Copy this file | To your project |
-|-----|---------------|-----------------|
-| GitHub Copilot | [`examples/.github/copilot-instructions.md`](examples/.github/copilot-instructions.md) | `.github/copilot-instructions.md` |
-| Claude Code | [`examples/CLAUDE.md`](examples/CLAUDE.md) | `CLAUDE.md` |
 
 See the [MCP Server guide](https://PatrickGallucci.github.io/udp-cicd/guide/mcp-server/) and [Development Workflows](https://PatrickGallucci.github.io/udp-cicd/guide/development-workflows/).
 
@@ -302,45 +286,16 @@ resources:
       environment: spark-env
       default_lakehouse: bronze
 
-  pipelines:
-    daily-refresh:
-      schedule:
-        cron: "0 6 * * *"
-        timezone: America/Chicago
-      activities:
-        - notebook: etl-pipeline
-
   semantic_models:
     analytics-model:
       path: ./semantic_model/
       default_lakehouse: gold
-
-  reports:
-    dashboard:
-      path: ./reports/dashboard/
-      semantic_model: analytics-model
-
-  data_agents:
-    udp-agent:
-      sources: [gold]
-      instructions: ./agent/instructions.md
-      few_shot_examples: ./agent/examples.yaml
 
 security:
   roles:
     - name: engineers
       entra_group: sg-data-eng
       workspace_role: contributor
-    - name: analysts
-      entra_group: sg-analysts
-      workspace_role: viewer
-
-# Org-wide Fabric tenant settings — applied tenant-wide via `udp-cicd admin apply`,
-# never by `deploy`. Keyed by API settingName. See docs/guide/admin-settings.md.
-admin:
-  tenant_settings:
-    PublishToWeb:
-      enabled: false
 
 targets:
   dev:
@@ -348,12 +303,6 @@ targets:
     workspace:
       name: udp-analytics-dev
       capacity_id: "your-dev-capacity-guid"
-
-  prod:
-    workspace:
-      name: udp-analytics-prod
-    run_as:
-      service_principal: sp-udp-prod
 ```
 
 ### 4.2 Variable Substitution
@@ -372,27 +321,20 @@ targets:
       adme_endpoint: "https://prod.energy.azure.com"
 ```
 
-Built-in deployment metadata is also available:
-
-| Variable | Source |
-|----------|--------|
-| `${deployment.name}` | The `name` field in the `deployment` section |
-| `${deployment.version}` | The `version` field in the `deployment` section |
+Built-in metadata is also available: `${deployment.name}`, `${deployment.version}`.
 
 ### 4.3 Secrets Injection
 
-The `SecretsResolver` replaces placeholders recursively across the manifest. Two patterns are supported:
+The `SecretsResolver` replaces placeholders recursively across the manifest:
 
 | Pattern | Resolution |
 |---------|-----------|
 | `${secret.NAME}` | Resolved from the local environment (`Environment.GetEnvironmentVariable`) |
-| `${keyvault.VAULT.SECRET}` | Resolved via Azure Key Vault `SecretClient`; results cached to minimize API calls |
+| `${keyvault.VAULT.SECRET}` | Resolved via Azure Key Vault `SecretClient`; results cached |
 
 Key Vault lookups authenticate with the same credential chain as the Fabric API (see [2.3](#23-authentication)).
 
 ### 4.4 Include Files
-
-Split large deployments across multiple files:
 
 ```yaml
 include:
@@ -403,30 +345,17 @@ include:
 
 ### 4.5 Templates
 
-**`medallion`** — Bronze/Silver/Gold lakehouse architecture with:
-
-- Three lakehouses with ETL notebooks
-- Data pipeline with dependency chaining
-- Semantic model and dashboard
-- Data Agent with few-shot examples
-- Security roles for engineers and analysts
-- Dev/Staging/Prod targets
-
-**`blank`** — minimal structure for new projects.
-
-**`all-resource-types`** — reference catalogue: a `udp.yml` declaring all 45 supported Fabric item types (validates out of the box), with working stubs for the deployable text-based items. Copy the blocks you need.
-
-**Custom templates** — add a directory with a `template.yml` and a `udp.yml`. The template engine uses Scriban for scaffolding.
+**`medallion`** — Bronze/Silver/Gold lakehouse with ETL notebooks, a dependency-chained pipeline, semantic model and dashboard, a Data Agent, security roles, and dev/staging/prod targets. **`blank`** — minimal structure. **`all-resource-types`** — reference catalogue declaring all 45 Fabric item types. Custom templates use Scriban scaffolding.
 
 ### 4.6 VS Code Integration
 
-Get autocomplete and validation for `udp.yml` via the bundled JSON schema. Add `.vscode/settings.json`:
+Get autocomplete and validation for `udp.yml` via the bundled JSON schema:
 
 ```json
 {
-    "yaml.schemas": {
-        "./udp.schema.json": "udp.yml"
-    }
+  "yaml.schemas": {
+    "./udp.schema.json": "udp.yml"
+  }
 }
 ```
 
@@ -434,44 +363,77 @@ Requires the [YAML extension](https://marketplace.visualstudio.com/items?itemNam
 
 ---
 
-## 5. Core Architecture
+## 5. Multi-Platform Resources
 
-### 5.1 Deployment Engine Pipeline
+A single `udp.yml` can declare resources on three control planes. Each resource type is tagged with a **platform** that selects the provider used to deploy it. Fabric is the default; Entra and Azure types are addressed by their own top-level keys.
 
-The engine is a linear five-stage pipeline. Each stage owns one aspect of the lifecycle:
+| Platform | Control plane | Deployed via | Scope | Auth |
+|----------|---------------|--------------|-------|------|
+| **Fabric** | Microsoft Fabric items | Fabric REST API | Workspace | Fabric token |
+| **Entra** | Directory objects | Microsoft Graph | Tenant | Graph `*.ReadWrite.All` |
+| **Azure** | ARM resources | Bicep through the `az` CLI | Subscription / resource group | `az login` |
+
+```yaml
+azure:
+  subscription: "${var.subscription_id}"
+  location: eastus
+
+resources:
+  # Fabric (workspace)
+  lakehouses:
+    analytics_lh: { description: "Analytics workload" }
+
+  # Entra (tenant, via Graph) — idempotent create-or-patch by display name
+  entra_groups:
+    sg-analytics-readers: { security_enabled: true }
+  entra_apps:
+    analytics-ingest-app: { create_service_principal: true }
+
+  # Azure (ARM via Bicep)
+  azure_resource_groups:
+    rg-analytics-dev: { location: eastus }
+  azure_key_vaults:
+    kv-analytics:
+      resource_group: rg-analytics-dev
+  azure_virtual_networks:
+    vnet-hub:
+      resource_group: rg-analytics-dev
+      properties: { addressSpace: { addressPrefixes: ["10.0.0.0/16"] } }
+```
+
+See the [Multi-platform guide](https://PatrickGallucci.github.io/udp-cicd/guide/multi-platform/) and examples [10](examples/10-azure-and-entra/), [11](examples/11-azure-data-services/), and [12](examples/12-azure-platform-services/).
+
+> **Note** — The deploy engine is workspace-centric: a deployment containing only Entra/Azure resources still creates a Fabric workspace. Mixed and Fabric-only deployments are unaffected.
+
+---
+
+## 6. Core Architecture
+
+### 6.1 Deployment Engine Pipeline
+
+The engine is a linear five-stage pipeline:
 
 | Stage | Component | Responsibility |
 |-------|-----------|----------------|
-| 1. Load | `Loader` / `YamlFactory` | Parse `udp.yml` (YamlDotNet) into a `DeploymentDefinition`; handle includes, variable substitution, schema validation |
-| 2. Resolve | `Resolver` | Analyze resource relationships (e.g., a Notebook referencing a Lakehouse); topological sort for creation order |
-| 3. Plan | `Planner` | Compare desired state (YAML) against current state to compute actions: Create, Update, Delete, No-op |
-| 4. Deploy | `Deployer` | Execute the plan via `FabricClient`; update state after each successful operation |
-| 5. State | `StateManager` | Maintain `deployment-state.json` — the record of truth for what has been deployed; powers drift detection and idempotency |
+| 1. Load | `Loader` / `YamlFactory` | Parse `udp.yml` into a `DeploymentDefinition`; includes, variable substitution, schema validation |
+| 2. Resolve | `Resolver` | Analyze resource relationships; topological sort for creation order |
+| 3. Plan | `Planner` | Diff desired vs current state → Create / Update / Delete / No-op |
+| 4. Deploy | `Deployer` | Execute the plan, dispatching each item to its platform provider; update state |
+| 5. State | `StateManager` | Maintain `deployment-state.json` — record of truth, powering drift and idempotency |
 
-Dependency order is resolved automatically — you never have to think about what goes first:
+### 6.2 Platform Providers
 
-```
-environments → lakehouses → notebooks → pipelines
-                          → warehouses
-                          → semantic_models → reports
-                          → data_agents
-```
+Non-Fabric resources deploy through an `IResourcePlatformProvider`, selected per item by its `ResourcePlatform` tag in the resource registry:
 
-### 5.2 Core Data Models
+| Provider | Platform | Client |
+|----------|----------|--------|
+| `Deployer` (inline) | Fabric | `FabricClient` (REST + Admin API) |
+| `EntraResourceProvider` | Entra | `GraphClient` (Microsoft Graph) |
+| `AzureResourceProvider` | Azure | `AzureCli` (`az deployment` + Bicep) |
 
-Every element in `udp.yml` maps to a strongly typed C# class in `UdpCicd.Core.Models`:
+The Azure provider emits generated Bicep for first-class service types (driven by an ARM-type → API-version table), or deploys an author-supplied `.bicep` via `azure_deployments`.
 
-| Entity | Code Identifier | Description |
-|--------|-----------------|-------------|
-| Root definition | `DeploymentDefinition` | Top-level container for a `udp.yml` file |
-| Resource map | `ResourcesConfig` | Collection of all Fabric items (notebooks, lakehouses, etc.) |
-| Target | `TargetConfig` | Environment-specific overrides (`prod` vs `dev`) |
-| Workspace | `WorkspaceConfig` | Fabric workspace settings (ID, capacity, name) |
-| State | `StateConfig` | State backend selection and settings |
-
-### 5.3 State Backends
-
-The `StateManager` keeps the engine idempotent and supports multiple backends:
+### 6.3 State Backends
 
 | Backend | Use Case | Status |
 |---------|----------|--------|
@@ -479,40 +441,34 @@ The `StateManager` keeps the engine idempotent and supports multiple backends:
 | Azure Blob | Team collaboration, remote locking (blob lease) | Beta |
 | OneLake / ADLS Gen2 | State stored inside the Fabric ecosystem | Beta |
 
-### 5.4 Generators
-
-| Generator | Component | Function |
-|-----------|-----------|----------|
-| Reverse | `ReverseGenerator` | Scans an existing workspace via `FabricClient`; emits `udp.yml` plus source files (e.g., `.py` for notebooks) |
-| Template | `TemplateEngine` (Scriban) | Scaffolds new projects from templates in `Assets/templates/` |
-
-### 5.5 Repository Layout
+### 6.4 Repository Layout
 
 ```
 dotnet/
 ├── src/
 │   ├── UdpCicd.Core/
-│   │   ├── Models/            # DeploymentDefinition + typed udp.yml schema
-│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver, AdminApplier, ConnectionChecker
-│   │   ├── Providers/         # FabricClient, FabricAuth (Fabric REST + Admin API)
+│   │   ├── Models/            # DeploymentDefinition + typed udp.yml schema + ResourceTypeRegistry
+│   │   ├── Engine/            # Loader, Resolver, Planner, Deployer, StateManager, SecretsResolver, ...
+│   │   ├── Providers/         # FabricClient, GraphClient, AzureCli + Platforms/ (Entra, Azure)
 │   │   ├── Generators/        # ReverseGenerator, TemplateEngine
 │   │   └── Assets/templates/  # medallion/, blank/, all-resource-types/
 │   ├── UdpCicd.Cli/           # System.CommandLine entry point
-│   └── UdpCicd.Mcp/           # MCP server (14 tools)
+│   ├── UdpCicd.Mcp/           # MCP server (14 tools)
+│   └── UdpCicd.Editor/        # WinForms udp.yml editor (Windows)
 └── tests/
     └── UdpCicd.Core.Tests/    # Unit + integration tests
 ```
 
 ---
 
-## 6. CI/CD Integration
+## 7. CI/CD Integration
 
-### 6.1 Developer Workflow
+### 7.1 Developer Workflow
 
 ```mermaid
 flowchart TB
     subgraph local["Local Development"]
-        A["Author udp.yml\n+ notebooks, SQL, etc."] --> B["udp-cicd validate"]
+        A["Author udp.yml"] --> B["udp-cicd validate"]
         B --> C["udp-cicd plan --target dev"]
         C --> D["udp-cicd deploy --target dev"]
         D --> E["udp-cicd drift"]
@@ -521,41 +477,18 @@ flowchart TB
     end
 
     subgraph cicd["CI/CD Pipeline"]
-        G["PR Opened"] --> H["udp-cicd validate"]
-        H --> I["udp-cicd plan --target staging"]
+        G["PR Opened"] --> H["validate"]
+        H --> I["plan --target staging"]
         I --> J{Merge to main}
-        J --> K["udp-cicd deploy --target staging -y"]
+        J --> K["deploy --target staging -y"]
         K --> L{Approval Gate}
-        L --> M["udp-cicd deploy --target prod -y"]
-    end
-
-    subgraph udp["Microsoft Fabric"]
-        direction LR
-        DEV["Dev Workspace"]
-        STG["Staging Workspace"]
-        PRD["Prod Workspace"]
+        L --> M["deploy --target prod -y"]
     end
 
     F --> G
-    D -.->|"Fabric REST API"| DEV
-    K -.->|"Service Principal"| STG
-    M -.->|"Service Principal"| PRD
 ```
 
-### 6.2 Pipeline Stage Reference
-
-| Stage | Command | What happens |
-|-------|---------|--------------|
-| Local dev | `udp-cicd validate` | Schema validation, reference checks, dependency resolution |
-| Local dev | `udp-cicd plan --target dev` | Connects to Fabric, diffs desired vs actual state |
-| Local dev | `udp-cicd deploy --target dev` | Creates/updates resources in dev workspace |
-| Local dev | `udp-cicd drift` | Detects out-of-band changes made in the portal |
-| PR check | `udp-cicd validate` | Gate: blocks merge if deployment is invalid |
-| PR check | `udp-cicd plan --target staging` | Informational: shows what the merge will change |
-| CI deploy | `udp-cicd deploy --target staging -y` | Auto-deploys on merge, service principal auth |
-| CI deploy | `udp-cicd deploy --target prod -y` | Deploys after manual approval gate |
-
-### 6.3 GitHub Actions
+### 7.2 GitHub Actions
 
 Copy `cicd/github-actions.yml` to `.github/workflows/udp-cicd.yml`:
 
@@ -570,21 +503,15 @@ Copy `cicd/github-actions.yml` to `.github/workflows/udp-cicd.yml`:
     AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 ```
 
-### 6.4 Azure DevOps
+### 7.3 Azure DevOps
 
-Copy `cicd/azure-devops.yml` to your repo as a YAML pipeline — includes validate, staging, and production stages with approval gates.
-
-### 6.5 Pipeline Templates
-
-[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Use_Template-238636?style=for-the-badge&logo=github)](https://github.com/PatrickGallucci/udp-udp-cicd-example/generate) [![Azure DevOps](https://img.shields.io/badge/Azure_DevOps-Use_Template-0078D7?style=for-the-badge&logo=azuredevops)](https://github.com/PatrickGallucci/udp-udp-cicd-ado-example/generate)
-
-Click to create your own repo with a working dev → test → prod pipeline. Add 5 secrets and push. Setup guides: [GitHub Actions](https://github.com/PatrickGallucci/udp-udp-cicd-example#setup) | [Azure DevOps](https://github.com/PatrickGallucci/udp-udp-cicd-ado-example#setup)
+Copy `cicd/azure-devops.yml` to your repo as a YAML pipeline — validate, staging, and production stages with approval gates.
 
 ---
 
-## 7. Supported Resource Types
+## 8. Supported Resource Types
 
-**45 item types** across all Fabric workloads:
+### 8.1 Microsoft Fabric (45 item types)
 
 | Category | Types |
 |----------|-------|
@@ -599,13 +526,53 @@ Click to create your own repo with a working dev → test → prod pipeline. Add
 
 Plus **OneLake Shortcuts** (ADLS, S3, cross-workspace) as lakehouse sub-resources.
 
-See the [Resource Types Guide](https://PatrickGallucci.github.io/udp-cicd/guide/resource-types/) for full details.
+### 8.2 Microsoft Entra
+
+`entra_groups` (security groups) and `entra_apps` (app registrations + optional service principal), deployed via Microsoft Graph at tenant scope.
+
+### 8.3 Azure (64 service types via Bicep)
+
+| Group | Type keys |
+|-------|-----------|
+| Foundations | `azure_resource_groups`, `azure_storage_accounts`, `azure_deployments` (generic Bicep) |
+| Storage | `azure_blob_storage`, `azure_data_lake_storage`, `azure_files`, `azure_queue_storage`, `azure_table_storage` |
+| Integration / streaming / compute | `azure_data_factories`, `azure_databricks_workspaces`, `azure_databricks_structured_streaming`, `azure_event_hub_namespaces`, `azure_event_grid_topics`, `azure_stream_analytics_jobs`, `azure_iot_hubs`, `azure_logic_apps`, `azure_functions` |
+| Databases | `azure_sql_databases`, `azure_sql_managed_instances`, `azure_sql_virtual_machines`, `azure_postgresql`, `azure_mysql`, `azure_mariadb`, `azure_cosmosdb_accounts`, `azure_redis_cache`, `azure_data_box` |
+| Governance / security / AI | `azure_purview_accounts`, `azure_key_vaults`, `azure_policy_assignments`, `azure_defender_plans`, `azure_machine_learning_workspaces`, `azure_ai_foundry`, `azure_sentinel`, `azure_video_indexer`, `azure_openai`, `azure_load_testing`, `azure_agent_ids`, `azure_service_groups` |
+| Monitoring / observability | `azure_monitor_components`, `azure_alerts`, `azure_diagnostic_settings`, `azure_log_analytics_workspaces`, `azure_metrics`, `azure_workbooks`, `azure_activity_logs`, `azure_database_watchers` |
+| Networking | `azure_network_watchers`, `azure_dns_zones`, `azure_network_interfaces`, `azure_private_dns_zones`, `azure_public_ip_addresses`, `azure_route_tables`, `azure_virtual_networks`, `azure_local_network_gateways`, `azure_peering_services`, `azure_peerings`, `azure_virtual_network_gateways`, `azure_virtual_wans`, `azure_ddos_protection_plans`, `azure_firewalls`, `azure_ip_groups`, `azure_network_security_groups`, `azure_application_gateways`, `azure_application_security_groups` |
+
+See the [Resource Types Guide](https://PatrickGallucci.github.io/udp-cicd/guide/resource-types/) for the full reference.
 
 ---
 
-## 8. Reference
+## 9. Comparison with fabric-automation-bundles
 
-### 8.1 Environment Variables
+udp-cicd shares its declarative model and engine shape with the original Python tool, and extends it across additional control planes.
+
+| Aspect | fabric-automation-bundles (`fab-bundle`) | udp-cicd |
+|--------|------------------------------------------|----------|
+| Author | Derek Nguyen | Patrick Gallucci (port + extensions) |
+| Language / runtime | Python (Click, Pydantic, Jinja2) | .NET 9 (System.CommandLine, YamlDotNet, Scriban) |
+| Manifest | `fabric.yml` | `udp.yml` |
+| Distribution | `pip` | `dotnet tool` (NuGet) |
+| Control planes | Microsoft Fabric | **Fabric + Entra + Azure** |
+| Fabric item types | 45 | 45 |
+| Entra (groups / apps) | — | ✓ (Microsoft Graph) |
+| Azure resources | — | ✓ **64 service types** (Bicep via `az`) |
+| Templates | medallion, osdu-analytics | medallion, blank, all-resource-types |
+| MCP server | ✓ | ✓ (14 tools) |
+| State / drift / reverse-gen | ✓ | ✓ |
+| Tenant/admin settings | — | ✓ (`admin plan`/`apply`) |
+| GUI editor | — | ✓ (WinForms, Windows) |
+
+The shared lineage is intentional: the `Loader → Resolver → Planner → Deployer` pipeline, providers, and generators mirror the Python originals so concepts transfer directly between the two tools.
+
+---
+
+## 10. Reference
+
+### 10.1 Environment Variables
 
 | Variable | Purpose |
 |----------|---------|
@@ -616,47 +583,41 @@ See the [Resource Types Guide](https://PatrickGallucci.github.io/udp-cicd/guide/
 | `FABRIC_CAPACITY_ID` | Capacity GUID for workspace creation during `deploy`/`init` |
 | `AZURE_STORAGE_ACCOUNT_NAME` | Used with `azureblob` or `adls` state backends |
 
-For Blob/ADLS state backends, omit the account key where possible — the system falls back to `DefaultAzureCredential` for storage access.
+### 10.2 Tested Item Types
 
-### 8.2 Tested Item Types
-
-30 item types verified against a live Fabric workspace:
+30 Fabric item types verified against a live workspace:
 
 | Status | Item Types |
 |--------|-----------|
 | **Verified** (30) | Lakehouse, Notebook, DataPipeline, Warehouse, Environment, DataAgent, Eventhouse, KQLDatabase, KQLDashboard, KQLQueryset, Eventstream, Reflex, MLModel, MLExperiment, SparkJobDefinition, GraphQLApi, CopyJob, ApacheAirflowJob, Ontology, VariableLibrary, SQLDatabase, CosmosDBDatabase, MirroredAzureDatabricksCatalog, OperationsAgent, AnomalyDetector, DigitalTwinBuilder, GraphQuerySet, GraphModel, Map, UserDataFunction |
-| **Capacity-gated** (4) | DataBuildToolJob, Graph, HLSCohort, EventSchemaSet |
-| **Needs config** (2) | SnowflakeDatabase, DigitalTwinBuilderFlow |
 | **List-only** (5) | Datamart, Dashboard, MirroredWarehouse, PaginatedReport, Dataflow |
 | **Needs definition files** (4) | SemanticModel (TMDL), Report (PBIR), MirroredDatabase, MountedDataFactory |
 
-### 8.3 Feature Stability
+### 10.3 Feature Stability
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| validate, plan, deploy, destroy | **Stable** | Tested end-to-end against live API |
+| validate, plan, deploy, destroy | **Stable** | Tested end-to-end against live Fabric API |
 | drift, status, diff, history, diag | **Stable** | Tested against live workspaces |
-| run (notebooks/pipelines) | **Stable** | Job submission works, LRO tracking limited |
-| Security roles (workspace) | **Stable** | Entra user/group GUIDs |
-| Connection reachability check | **Stable** | `validate`/`diag` TCP-probe each `connections` source (host:port from conn string or endpoint) |
 | Incremental deploy (hash-based) | **Stable** | Skips unchanged resources |
-| Deployment locking | **Stable** | Local + remote (blob lease) |
 | CI/CD (GitHub Actions) | **Stable** | [Proven end-to-end](https://github.com/PatrickGallucci/udp-udp-cicd-example) |
+| Entra provider (groups/apps) | **Beta** | Graph create/patch/delete, unit-tested against a mocked Graph |
+| Azure provider (64 service types) | **Beta** | Bicep emit + `az deployment`, unit-tested; live deploy depends on service-specific properties |
 | Remote state (OneLake, Blob, ADLS) | **Beta** | Built, not yet tested live |
 | MCP server | **Beta** | 14 tools verified locally |
-| Tenant/admin settings | **Beta** | Declarative tenant settings via Admin API (`admin plan`/`apply`); diff unit-tested, live apply unverified |
-| OneLake data access roles | **Beta** | Built, not yet tested live |
-| Environment publish (libraries) | **Beta** | Fire-and-forget, can't track completion |
-| watch, promote, canary | **Experimental** | Built, untested |
-| Notifications (Slack/Teams) | **Experimental** | Built, untested |
-| Policy enforcement | **Experimental** | Built, untested |
-| Shortcut transformations | **Experimental** | Model defined, API untested |
+| Tenant/admin settings | **Beta** | Declarative tenant settings via Admin API |
 
 ---
 
-## 9. Contributing
+## 11. Acknowledgments
 
-Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+udp-cicd is a .NET reimplementation of [**fabric-automation-bundles**](https://github.com/dereknguyenio/fabric-automation-bundles) by **Derek Nguyen**. That project established the declarative, single-manifest model for Microsoft Fabric — schema-validated config, topological dependency resolution, plan/deploy/drift, reverse generation from existing workspaces, and MCP-based AI assistance. udp-cicd ports those ideas to .NET 9 and extends them across Microsoft Entra and Azure. Thank you to Derek for the original design and tooling.
+
+---
+
+## 12. Contributing
+
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```bash
 git clone https://github.com/PatrickGallucci/udp-cicd.git
@@ -665,6 +626,6 @@ dotnet build
 dotnet test
 ```
 
-## 10. License
+## 13. License
 
 MIT

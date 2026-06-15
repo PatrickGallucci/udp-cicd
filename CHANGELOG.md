@@ -4,6 +4,41 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-06-15
+
+### Added
+
+- **38 more Azure service types** (64 Azure types total), each declared under its
+  own `azure_*` key and deployed as a single ARM resource via generated Bicep:
+  - **Governance / security / AI:** `azure_purview_accounts`, `azure_key_vaults`,
+    `azure_policy_assignments`, `azure_defender_plans`,
+    `azure_machine_learning_workspaces`, `azure_ai_foundry`, `azure_sentinel`,
+    `azure_video_indexer`, `azure_openai`, `azure_load_testing`,
+    `azure_agent_ids`, `azure_service_groups`.
+  - **Monitoring / observability:** `azure_monitor_components`, `azure_alerts`,
+    `azure_diagnostic_settings`, `azure_log_analytics_workspaces`,
+    `azure_metrics`, `azure_workbooks`, `azure_activity_logs`,
+    `azure_database_watchers`.
+  - **Networking:** `azure_network_watchers`, `azure_dns_zones`,
+    `azure_network_interfaces`, `azure_private_dns_zones`,
+    `azure_public_ip_addresses`, `azure_route_tables`, `azure_virtual_networks`,
+    `azure_local_network_gateways`, `azure_peering_services`, `azure_peerings`,
+    `azure_virtual_network_gateways`, `azure_virtual_wans`,
+    `azure_ddos_protection_plans`, `azure_firewalls`, `azure_ip_groups`,
+    `azure_network_security_groups`, `azure_application_gateways`,
+    `azure_application_security_groups`.
+- New example [`examples/12-azure-platform-services`](examples/12-azure-platform-services)
+  cataloguing all 38; JSON schema (both copies) gains the 38 keys; the
+  ARM-type → API-version table in `AzureResourceProvider` is extended to cover them.
+
+### Changed
+
+- **README fully rewritten** — multi-platform overview, a dedicated platform
+  providers section, a complete Azure service catalogue, an acknowledgment of and
+  a side-by-side comparison with the upstream
+  [fabric-automation-bundles](https://github.com/dereknguyenio/fabric-automation-bundles)
+  by Derek Nguyen, of which udp-cicd is a .NET port and multi-platform extension.
+
 ## [1.8.0] - 2026-06-14
 
 ### Added

@@ -91,6 +91,50 @@ public sealed partial class ResourcesConfig
     public Dictionary<string, AzureServiceResource> AzureRedisCache { get; set; } = [];
     public Dictionary<string, AzureServiceResource> AzureDataBox { get; set; } = [];
 
+    // Governance / security / AI
+    public Dictionary<string, AzureServiceResource> AzurePurviewAccounts { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureKeyVaults { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzurePolicyAssignments { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDefenderPlans { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureMachineLearningWorkspaces { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureAiFoundry { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureSentinel { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureVideoIndexer { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureOpenai { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureLoadTesting { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureAgentIds { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureServiceGroups { get; set; } = [];
+
+    // Monitoring / observability
+    public Dictionary<string, AzureServiceResource> AzureMonitorComponents { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureAlerts { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDiagnosticSettings { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureLogAnalyticsWorkspaces { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureMetrics { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureWorkbooks { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureActivityLogs { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDatabaseWatchers { get; set; } = [];
+
+    // Networking
+    public Dictionary<string, AzureServiceResource> AzureNetworkWatchers { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDnsZones { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureNetworkInterfaces { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzurePrivateDnsZones { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzurePublicIpAddresses { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureRouteTables { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureVirtualNetworks { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureLocalNetworkGateways { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzurePeeringServices { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzurePeerings { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureVirtualNetworkGateways { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureVirtualWans { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDdosProtectionPlans { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureFirewalls { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureIpGroups { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureNetworkSecurityGroups { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureApplicationGateways { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureApplicationSecurityGroups { get; set; } = [];
+
     private static readonly Dictionary<string, System.Reflection.PropertyInfo> PropByField =
         ResourceTypeRegistry.All.ToDictionary(
             r => r.FieldName,

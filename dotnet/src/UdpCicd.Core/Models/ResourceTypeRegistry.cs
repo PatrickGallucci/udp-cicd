@@ -146,6 +146,50 @@ public static class ResourceTypeRegistry
         new("azure_cosmosdb_accounts", "AzureCosmosdbAccounts", "Microsoft.DocumentDB/databaseAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
         new("azure_redis_cache", "AzureRedisCache", "Microsoft.Cache/Redis", StrictNaming: false, Platform: ResourcePlatform.Azure),
         new("azure_data_box", "AzureDataBox", "Microsoft.DataBox/jobs", StrictNaming: false, Platform: ResourcePlatform.Azure),
+
+        // Governance / security / AI
+        new("azure_purview_accounts", "AzurePurviewAccounts", "Microsoft.Purview/accounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_key_vaults", "AzureKeyVaults", "Microsoft.KeyVault/vaults", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_policy_assignments", "AzurePolicyAssignments", "Microsoft.Authorization/policyAssignments", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_defender_plans", "AzureDefenderPlans", "Microsoft.Security/pricings", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_machine_learning_workspaces", "AzureMachineLearningWorkspaces", "Microsoft.MachineLearningServices/workspaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_ai_foundry", "AzureAiFoundry", "Microsoft.MachineLearningServices/workspaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_sentinel", "AzureSentinel", "Microsoft.SecurityInsights/onboardingStates", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_video_indexer", "AzureVideoIndexer", "Microsoft.VideoIndexer/accounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_openai", "AzureOpenai", "Microsoft.CognitiveServices/accounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_load_testing", "AzureLoadTesting", "Microsoft.LoadTestService/loadTests", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_agent_ids", "AzureAgentIds", "Microsoft.ManagedIdentity/userAssignedIdentities", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_service_groups", "AzureServiceGroups", "Microsoft.Management/serviceGroups", StrictNaming: false, Platform: ResourcePlatform.Azure),
+
+        // Monitoring / observability
+        new("azure_monitor_components", "AzureMonitorComponents", "Microsoft.Insights/components", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_alerts", "AzureAlerts", "Microsoft.Insights/metricAlerts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_diagnostic_settings", "AzureDiagnosticSettings", "Microsoft.Insights/diagnosticSettings", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_log_analytics_workspaces", "AzureLogAnalyticsWorkspaces", "Microsoft.OperationalInsights/workspaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_metrics", "AzureMetrics", "Microsoft.Insights/dataCollectionRules", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_workbooks", "AzureWorkbooks", "Microsoft.Insights/workbooks", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_activity_logs", "AzureActivityLogs", "Microsoft.Insights/diagnosticSettings", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_database_watchers", "AzureDatabaseWatchers", "Microsoft.DatabaseWatcher/watchers", StrictNaming: false, Platform: ResourcePlatform.Azure),
+
+        // Networking
+        new("azure_network_watchers", "AzureNetworkWatchers", "Microsoft.Network/networkWatchers", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_dns_zones", "AzureDnsZones", "Microsoft.Network/dnsZones", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_network_interfaces", "AzureNetworkInterfaces", "Microsoft.Network/networkInterfaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_private_dns_zones", "AzurePrivateDnsZones", "Microsoft.Network/privateDnsZones", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_public_ip_addresses", "AzurePublicIpAddresses", "Microsoft.Network/publicIPAddresses", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_route_tables", "AzureRouteTables", "Microsoft.Network/routeTables", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_virtual_networks", "AzureVirtualNetworks", "Microsoft.Network/virtualNetworks", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_local_network_gateways", "AzureLocalNetworkGateways", "Microsoft.Network/localNetworkGateways", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_peering_services", "AzurePeeringServices", "Microsoft.Network/peeringServices", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_peerings", "AzurePeerings", "Microsoft.Peering/peerings", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_virtual_network_gateways", "AzureVirtualNetworkGateways", "Microsoft.Network/virtualNetworkGateways", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_virtual_wans", "AzureVirtualWans", "Microsoft.Network/virtualWans", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_ddos_protection_plans", "AzureDdosProtectionPlans", "Microsoft.Network/ddosProtectionPlans", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_firewalls", "AzureFirewalls", "Microsoft.Network/azureFirewalls", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_ip_groups", "AzureIpGroups", "Microsoft.Network/ipGroups", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_network_security_groups", "AzureNetworkSecurityGroups", "Microsoft.Network/networkSecurityGroups", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_application_gateways", "AzureApplicationGateways", "Microsoft.Network/applicationGateways", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_application_security_groups", "AzureApplicationSecurityGroups", "Microsoft.Network/applicationSecurityGroups", StrictNaming: false, Platform: ResourcePlatform.Azure),
     ];
 
     /// <summary>Resource types for a single platform (provider).</summary>
