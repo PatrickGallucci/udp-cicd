@@ -43,7 +43,7 @@ public class PlatformProviderTests
     public void Platform_Partitioning_Has_Expected_Counts()
     {
         Assert.Equal(2, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Entra).Count());
-        Assert.Equal(3, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Azure).Count());
+        Assert.Equal(26, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Azure).Count());
         Assert.All(ResourceTypeRegistry.ForPlatform(ResourcePlatform.Fabric),
             r => Assert.Equal(ResourcePlatform.Fabric, r.Platform));
     }
@@ -149,6 +149,67 @@ public class PlatformProviderTests
 
         Assert.Null(result);
         Assert.Empty(az.Calls);
+    }
+
+    [Fact]
+    public void AzureProvider_GenericService_Issues_GroupScope_Deployment()
+    {
+        var az = new CapturingAz();
+        var d = new DeploymentDefinition();
+        d.Azure.Subscription = "sub-123";
+        d.Azure.Location = "eastus";
+        d.Resources.AzureEventHubNamespaces["ehns-test"] = new() { ResourceGroup = "rg-test", Sku = "Standard" };
+        var item = new PlanItem { ResourceKey = "ehns-test", ResourceType = "Microsoft.EventHub/namespaces", Action = PlanAction.Create };
+
+        var result = new AzureResourceProvider(az).Apply(item, Ctx(d));
+
+        Assert.True(result);
+        var call = Assert.Single(az.Calls);
+        Assert.Equal(new[] { "deployment", "group", "create" }, call.Take(3));
+        Assert.Contains("--resource-group", call);
+        Assert.Contains("rg-test", call);
+        Assert.Contains("--template-file", call);
+    }
+
+    [Fact]
+    public void AzureProvider_GenericService_Without_ResourceGroup_Is_Skipped()
+    {
+        var az = new CapturingAz();
+        var d = new DeploymentDefinition();
+        d.Azure.Location = "eastus";
+        d.Resources.AzureCosmosdbAccounts["cosmos-test"] = new();
+        var item = new PlanItem { ResourceKey = "cosmos-test", ResourceType = "Microsoft.DocumentDB/databaseAccounts", Action = PlanAction.Create };
+
+        var result = new AzureResourceProvider(az).Apply(item, Ctx(d));
+
+        Assert.Null(result);
+        Assert.Empty(az.Calls);
+    }
+
+    [Fact]
+    public void AllAzureServiceTypes_Have_A_Registered_ApiVersion()
+    {
+        // Every generic azure_* service row (those NOT handled by a bespoke path)
+        // must have an API version, or the generic emitter would skip it.
+        var bespoke = new HashSet<string> { "azure_resource_groups", "azure_storage_accounts", "azure_deployments" };
+        var d = new DeploymentDefinition();
+        var az = new CapturingAz();
+        var provider = new AzureResourceProvider(az);
+        foreach (var info in ResourceTypeRegistry.ForPlatform(ResourcePlatform.Azure))
+        {
+            if (bespoke.Contains(info.FieldName))
+            {
+                continue;
+            }
+            var prop = typeof(ResourcesConfig).GetProperty(info.PropertyName)!;
+            var dict = (System.Collections.IDictionary)prop.GetValue(d.Resources)!;
+            dict["probe"] = new AzureServiceResource { ResourceGroup = "rg", Location = "eastus" };
+            var item = new PlanItem { ResourceKey = "probe", ResourceType = info.ProviderType, Action = PlanAction.Create };
+            // Dry-run: succeeds (true) only if the ARM type resolves to an API version.
+            var result = provider.Apply(item, Ctx(d, dryRun: true));
+            Assert.True(result, $"{info.FieldName} ({info.ProviderType}) has no registered API version");
+            dict.Remove("probe");
+        }
     }
 
     // ----- Entra provider (Microsoft Graph) -----

@@ -795,6 +795,43 @@ resource type is supplied as an author-written `.bicep` file via
 | Storage Account | `azure_storage_accounts` | Microsoft.Storage/storageAccounts |
 | Generic Bicep | `azure_deployments` | Microsoft.Resources/deployments |
 
+In addition, these **first-class service types** each deploy as a single ARM
+resource via a generated, resource-group-scope Bicep template. They share the
+same shape (`resource_group`, `location`, optional `sku`/`kind`/`properties`/`tags`).
+See the full catalogue in [`11-azure-data-services`](https://github.com/PatrickGallucci/udp-cicd/tree/main/examples/11-azure-data-services).
+
+| Service | Type Key | ARM Type |
+|---------|----------|----------|
+| Data Factory | `azure_data_factories` | Microsoft.DataFactory/factories |
+| Databricks | `azure_databricks_workspaces` | Microsoft.Databricks/workspaces |
+| Databricks Structured Streaming | `azure_databricks_structured_streaming` | Microsoft.Databricks/workspaces |
+| Event Hubs | `azure_event_hub_namespaces` | Microsoft.EventHub/namespaces |
+| Event Grid | `azure_event_grid_topics` | Microsoft.EventGrid/topics |
+| Stream Analytics | `azure_stream_analytics_jobs` | Microsoft.StreamAnalytics/streamingjobs |
+| IoT Hub | `azure_iot_hubs` | Microsoft.Devices/IotHubs |
+| Logic Apps | `azure_logic_apps` | Microsoft.Logic/workflows |
+| Functions | `azure_functions` | Microsoft.Web/sites |
+| Blob Storage | `azure_blob_storage` | Microsoft.Storage/storageAccounts |
+| Data Lake Storage Gen2 | `azure_data_lake_storage` | Microsoft.Storage/storageAccounts |
+| Files | `azure_files` | Microsoft.Storage/storageAccounts |
+| Queue Storage | `azure_queue_storage` | Microsoft.Storage/storageAccounts |
+| Table Storage | `azure_table_storage` | Microsoft.Storage/storageAccounts |
+| SQL Database | `azure_sql_databases` | Microsoft.Sql/servers/databases |
+| SQL Managed Instance | `azure_sql_managed_instances` | Microsoft.Sql/managedInstances |
+| SQL Server on VMs | `azure_sql_virtual_machines` | Microsoft.SqlVirtualMachine/sqlVirtualMachines |
+| Database for PostgreSQL | `azure_postgresql` | Microsoft.DBforPostgreSQL/flexibleServers |
+| Database for MySQL | `azure_mysql` | Microsoft.DBforMySQL/flexibleServers |
+| Database for MariaDB | `azure_mariadb` | Microsoft.DBforMariaDB/servers |
+| Cosmos DB | `azure_cosmosdb_accounts` | Microsoft.DocumentDB/databaseAccounts |
+| Cache for Redis | `azure_redis_cache` | Microsoft.Cache/Redis |
+| Data Box | `azure_data_box` | Microsoft.DataBox/jobs |
+
+!!! note "Storage-family naming & child resources"
+    The five storage-family services deploy as storage accounts, so their names
+    must be **3–24 lowercase alphanumeric**. Child resources such as
+    `azure_sql_databases` may need a parent server — name the database
+    `"<server>/<database>"` or use `azure_deployments` for full control.
+
 ```yaml
 azure:
   subscription: "${var.subscription_id}"

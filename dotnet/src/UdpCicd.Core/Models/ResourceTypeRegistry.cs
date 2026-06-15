@@ -116,6 +116,36 @@ public static class ResourceTypeRegistry
         new("azure_resource_groups", "AzureResourceGroups", "Microsoft.Resources/resourceGroups", StrictNaming: false, Platform: ResourcePlatform.Azure),
         new("azure_storage_accounts", "AzureStorageAccounts", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
         new("azure_deployments", "AzureDeployments", "Microsoft.Resources/deployments", StrictNaming: false, Platform: ResourcePlatform.Azure),
+
+        // --- Azure service resources (generic single-resource Bicep). ---
+        // Integration / streaming / compute
+        new("azure_data_factories", "AzureDataFactories", "Microsoft.DataFactory/factories", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_databricks_workspaces", "AzureDatabricksWorkspaces", "Microsoft.Databricks/workspaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_databricks_structured_streaming", "AzureDatabricksStructuredStreaming", "Microsoft.Databricks/workspaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_event_hub_namespaces", "AzureEventHubNamespaces", "Microsoft.EventHub/namespaces", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_event_grid_topics", "AzureEventGridTopics", "Microsoft.EventGrid/topics", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_stream_analytics_jobs", "AzureStreamAnalyticsJobs", "Microsoft.StreamAnalytics/streamingjobs", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_iot_hubs", "AzureIotHubs", "Microsoft.Devices/IotHubs", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_logic_apps", "AzureLogicApps", "Microsoft.Logic/workflows", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_functions", "AzureFunctions", "Microsoft.Web/sites", StrictNaming: false, Platform: ResourcePlatform.Azure),
+
+        // Storage family (all deploy as a storage account with service-specific kind/properties)
+        new("azure_blob_storage", "AzureBlobStorage", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_data_lake_storage", "AzureDataLakeStorage", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_files", "AzureFiles", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_queue_storage", "AzureQueueStorage", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_table_storage", "AzureTableStorage", "Microsoft.Storage/storageAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+
+        // Databases
+        new("azure_sql_databases", "AzureSqlDatabases", "Microsoft.Sql/servers/databases", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_sql_managed_instances", "AzureSqlManagedInstances", "Microsoft.Sql/managedInstances", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_sql_virtual_machines", "AzureSqlVirtualMachines", "Microsoft.SqlVirtualMachine/sqlVirtualMachines", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_postgresql", "AzurePostgresql", "Microsoft.DBforPostgreSQL/flexibleServers", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_mysql", "AzureMysql", "Microsoft.DBforMySQL/flexibleServers", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_mariadb", "AzureMariadb", "Microsoft.DBforMariaDB/servers", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_cosmosdb_accounts", "AzureCosmosdbAccounts", "Microsoft.DocumentDB/databaseAccounts", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_redis_cache", "AzureRedisCache", "Microsoft.Cache/Redis", StrictNaming: false, Platform: ResourcePlatform.Azure),
+        new("azure_data_box", "AzureDataBox", "Microsoft.DataBox/jobs", StrictNaming: false, Platform: ResourcePlatform.Azure),
     ];
 
     /// <summary>Resource types for a single platform (provider).</summary>

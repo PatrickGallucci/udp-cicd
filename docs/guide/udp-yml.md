@@ -333,6 +333,9 @@ In addition to the 45 Fabric item types, `resources` accepts **Entra** and
 | **Azure** | `azure_resource_groups` | Azure resource groups (subscription-scope Bicep). |
 | | `azure_storage_accounts` | Azure Storage accounts (resource-group-scope Bicep). |
 | | `azure_deployments` | Generic Bicep deployments (any ARM resource). |
+| **Azure services** | `azure_data_factories`, `azure_databricks_workspaces`, `azure_databricks_structured_streaming`, `azure_event_hub_namespaces`, `azure_event_grid_topics`, `azure_stream_analytics_jobs`, `azure_iot_hubs`, `azure_logic_apps`, `azure_functions` | Integration / streaming / compute. |
+| | `azure_blob_storage`, `azure_data_lake_storage`, `azure_files`, `azure_queue_storage`, `azure_table_storage` | Storage family (deploy as storage accounts). |
+| | `azure_sql_databases`, `azure_sql_managed_instances`, `azure_sql_virtual_machines`, `azure_postgresql`, `azure_mysql`, `azure_mariadb`, `azure_cosmosdb_accounts`, `azure_redis_cache`, `azure_data_box` | Databases & data movement. |
 
 See the [Multi-platform guide](multi-platform.md) and [Resource Types §5](resource-types.md#5-beyond-fabric-entra-and-azure).
 

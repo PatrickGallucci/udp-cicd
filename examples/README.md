@@ -27,6 +27,7 @@ Working examples you can copy and deploy to your Fabric tenant.
 | 08 | [All Resource Types](08-all-resource-types/) | Reference catalogue using all 45 supported item types | Reference |
 | 09 | [Tenant Settings](09-tenant-settings/) | Declarative org-wide Fabric admin/tenant settings | Advanced |
 | 10 | [Azure & Entra](10-azure-and-entra/) | Cross-plane: Fabric + Entra groups/apps + Azure resources via Bicep | Advanced |
+| 11 | [Azure Data Services](11-azure-data-services/) | Catalogue of all `azure_*` service types (Data Factory, Databricks, Event Hubs, SQL, Cosmos DB, …) | Reference |
 
 ## Finding Your Capacity GUID
 

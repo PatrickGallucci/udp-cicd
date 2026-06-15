@@ -66,7 +66,30 @@
         "entra_apps": { "$ref": "#/definitions/resourceMap_entra_app" },
         "azure_resource_groups": { "$ref": "#/definitions/resourceMap_azure_resource_group" },
         "azure_storage_accounts": { "$ref": "#/definitions/resourceMap_azure_storage_account" },
-        "azure_deployments": { "$ref": "#/definitions/resourceMap_azure_deployment" }
+        "azure_deployments": { "$ref": "#/definitions/resourceMap_azure_deployment" },
+        "azure_data_factories": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_databricks_workspaces": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_databricks_structured_streaming": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_event_hub_namespaces": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_event_grid_topics": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_stream_analytics_jobs": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_iot_hubs": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_logic_apps": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_functions": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_blob_storage": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_data_lake_storage": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_files": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_queue_storage": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_table_storage": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_sql_databases": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_sql_managed_instances": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_sql_virtual_machines": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_postgresql": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_mysql": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_mariadb": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_cosmosdb_accounts": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_redis_cache": { "$ref": "#/definitions/resourceMap_azure_service" },
+        "azure_data_box": { "$ref": "#/definitions/resourceMap_azure_service" }
       }
     },
     "azure": {
@@ -164,6 +187,22 @@
           "location": { "type": "string" },
           "template_file": { "type": "string" },
           "parameters": { "type": "object" }
+        }
+      }
+    },
+    "resourceMap_azure_service": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["resource_group"],
+        "properties": {
+          "subscription": { "type": "string" },
+          "resource_group": { "type": "string" },
+          "location": { "type": "string" },
+          "sku": { "type": "string", "description": "Optional SKU name" },
+          "kind": { "type": "string", "description": "Optional resource kind" },
+          "properties": { "type": "object", "description": "ARM properties bag, emitted into the generated Bicep template" },
+          "tags": { "type": "object", "additionalProperties": { "type": "string" } }
         }
       }
     },

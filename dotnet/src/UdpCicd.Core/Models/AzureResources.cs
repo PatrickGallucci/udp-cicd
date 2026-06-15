@@ -44,6 +44,36 @@ public sealed class AzureStorageAccountResource
 }
 
 /// <summary>
+/// A first-class Azure service resource, deployed as a single ARM resource via a
+/// generated resource-group-scope Bicep template. The ARM type and API version
+/// come from the resource registry; <see cref="Sku"/>, <see cref="Kind"/>,
+/// <see cref="Properties"/>, and <see cref="Tags"/> are emitted into the template.
+/// Used by every <c>azure_*</c> service type (Data Factory, Databricks, Event
+/// Hubs, SQL, Cosmos DB, …). For full control over a template, use
+/// <see cref="AzureBicepResource"/> (<c>azure_deployments</c>) instead.
+/// </summary>
+public class AzureServiceResource
+{
+    public string? Subscription { get; set; }
+
+    /// <summary>Target resource group (required).</summary>
+    public string ResourceGroup { get; set; } = "";
+
+    public string? Location { get; set; }
+
+    /// <summary>Optional SKU name, emitted as <c>sku: { name: '…' }</c>.</summary>
+    public string? Sku { get; set; }
+
+    /// <summary>Optional resource <c>kind</c> (e.g. storage account kind).</summary>
+    public string? Kind { get; set; }
+
+    /// <summary>ARM <c>properties</c> bag, emitted verbatim into the template.</summary>
+    public Dictionary<string, object?> Properties { get; set; } = [];
+
+    public Dictionary<string, string> Tags { get; set; } = [];
+}
+
+/// <summary>
 /// A generic Bicep deployment — the escape hatch for any Azure resource type the
 /// author supplies as a <c>.bicep</c> file. Deployed at subscription or
 /// resource-group scope.

@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/github/license/PatrickGallucci/udp-cicd)](https://github.com/PatrickGallucci/udp-cicd/blob/main/LICENSE)
 [![Tests](https://img.shields.io/github/actions/workflow/status/PatrickGallucci/udp-cicd/ci.yml?label=tests)](https://github.com/PatrickGallucci/udp-cicd/actions)
 [![Docs](https://img.shields.io/badge/docs-PatrickGallucci.github.io-teal)](https://PatrickGallucci.github.io/udp-cicd/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PatrickGallucci/udp-cicd)
 
 > **Public Preview** — 30 item types verified against the live Fabric API. Core workflows are production-ready. See [8.2 Tested Item Types](#82-tested-item-types).
 

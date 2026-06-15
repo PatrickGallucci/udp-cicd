@@ -20,13 +20,23 @@ public sealed class AzureResourceProvider : IResourcePlatformProvider
 
     public ResourcePlatform Platform => ResourcePlatform.Azure;
 
-    public bool? Apply(PlanItem item, PlatformDeployContext ctx) => item.ResourceType switch
+    public bool? Apply(PlanItem item, PlatformDeployContext ctx)
     {
-        "Microsoft.Resources/resourceGroups" => ApplyResourceGroup(item, ctx),
-        "Microsoft.Storage/storageAccounts" => ApplyStorageAccount(item, ctx),
-        "Microsoft.Resources/deployments" => ApplyBicep(item, ctx),
-        _ => Skip(ctx, item, $"unsupported Azure type '{item.ResourceType}'"),
-    };
+        // Dispatch by field name (not ARM type): the three bespoke types keep
+        // their dedicated paths; every other azure_* service flows through the
+        // generic single-resource emitter. Keying on the field avoids ARM-type
+        // collisions (e.g. the storage-family services share a storage account
+        // type with azure_storage_accounts).
+        var field = ctx.Deployment.Resources.GetResourceType(item.ResourceKey);
+        return field switch
+        {
+            "azure_resource_groups" => ApplyResourceGroup(item, ctx),
+            "azure_storage_accounts" => ApplyStorageAccount(item, ctx),
+            "azure_deployments" => ApplyBicep(item, ctx),
+            null => Skip(ctx, item, "resource not found in deployment"),
+            _ => ApplyGenericService(item, ctx, field),
+        };
+    }
 
     // ----- Resource groups (subscription-scope Bicep) -----
 
@@ -180,6 +190,167 @@ public sealed class AzureResourceProvider : IResourcePlatformProvider
         ctx.Console.MarkupLine($"  [green]+[/] Deployed Azure (bicep): {Markup.Escape(name)}");
         return true;
     }
+
+    // ----- Generic Azure service (single ARM resource, group-scope Bicep) -----
+
+    /// <summary>ARM API version per resource type for the generic service emitter.</summary>
+    private static readonly Dictionary<string, string> ApiVersions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Microsoft.DataFactory/factories"] = "2018-06-01",
+        ["Microsoft.Databricks/workspaces"] = "2024-05-01",
+        ["Microsoft.EventHub/namespaces"] = "2024-01-01",
+        ["Microsoft.EventGrid/topics"] = "2022-06-15",
+        ["Microsoft.StreamAnalytics/streamingjobs"] = "2020-03-01",
+        ["Microsoft.Devices/IotHubs"] = "2023-06-30",
+        ["Microsoft.Logic/workflows"] = "2019-05-01",
+        ["Microsoft.Web/sites"] = "2023-12-01",
+        ["Microsoft.Storage/storageAccounts"] = "2023-01-01",
+        ["Microsoft.Sql/servers/databases"] = "2023-08-01",
+        ["Microsoft.Sql/managedInstances"] = "2023-08-01",
+        ["Microsoft.SqlVirtualMachine/sqlVirtualMachines"] = "2023-10-01",
+        ["Microsoft.DBforPostgreSQL/flexibleServers"] = "2022-12-01",
+        ["Microsoft.DBforMySQL/flexibleServers"] = "2023-06-30",
+        ["Microsoft.DBforMariaDB/servers"] = "2018-06-01",
+        ["Microsoft.DocumentDB/databaseAccounts"] = "2024-05-15",
+        ["Microsoft.Cache/Redis"] = "2023-08-01",
+        ["Microsoft.DataBox/jobs"] = "2022-12-01",
+    };
+
+    private bool? ApplyGenericService(PlanItem item, PlatformDeployContext ctx, string field)
+    {
+        var name = item.ResourceKey;
+        var armType = item.ResourceType;
+        if (ctx.Deployment.Resources.GetResourceObject(field, name) is not AzureServiceResource svc
+            || string.IsNullOrEmpty(svc.ResourceGroup))
+        {
+            return Skip(ctx, item, $"{field} requires a resource_group");
+        }
+        if (!ApiVersions.TryGetValue(armType, out var apiVersion))
+        {
+            return Skip(ctx, item, $"no API version registered for '{armType}'");
+        }
+
+        var sub = svc.Subscription ?? ctx.Deployment.Azure.Subscription;
+        var location = svc.Location ?? ctx.Deployment.Azure.Location;
+
+        if (item.Action == PlanAction.Delete)
+        {
+            return DeleteGeneric(ctx, name, armType, svc.ResourceGroup, sub);
+        }
+        if (string.IsNullOrEmpty(location))
+        {
+            return Skip(ctx, item, "no location (set azure.location or the resource's location)");
+        }
+        if (ctx.DryRun)
+        {
+            return Would(ctx, armType, $"{name} in {svc.ResourceGroup}");
+        }
+
+        var sb = new StringBuilder()
+            .AppendLine($"resource res '{armType}@{apiVersion}' = {{")
+            .AppendLine($"  name: '{Esc(name)}'")
+            .AppendLine($"  location: '{Esc(location)}'");
+        if (!string.IsNullOrEmpty(svc.Sku))
+        {
+            sb.AppendLine($"  sku: {{ name: '{Esc(svc.Sku)}' }}");
+        }
+        if (!string.IsNullOrEmpty(svc.Kind))
+        {
+            sb.AppendLine($"  kind: '{Esc(svc.Kind)}'");
+        }
+        if (svc.Properties.Count > 0)
+        {
+            sb.AppendLine($"  properties: {ToBicep(svc.Properties, 1)}");
+        }
+        if (svc.Tags.Count > 0)
+        {
+            sb.AppendLine($"  tags: {TagsBicep(svc.Tags)}");
+        }
+        sb.AppendLine("}");
+
+        return DeployTemplate(ctx, sb.ToString(), name, sub, args =>
+        {
+            args.Add("deployment");
+            args.Add("group");
+            args.Add("create");
+            args.Add("--resource-group");
+            args.Add(svc.ResourceGroup);
+        }, recordKey: null);
+    }
+
+    private bool? DeleteGeneric(PlatformDeployContext ctx, string name, string armType, string rg, string? sub)
+    {
+        if (ctx.DryRun)
+        {
+            ctx.Console.MarkupLine($"  [red]-[/] Would delete Azure {armType}: {Markup.Escape(name)}");
+            return true;
+        }
+        var args = new List<string> { "resource", "delete", "--name", name, "--resource-group", rg, "--resource-type", armType };
+        if (!string.IsNullOrEmpty(sub))
+        {
+            args.Add("--subscription");
+            args.Add(sub);
+        }
+        _az.RunChecked(args);
+        ctx.Console.MarkupLine($"  [red]-[/] Deleted Azure {armType}: {Markup.Escape(name)}");
+        return true;
+    }
+
+    /// <summary>Serialize a YAML-deserialized value to a Bicep literal.</summary>
+    private static string ToBicep(object? node, int indent)
+    {
+        switch (node)
+        {
+            case null:
+                return "null";
+            case bool b:
+                return b ? "true" : "false";
+            case string s:
+                return Scalar(s);
+            case System.Collections.IDictionary map:
+            {
+                if (map.Count == 0)
+                {
+                    return "{}";
+                }
+                var pad = new string(' ', (indent + 1) * 2);
+                var close = new string(' ', indent * 2);
+                var lines = new List<string>();
+                foreach (System.Collections.DictionaryEntry e in map)
+                {
+                    var key = e.Key?.ToString() ?? "";
+                    lines.Add($"{pad}{BicepKey(key)}: {ToBicep(e.Value, indent + 1)}");
+                }
+                return "{\n" + string.Join("\n", lines) + "\n" + close + "}";
+            }
+            case System.Collections.IEnumerable seq:
+            {
+                var items = seq.Cast<object?>().Select(v => ToBicep(v, indent)).ToList();
+                return items.Count == 0 ? "[]" : "[ " + string.Join(", ", items) + " ]";
+            }
+            default:
+                return Scalar(node.ToString() ?? "");
+        }
+    }
+
+    private static string Scalar(string s)
+    {
+        if (s is "true" or "false" or "null")
+        {
+            return s;
+        }
+        if (long.TryParse(s, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out _)
+            || double.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
+        {
+            return s;
+        }
+        return $"'{Esc(s)}'";
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex IdentifierPattern =
+        new("^[A-Za-z_][A-Za-z0-9_]*$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private static string BicepKey(string key) => IdentifierPattern.IsMatch(key) ? key : $"'{Esc(key)}'";
 
     // ----- Shared helpers -----
 

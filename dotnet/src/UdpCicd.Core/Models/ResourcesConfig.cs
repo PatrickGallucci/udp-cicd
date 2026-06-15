@@ -61,6 +61,36 @@ public sealed partial class ResourcesConfig
     public Dictionary<string, AzureStorageAccountResource> AzureStorageAccounts { get; set; } = [];
     public Dictionary<string, AzureBicepResource> AzureDeployments { get; set; } = [];
 
+    // --- Azure service resources (generic single-resource Bicep) ---
+    // Integration / streaming / compute
+    public Dictionary<string, AzureServiceResource> AzureDataFactories { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDatabricksWorkspaces { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDatabricksStructuredStreaming { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureEventHubNamespaces { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureEventGridTopics { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureStreamAnalyticsJobs { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureIotHubs { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureLogicApps { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureFunctions { get; set; } = [];
+
+    // Storage family
+    public Dictionary<string, AzureServiceResource> AzureBlobStorage { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDataLakeStorage { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureFiles { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureQueueStorage { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureTableStorage { get; set; } = [];
+
+    // Databases
+    public Dictionary<string, AzureServiceResource> AzureSqlDatabases { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureSqlManagedInstances { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureSqlVirtualMachines { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzurePostgresql { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureMysql { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureMariadb { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureCosmosdbAccounts { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureRedisCache { get; set; } = [];
+    public Dictionary<string, AzureServiceResource> AzureDataBox { get; set; } = [];
+
     private static readonly Dictionary<string, System.Reflection.PropertyInfo> PropByField =
         ResourceTypeRegistry.All.ToDictionary(
             r => r.FieldName,
