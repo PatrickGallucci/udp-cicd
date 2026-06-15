@@ -960,10 +960,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#61-supported-resource-types-45-types" class="md-nav__link">
+  <a href="#61-supported-resource-types-46-types" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.1 Supported resource types (45 types)
+        6.1 Supported resource types (46 types)
       
     </span>
   </a>
@@ -2873,10 +2873,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#61-supported-resource-types-45-types" class="md-nav__link">
+  <a href="#61-supported-resource-types-46-types" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.1 Supported resource types (45 types)
+        6.1 Supported resource types (46 types)
       
     </span>
   </a>
@@ -3756,7 +3756,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">deployment</span><span class="p">:</span><span class="w">          </span><span class="c1"># Required. Project metadata.</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">workspace</span><span class="p">:</span><span class="w">       </span><span class="c1"># Default workspace configuration.</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">variables</span><span class="p">:</span><span class="w">       </span><span class="c1"># Variable definitions with optional defaults.</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">resources</span><span class="p">:</span><span class="w">       </span><span class="c1"># Resource definitions — Fabric (45 types), Entra, and Azure.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">resources</span><span class="p">:</span><span class="w">       </span><span class="c1"># Resource definitions — Fabric (46 types), Entra, and Azure.</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">azure</span><span class="p">:</span><span class="w">           </span><span class="c1"># Azure deployment defaults (subscription, location).</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">security</span><span class="p">:</span><span class="w">        </span><span class="c1"># Workspace and OneLake role assignments.</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nt">connections</span><span class="p">:</span><span class="w">     </span><span class="c1"># Data source connection definitions.</span>
@@ -4169,7 +4169,7 @@ be set per <a href="../targets-variables/">target</a>.</p>
 <hr />
 <h2 id="6-resources">6. resources<a class="headerlink" href="#6-resources" title="Permanent link">&para;</a></h2>
 <p>All Fabric resource definitions organized by type. Each resource type is a dictionary where keys are the resource display names and values define the resource configuration.</p>
-<h3 id="61-supported-resource-types-45-types">6.1 Supported resource types (45 types)<a class="headerlink" href="#61-supported-resource-types-45-types" title="Permanent link">&para;</a></h3>
+<h3 id="61-supported-resource-types-46-types">6.1 Supported resource types (46 types)<a class="headerlink" href="#61-supported-resource-types-46-types" title="Permanent link">&para;</a></h3>
 <p>The following table lists every supported resource type. Click a type name for details in the <a href="../resource-types/">resource type reference</a>.</p>
 <table>
 <thead>
@@ -4199,6 +4199,11 @@ be set per <a href="../targets-variables/">target</a>.</p>
 <td></td>
 <td><code>spark_job_definitions</code></td>
 <td>Spark Job Definition resources (.py, .jar).</td>
+</tr>
+<tr>
+<td></td>
+<td><code>materialized_lake_views</code></td>
+<td>Materialized Lake Views (SQL views over lakehouse Delta tables).</td>
 </tr>
 <tr>
 <td></td>
@@ -4407,7 +4412,7 @@ be set per <a href="../targets-variables/">target</a>.</p>
 </tr>
 </tbody>
 </table>
-<p>In addition to the 45 Fabric item types, <code>resources</code> accepts <strong>Entra</strong> and
+<p>In addition to the 46 Fabric item types, <code>resources</code> accepts <strong>Entra</strong> and
 <strong>Azure</strong> types, deployed through Microsoft Graph and Bicep respectively:</p>
 <table>
 <thead>
