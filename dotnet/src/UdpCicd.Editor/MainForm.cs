@@ -181,6 +181,7 @@ public sealed class MainForm : Form
 
         AddNode(null, $"Deployment: {_def.Deployment.Name}", new NodeMeta { Kind = NodeKind.Deployment, Target = _def.Deployment });
         AddNode(null, "Workspace", new NodeMeta { Kind = NodeKind.Workspace, Target = _def.Workspace });
+        AddNode(null, "Azure (defaults)", new NodeMeta { Kind = NodeKind.Azure, Target = _def.Azure });
 
         var variables = AddNode(null, $"Variables ({_def.Variables.Count})", new NodeMeta { Kind = NodeKind.Container });
         foreach (var key in _def.Variables.Keys.OrderBy(k => k, StringComparer.Ordinal))
@@ -194,26 +195,21 @@ public sealed class MainForm : Form
         }
 
         var resources = AddNode(null, "Resources", new NodeMeta { Kind = NodeKind.Container });
-        foreach (var info in ResourceTypeRegistry.All)
+
+        // Fabric types sit directly under Resources (the common case); Entra and
+        // Azure types are grouped under a platform node so 100+ types stay navigable.
+        AddResourceTypeNodes(resources, ResourceTypeRegistry.ForPlatform(ResourcePlatform.Fabric));
+        foreach (var platform in new[] { ResourcePlatform.Entra, ResourcePlatform.Azure })
         {
-            var dict = DictFor(info.FieldName);
-            if (dict.Count == 0)
+            var infos = ResourceTypeRegistry.ForPlatform(platform)
+                .Where(i => DictFor(i.FieldName).Count > 0).ToList();
+            if (infos.Count == 0)
             {
                 continue;
             }
-            var typeNode = AddNode(resources, $"{info.FieldName} ({dict.Count})",
-                new NodeMeta { Kind = NodeKind.ResourceType });
-            foreach (var keyObj in dict.Keys)
-            {
-                var key = (string)keyObj;
-                AddNode(typeNode, key, new NodeMeta
-                {
-                    Kind = NodeKind.Resource,
-                    Key = key,
-                    ResourceField = info.FieldName,
-                    Target = dict[key],
-                });
-            }
+            var total = infos.Sum(i => DictFor(i.FieldName).Count);
+            var platformNode = AddNode(resources, $"{platform} ({total})", new NodeMeta { Kind = NodeKind.Container });
+            AddResourceTypeNodes(platformNode, infos);
         }
 
         AddNode(null, $"Security roles ({_def.Security.Roles.Count})",
@@ -270,6 +266,32 @@ public sealed class MainForm : Form
         if (selectedPath is not null)
         {
             SelectByPath(selectedPath);
+        }
+    }
+
+    /// <summary>Add a type node (and its resource children) for each non-empty type.</summary>
+    private void AddResourceTypeNodes(TreeNode parent, IEnumerable<ResourceTypeInfo> infos)
+    {
+        foreach (var info in infos)
+        {
+            var dict = DictFor(info.FieldName);
+            if (dict.Count == 0)
+            {
+                continue;
+            }
+            var typeNode = AddNode(parent, $"{info.FieldName} ({dict.Count})",
+                new NodeMeta { Kind = NodeKind.ResourceType });
+            foreach (var keyObj in dict.Keys)
+            {
+                var key = (string)keyObj;
+                AddNode(typeNode, key, new NodeMeta
+                {
+                    Kind = NodeKind.Resource,
+                    Key = key,
+                    ResourceField = info.FieldName,
+                    Target = dict[key],
+                });
+            }
         }
     }
 
@@ -528,24 +550,31 @@ public sealed class MainForm : Form
 
     private void SelectResource(string field, string key)
     {
-        foreach (TreeNode top in _tree.Nodes)
+        // Resource nodes may be nested under a platform group (Entra/Azure), so
+        // search the whole tree rather than assuming a fixed depth.
+        var match = FindResourceNode(_tree.Nodes, field, key);
+        if (match is not null)
         {
-            if (top.Tag is NodeMeta { Kind: NodeKind.Container } && top.Text == "Resources")
+            _tree.SelectedNode = match;
+        }
+    }
+
+    private static TreeNode? FindResourceNode(TreeNodeCollection nodes, string field, string key)
+    {
+        foreach (TreeNode node in nodes)
+        {
+            if (node.Tag is NodeMeta { Kind: NodeKind.Resource } m
+                && m.ResourceField == field && m.Key == key)
             {
-                foreach (TreeNode typeNode in top.Nodes)
-                {
-                    foreach (TreeNode child in typeNode.Nodes)
-                    {
-                        if (child.Tag is NodeMeta { Kind: NodeKind.Resource } m
-                            && m.ResourceField == field && m.Key == key)
-                        {
-                            _tree.SelectedNode = child;
-                            return;
-                        }
-                    }
-                }
+                return node;
+            }
+            var found = FindResourceNode(node.Nodes, field, key);
+            if (found is not null)
+            {
+                return found;
             }
         }
+        return null;
     }
 
     // -- file operations -----------------------------------------------------

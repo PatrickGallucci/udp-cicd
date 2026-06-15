@@ -22,6 +22,7 @@ This creates a new directory with the project name containing a fully configured
 | `medallion` | Bronze/Silver/Gold lakehouse architecture with ETL notebooks, a data pipeline, and a Data Agent. |
 | `all-resource-types` | Reference catalogue: a `udp.yml` that declares all 46 supported Fabric item types. |
 | `realtime-governance` | Real-time intelligence (IoT → Eventhouse → Eventstream → Activator) with a lakehouse, Data Agent, and materialized lake views, governed by Azure Key Vault, Policy, Defender, Monitor, and Sentinel — ships an Azure DevOps pipeline. |
+| `streaming-lakehouse-governance` | Streaming analytics: Azure Event Hub → Azure Databricks → Fabric Lakehouse + Data Agent, governed by Azure Key Vault, Policy, Defender, Monitor, and Sentinel — ships an Azure DevOps pipeline. |
 
 ### 2.1 `blank`
 
@@ -147,6 +148,30 @@ Telemetry flows **IoT Hub → Eventstream → Eventhouse**; a curated **Lakehous
 | `sentinel-onboard` | Microsoft Sentinel | Azure |
 
 The bundled `azure-pipelines.yml` validates on PRs, deploys to **staging** on merge to `main`, then to **production** behind a manual approval gate. Create a variable group `udp-credentials` (`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`).
+
+### 2.5 `streaming-lakehouse-governance`
+
+A streaming analytics estate — **Azure Event Hub → Azure Databricks → Fabric Lakehouse → Data Agent** — with Azure governance and a bundled **Azure DevOps pipeline** (`azure-pipelines.yml`).
+
+```bash
+udp-cicd init --template streaming-lakehouse-governance --name my-streaming
+```
+
+Events land in **Event Hub**, are processed by **Azure Databricks**, and the curated results are stored in a **Fabric Lakehouse** exposed through a **Data Agent**:
+
+| Resource | Type | Plane |
+|----------|------|-------|
+| `ehns-streaming` | Event Hub | Azure |
+| `dbw-streaming` | Databricks | Azure |
+| `streaming_lakehouse` | Lakehouse | Fabric |
+| `streaming_agent` | Data Agent | Fabric |
+| `kv-streaming` | Key Vault | Azure |
+| `require-resource-tags` | Policy | Azure |
+| `defender-servers` | Defender for Cloud | Azure |
+| `appi-streaming` | Monitor (App Insights) | Azure |
+| `sentinel-onboard` | Microsoft Sentinel | Azure |
+
+Same pipeline shape as `realtime-governance`: validate on PRs → staging on merge → prod behind an approval gate, driven by the `udp-credentials` variable group.
 
 ---
 

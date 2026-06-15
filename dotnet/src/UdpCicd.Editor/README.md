@@ -6,8 +6,9 @@ required.
 
 It references `UdpCicd.Core` and reuses the project's own model graph and
 YamlDotNet configuration, so the files it writes are byte-compatible with the
-`udp-cicd` CLI and MCP server, and it automatically supports **all 46 Fabric
-resource types**.
+`udp-cicd` CLI and MCP server, and it automatically supports **all resource types
+across every platform** — the 46 Fabric item types, Microsoft **Entra** groups
+and app registrations, and the 64 **Azure** service types.
 
 ## Running
 
@@ -30,11 +31,13 @@ dotnet build src/UdpCicd.Editor -c Release
 
 ## What you can edit
 
-- **Deployment** metadata, **Workspace** (incl. Git integration), **Variables**
+- **Deployment** metadata, **Workspace** (incl. Git integration), **Azure
+  defaults** (subscription/location for `azure_*` resources), **Variables**
   (literal or description/default form).
-- **Resources** — every supported type (lakehouses, notebooks, pipelines,
-  warehouses, semantic models, reports, data agents, eventhouses/streams, KQL,
-  ML, graphs, mirrored databases, …). Add via **Edit ▸ Add Resource**.
+- **Resources** — every supported type across all three platforms. Fabric items
+  sit directly under **Resources**; **Entra** and **Azure** types are grouped
+  under their platform. Add via **Edit ▸ Add Resource**, which has a **platform
+  filter** (Fabric / Entra / Azure) so the 100+ types stay navigable.
 - **Security** roles + OneLake role bindings, **Connections**, **Targets**
   (per-environment workspace/variables/run-as/strategy), **Admin** tenant
   settings, and the advanced **Policies / Notifications / State** sections.

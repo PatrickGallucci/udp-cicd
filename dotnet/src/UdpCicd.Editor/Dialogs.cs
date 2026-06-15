@@ -55,9 +55,11 @@ public sealed class InputDialog : Form
     }
 }
 
-/// <summary>Pick a resource type and key when adding a new resource.</summary>
+/// <summary>Pick a resource type and key when adding a new resource. The type
+/// list is platform-aware (Fabric / Entra / Azure) with an optional filter.</summary>
 public sealed class AddResourceDialog : Form
 {
+    private readonly ComboBox _platform = new() { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly ComboBox _types = new() { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly TextBox _key = new() { Dock = DockStyle.Fill };
 
@@ -68,8 +70,12 @@ public sealed class AddResourceDialog : Form
 
     private sealed record TypeItem(ResourceTypeInfo Info)
     {
-        public override string ToString() =>
-            $"{Info.FabricType}  ({Info.FieldName}){(Info.StrictNaming ? "  — strict naming" : "")}";
+        public override string ToString()
+        {
+            var prefix = Info.Platform == ResourcePlatform.Fabric ? "" : $"[{Info.Platform}] ";
+            var strict = Info.StrictNaming ? "  — strict naming" : "";
+            return $"{prefix}{Info.FieldName}  —  {Info.ProviderType}{strict}";
+        }
     }
 
     public AddResourceDialog()
@@ -79,30 +85,28 @@ public sealed class AddResourceDialog : Form
         StartPosition = FormStartPosition.CenterParent;
         MinimizeBox = false;
         MaximizeBox = false;
-        ClientSize = new Size(460, 170);
+        ClientSize = new Size(520, 210);
 
-        foreach (var info in ResourceTypeRegistry.All.OrderBy(i => i.FabricType, StringComparer.Ordinal))
-        {
-            _types.Items.Add(new TypeItem(info));
-        }
-        if (_types.Items.Count > 0)
-        {
-            _types.SelectedIndex = 0;
-        }
+        _platform.Items.AddRange(["All", "Fabric", "Entra", "Azure"]);
+        _platform.SelectedIndex = 0;
+        _platform.SelectedIndexChanged += (_, _) => PopulateTypes();
+        PopulateTypes();
 
         var layout = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
             ColumnCount = 2,
-            RowCount = 2,
+            RowCount = 3,
             Padding = new Padding(10),
         };
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        layout.Controls.Add(new Label { Text = "Type:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
-        layout.Controls.Add(_types, 1, 0);
-        layout.Controls.Add(new Label { Text = "Key:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 1);
-        layout.Controls.Add(_key, 1, 1);
+        layout.Controls.Add(new Label { Text = "Platform:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
+        layout.Controls.Add(_platform, 1, 0);
+        layout.Controls.Add(new Label { Text = "Type:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 1);
+        layout.Controls.Add(_types, 1, 1);
+        layout.Controls.Add(new Label { Text = "Key:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 2);
+        layout.Controls.Add(_key, 1, 2);
 
         var ok = new Button { Text = "Add", DialogResult = DialogResult.OK, Width = 90 };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Width = 90 };
@@ -120,6 +124,26 @@ public sealed class AddResourceDialog : Form
         Controls.Add(buttons);
         AcceptButton = ok;
         CancelButton = cancel;
+    }
+
+    private void PopulateTypes()
+    {
+        _types.BeginUpdate();
+        _types.Items.Clear();
+        var selected = _platform.SelectedItem as string ?? "All";
+        var infos = ResourceTypeRegistry.All
+            .Where(i => selected == "All" || i.Platform.ToString() == selected)
+            .OrderBy(i => i.Platform)
+            .ThenBy(i => i.FieldName, StringComparer.Ordinal);
+        foreach (var info in infos)
+        {
+            _types.Items.Add(new TypeItem(info));
+        }
+        if (_types.Items.Count > 0)
+        {
+            _types.SelectedIndex = 0;
+        }
+        _types.EndUpdate();
     }
 }
 

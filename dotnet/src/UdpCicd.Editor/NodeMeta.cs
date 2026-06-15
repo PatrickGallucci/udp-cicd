@@ -7,6 +7,7 @@ public enum NodeKind
     Container,
     Deployment,
     Workspace,
+    Azure,
     Variable,
     ResourceType,
     Resource,

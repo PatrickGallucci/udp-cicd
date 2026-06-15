@@ -4,6 +4,28 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-06-15
+
+### Added
+
+- **`streaming-lakehouse-governance` template** — a streaming analytics estate
+  (Azure Event Hub → Azure Databricks → Fabric Lakehouse → Data Agent) governed
+  by Azure Key Vault, Policy, Defender for Cloud, Monitor, and Sentinel —
+  **ships an Azure DevOps pipeline** (`azure-pipelines.yml`) with validate →
+  staging → prod approval-gated stages. New example
+  [`examples/14-streaming-lakehouse-governance`](examples/14-streaming-lakehouse-governance).
+
+### Changed
+
+- **udp.yml Editor** now fully supports every platform:
+  - **Round-trip fix:** the top-level `azure:` block (subscription/location
+    defaults) is now serialized on save — previously it was silently dropped.
+  - New **"Azure (defaults)"** node to edit `azure.subscription` / `azure.location`.
+  - The **Resources** tree groups **Entra** and **Azure** types under their
+    platform (Fabric types stay at the top level), keeping 100+ types navigable.
+  - **Add Resource** dialog gained a **platform filter** (Fabric / Entra / Azure)
+    and labels each type by platform + field name + provider type.
+
 ## [1.10.0] - 2026-06-15
 
 ### Added

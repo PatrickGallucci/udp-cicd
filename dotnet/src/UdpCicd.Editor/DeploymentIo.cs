@@ -140,6 +140,11 @@ public static class DeploymentIo
             root["resources"] = resources;
         }
 
+        if (AzureHasContent(def.Azure))
+        {
+            root["azure"] = def.Azure;
+        }
+
         if (def.Security.Roles.Count > 0)
         {
             root["security"] = def.Security;
@@ -186,6 +191,9 @@ public static class DeploymentIo
         }
         return map;
     }
+
+    private static bool AzureHasContent(AzureConfig a) =>
+        !string.IsNullOrEmpty(a.Subscription) || !string.IsNullOrEmpty(a.Location);
 
     private static bool WorkspaceHasContent(WorkspaceConfig w) =>
         !string.IsNullOrEmpty(w.Name)

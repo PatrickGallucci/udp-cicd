@@ -30,6 +30,7 @@ Working examples you can copy and deploy to your Fabric tenant.
 | 11 | [Azure Data Services](11-azure-data-services/) | Catalogue of all `azure_*` service types (Data Factory, Databricks, Event Hubs, SQL, Cosmos DB, …) | Reference |
 | 12 | [Azure Platform Services](12-azure-platform-services/) | Governance, security, AI, monitoring & networking `azure_*` types (Key Vault, Purview, Sentinel, VNet, Firewall, …) | Reference |
 | 13 | [Real-Time Governance](13-realtime-governance/) | IoT → Eventhouse → Eventstream + Activator, Lakehouse, Data Agent, Materialized Lake Views & Azure governance | Advanced |
+| 14 | [Streaming Lakehouse Governance](14-streaming-lakehouse-governance/) | Event Hub → Databricks → Lakehouse + Data Agent, with Azure Key Vault, Policy, Defender, Monitor & Sentinel | Advanced |
 
 ## Finding Your Capacity GUID
 

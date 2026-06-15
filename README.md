@@ -132,7 +132,7 @@ udp-cicd init
 udp-cicd init --template medallion --name udp-analytics
 ```
 
-Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 46 Fabric item types), `realtime-governance` (IoT → Eventhouse → Eventstream + Azure governance, with an Azure DevOps pipeline).
+Available templates: `blank` (empty), `medallion` (bronze/silver/gold lakehouse), `all-resource-types` (reference catalogue of all 46 Fabric item types), `realtime-governance` (IoT → Eventhouse → Eventstream + Azure governance), `streaming-lakehouse-governance` (Event Hub → Databricks → Lakehouse + Azure governance) — the last two ship an Azure DevOps pipeline.
 
 Retrieve your Fabric capacity GUID, update the `workspace` section, then run the standard lifecycle:
 
@@ -345,7 +345,7 @@ include:
 
 ### 4.5 Templates
 
-**`medallion`** — Bronze/Silver/Gold lakehouse with ETL notebooks, a dependency-chained pipeline, semantic model and dashboard, a Data Agent, security roles, and dev/staging/prod targets. **`blank`** — minimal structure. **`all-resource-types`** — reference catalogue declaring all 46 Fabric item types. **`realtime-governance`** — IoT Hub → Fabric Eventhouse/Eventstream/Activator + Lakehouse, Data Agent, Materialized Lake Views, and Azure governance (Key Vault, Policy, Defender, Monitor, Sentinel), shipping an Azure DevOps pipeline. Custom templates use Scriban scaffolding.
+**`medallion`** — Bronze/Silver/Gold lakehouse with ETL notebooks, a dependency-chained pipeline, semantic model and dashboard, a Data Agent, security roles, and dev/staging/prod targets. **`blank`** — minimal structure. **`all-resource-types`** — reference catalogue declaring all 46 Fabric item types. **`realtime-governance`** — IoT Hub → Fabric Eventhouse/Eventstream/Activator + Lakehouse, Data Agent, Materialized Lake Views, and Azure governance (Key Vault, Policy, Defender, Monitor, Sentinel). **`streaming-lakehouse-governance`** — Azure Event Hub → Azure Databricks → Fabric Lakehouse + Data Agent, with the same Azure governance set. The last two ship an Azure DevOps pipeline. Custom templates use Scriban scaffolding.
 
 ### 4.6 VS Code Integration
 
