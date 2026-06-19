@@ -1928,6 +1928,15 @@ argument.</p>
 </table>
 <h2 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">&para;</a></h2>
 <ul>
+<li><strong>Tools ▸ Import from deployed environment…</strong> (<code>Ctrl+I</code>) — connects to the live
+  <strong>Fabric</strong> workspace, <strong>Microsoft Entra</strong>, and/or <strong>Azure</strong> subscription, lists
+  what is currently deployed, and lets you pick which resources to reverse-generate
+  into the open <code>udp.yml</code>. Check the sources to scan (and an Azure subscription /
+  resource group, if any), click <strong>Discover</strong>, filter the list, check the
+  resources you want, then <strong>Import Selected</strong> adds them — skipping any key already
+  present. It runs the same discovery engine as <code>udp-cicd generate --include-entra
+  --include-azure</code>, with the same credentials (<code>AZURE_*</code> env vars /
+  <code>DefaultAzureCredential</code>; Azure also needs <code>az login</code>).</li>
 <li><strong>Tools ▸ Validate</strong> (<code>F5</code>) — runs the same cross-reference and naming checks
   as <code>udp-cicd validate</code> and lists any issues.</li>
 <li><strong>Tools ▸ View YAML</strong> — previews exactly what will be written to disk.</li>

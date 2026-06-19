@@ -1931,7 +1931,7 @@
 <tr>
 <td><a href="../../cli/commands/#generate"><code>udp-cicd generate</code></a></td>
 <td>You have a workspace but no declaration yet and want to reverse-engineer a <code>udp.yml</code>.</td>
-<td>Scans a live workspace and writes <code>udp.yml</code> plus item content (notebook source, etc.).</td>
+<td>Scans a live workspace and writes <code>udp.yml</code> plus item content (notebook source, etc.). Add <code>--include-entra</code> / <code>--include-azure</code> to also import deployed Entra and Azure resources, so a Terraform estate spanning Fabric + Entra + Azure reverse-engineers in one pass.</td>
 </tr>
 <tr>
 <td><a href="../../cli/commands/#bind"><code>udp-cicd bind</code></a></td>

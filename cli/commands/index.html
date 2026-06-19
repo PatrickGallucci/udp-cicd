@@ -5849,7 +5849,7 @@
 <hr />
 <p><a id="generate"></a></p>
 <h3 id="73-generate">7.3 generate<a class="headerlink" href="#73-generate" title="Permanent link">&para;</a></h3>
-<p>Generate a <code>udp.yml</code> deployment definition by scanning an existing Fabric workspace.</p>
+<p>Generate a <code>udp.yml</code> deployment definition by scanning an existing Fabric workspace. Optionally reverse-engineer the whole <strong>multi-platform</strong> footprint in one pass by also importing deployed <strong>Microsoft Entra</strong> directory objects and <strong>Azure</strong> resources.</p>
 <h4 id="syntax_18">Syntax<a class="headerlink" href="#syntax_18" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-85-1" name="__codelineno-85-1" href="#__codelineno-85-1"></a>udp-cicd generate [OPTIONS]
 </code></pre></div>
@@ -5879,8 +5879,47 @@
 <td><code>.</code></td>
 <td>Output directory for the generated <code>udp.yml</code> and item definitions.</td>
 </tr>
+<tr>
+<td><code>--include-entra</code></td>
+<td></td>
+<td>Flag</td>
+<td><code>false</code></td>
+<td>Also import deployed Microsoft Entra security groups and app registrations (via Microsoft Graph) as <code>entra_groups</code> / <code>entra_apps</code>.</td>
+</tr>
+<tr>
+<td><code>--include-azure</code></td>
+<td></td>
+<td>Flag</td>
+<td><code>false</code></td>
+<td>Also import deployed Azure resources (via the <code>az</code> CLI), mapped to their <code>azure_*</code> field by ARM type. Unrecognized ARM types are skipped.</td>
+</tr>
+<tr>
+<td><code>--subscription</code></td>
+<td></td>
+<td>String</td>
+<td><em>(az CLI default)</em></td>
+<td>Azure subscription to scan. Only applies with <code>--include-azure</code>.</td>
+</tr>
+<tr>
+<td><code>--resource-group</code></td>
+<td><code>-g</code></td>
+<td>String</td>
+<td><em>(all)</em></td>
+<td>Limit Azure discovery to a single resource group. Only applies with <code>--include-azure</code>.</td>
+</tr>
+<tr>
+<td><code>--location</code></td>
+<td></td>
+<td>String</td>
+<td><em>(none)</em></td>
+<td>Default Azure region to record in the generated <code>azure:</code> block. Only applies with <code>--include-azure</code>.</td>
+</tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Note</strong></p>
+<p>Entra and Azure discovery use the same credentials as the rest of the CLI (the <code>AZURE_*</code> service-principal variables, otherwise <code>DefaultAzureCredential</code>); Azure discovery additionally requires the <code>az</code> CLI to be installed and signed in. Imported keys are kept verbatim because for these platforms the key <strong>is</strong> the resource's deployed name (the Entra display name, the Azure resource name).</p>
+</blockquote>
 <h4 id="examples_18">Examples<a class="headerlink" href="#examples_18" title="Permanent link">&para;</a></h4>
 <p><strong>Generate from a workspace name:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-86-1" name="__codelineno-86-1" href="#__codelineno-86-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Existing Workspace&quot;</span><span class="w"> </span>-o<span class="w"> </span>./generated
@@ -5888,31 +5927,43 @@
 <p><strong>Generate from a workspace GUID:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-87-1" name="__codelineno-87-1" href="#__codelineno-87-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;abc12345-def6-7890-abcd-ef1234567890&quot;</span><span class="w"> </span>-o<span class="w"> </span>./generated
 </code></pre></div>
+<p><strong>Reverse-engineer the whole multi-platform footprint:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-88-1" name="__codelineno-88-1" href="#__codelineno-88-1"></a>udp-cicd<span class="w"> </span>generate<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Existing Workspace&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-88-2" name="__codelineno-88-2" href="#__codelineno-88-2"></a><span class="w">  </span>--include-entra<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-88-3" name="__codelineno-88-3" href="#__codelineno-88-3"></a><span class="w">  </span>--include-azure<span class="w"> </span>--subscription<span class="w"> </span><span class="s2">&quot;Prod Sub&quot;</span><span class="w"> </span>-g<span class="w"> </span>rg-analytics<span class="w"> </span>--location<span class="w"> </span>eastus<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-88-4" name="__codelineno-88-4" href="#__codelineno-88-4"></a><span class="w">  </span>-o<span class="w"> </span>./generated
+</code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-88-1" name="__codelineno-88-1" href="#__codelineno-88-1"></a>Scanning workspace: My Existing Workspace (abc12345-...)
-<a id="__codelineno-88-2" name="__codelineno-88-2" href="#__codelineno-88-2"></a>  Found 8 items
-<a id="__codelineno-88-3" name="__codelineno-88-3" href="#__codelineno-88-3"></a>
-<a id="__codelineno-88-4" name="__codelineno-88-4" href="#__codelineno-88-4"></a>  + Lakehouse: bronze_lake
-<a id="__codelineno-88-5" name="__codelineno-88-5" href="#__codelineno-88-5"></a>  + Lakehouse: gold_lake
-<a id="__codelineno-88-6" name="__codelineno-88-6" href="#__codelineno-88-6"></a>  + Notebook:  etl_step1
-<a id="__codelineno-88-7" name="__codelineno-88-7" href="#__codelineno-88-7"></a>  + Notebook:  etl_step2
-<a id="__codelineno-88-8" name="__codelineno-88-8" href="#__codelineno-88-8"></a>  + Pipeline:  nightly_run
-<a id="__codelineno-88-9" name="__codelineno-88-9" href="#__codelineno-88-9"></a>
-<a id="__codelineno-88-10" name="__codelineno-88-10" href="#__codelineno-88-10"></a>Generated:
-<a id="__codelineno-88-11" name="__codelineno-88-11" href="#__codelineno-88-11"></a>  ./generated/udp.yml
-<a id="__codelineno-88-12" name="__codelineno-88-12" href="#__codelineno-88-12"></a>  ./generated/notebooks/etl_step1/notebook-content.py
-<a id="__codelineno-88-13" name="__codelineno-88-13" href="#__codelineno-88-13"></a>  ./generated/notebooks/etl_step2/notebook-content.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a>Scanning workspace: My Existing Workspace (abc12345-...)
+<a id="__codelineno-89-2" name="__codelineno-89-2" href="#__codelineno-89-2"></a>  Found 8 items
+<a id="__codelineno-89-3" name="__codelineno-89-3" href="#__codelineno-89-3"></a>
+<a id="__codelineno-89-4" name="__codelineno-89-4" href="#__codelineno-89-4"></a>  + Lakehouse: bronze_lake
+<a id="__codelineno-89-5" name="__codelineno-89-5" href="#__codelineno-89-5"></a>  + Lakehouse: gold_lake
+<a id="__codelineno-89-6" name="__codelineno-89-6" href="#__codelineno-89-6"></a>  + Notebook:  etl_step1
+<a id="__codelineno-89-7" name="__codelineno-89-7" href="#__codelineno-89-7"></a>  + Notebook:  etl_step2
+<a id="__codelineno-89-8" name="__codelineno-89-8" href="#__codelineno-89-8"></a>  + Pipeline:  nightly_run
+<a id="__codelineno-89-9" name="__codelineno-89-9" href="#__codelineno-89-9"></a>Scanning Microsoft Entra (groups, app registrations)…
+<a id="__codelineno-89-10" name="__codelineno-89-10" href="#__codelineno-89-10"></a>  Imported entra_groups: 3 item(s)
+<a id="__codelineno-89-11" name="__codelineno-89-11" href="#__codelineno-89-11"></a>  Imported entra_apps: 1 item(s)
+<a id="__codelineno-89-12" name="__codelineno-89-12" href="#__codelineno-89-12"></a>Scanning Azure resources…
+<a id="__codelineno-89-13" name="__codelineno-89-13" href="#__codelineno-89-13"></a>  Imported azure_key_vaults: 1 item(s)
+<a id="__codelineno-89-14" name="__codelineno-89-14" href="#__codelineno-89-14"></a>  Imported azure_storage_accounts: 2 item(s)
+<a id="__codelineno-89-15" name="__codelineno-89-15" href="#__codelineno-89-15"></a>
+<a id="__codelineno-89-16" name="__codelineno-89-16" href="#__codelineno-89-16"></a>Generated:
+<a id="__codelineno-89-17" name="__codelineno-89-17" href="#__codelineno-89-17"></a>  ./generated/udp.yml
+<a id="__codelineno-89-18" name="__codelineno-89-18" href="#__codelineno-89-18"></a>  ./generated/notebooks/etl_step1/notebook-content.py
+<a id="__codelineno-89-19" name="__codelineno-89-19" href="#__codelineno-89-19"></a>  ./generated/notebooks/etl_step2/notebook-content.py
 </code></pre></div>
 <blockquote>
 <p><strong>Tip</strong></p>
-<p>Use <code>generate</code> to bootstrap a deployment definition for an existing workspace, then customize the generated <code>udp.yml</code> to add variables, targets, security roles, and policies.</p>
+<p>Use <code>generate</code> to bootstrap a deployment definition for an existing workspace, then customize the generated <code>udp.yml</code> to add variables, targets, security roles, and policies. The same discovery engine backs the Editor's <strong>Tools ▸ Import from deployed environment…</strong> (<code>Ctrl+I</code>) — see the <a href="../../guide/editor/#tools">Editor guide</a>.</p>
 </blockquote>
 <hr />
 <p><a id="bind"></a></p>
 <h3 id="74-bind">7.4 bind<a class="headerlink" href="#74-bind" title="Permanent link">&para;</a></h3>
 <p>Bind an existing workspace item to deployment management. The item must already be defined in <code>udp.yml</code>.</p>
 <h4 id="syntax_19">Syntax<a class="headerlink" href="#syntax_19" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a>udp-cicd bind RESOURCE_NAME [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a>udp-cicd bind RESOURCE_NAME [OPTIONS]
 </code></pre></div>
 <h4 id="arguments_2">Arguments<a class="headerlink" href="#arguments_2" title="Permanent link">&para;</a></h4>
 <table>
@@ -5960,17 +6011,17 @@
 </tbody>
 </table>
 <h4 id="examples_19">Examples<a class="headerlink" href="#examples_19" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a>udp-cicd<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>ingest_notebook<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;sales-analytics-dev&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a>udp-cicd<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>ingest_notebook<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;sales-analytics-dev&quot;</span>
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a>Bound: ingest_notebook
-<a id="__codelineno-91-2" name="__codelineno-91-2" href="#__codelineno-91-2"></a>  Type:      Notebook
-<a id="__codelineno-91-3" name="__codelineno-91-3" href="#__codelineno-91-3"></a>  Item ID:   abc123-def456-...
-<a id="__codelineno-91-4" name="__codelineno-91-4" href="#__codelineno-91-4"></a>  Workspace: sales-analytics-dev
-<a id="__codelineno-91-5" name="__codelineno-91-5" href="#__codelineno-91-5"></a>  Recorded to state. Visible in &#39;udp-cicd status&#39;.
-<a id="__codelineno-91-6" name="__codelineno-91-6" href="#__codelineno-91-6"></a>
-<a id="__codelineno-91-7" name="__codelineno-91-7" href="#__codelineno-91-7"></a>  This resource will be managed by the deployment on the next deploy.
-<a id="__codelineno-91-8" name="__codelineno-91-8" href="#__codelineno-91-8"></a>  Changes to udp.yml will be applied to the existing item.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a>Bound: ingest_notebook
+<a id="__codelineno-92-2" name="__codelineno-92-2" href="#__codelineno-92-2"></a>  Type:      Notebook
+<a id="__codelineno-92-3" name="__codelineno-92-3" href="#__codelineno-92-3"></a>  Item ID:   abc123-def456-...
+<a id="__codelineno-92-4" name="__codelineno-92-4" href="#__codelineno-92-4"></a>  Workspace: sales-analytics-dev
+<a id="__codelineno-92-5" name="__codelineno-92-5" href="#__codelineno-92-5"></a>  Recorded to state. Visible in &#39;udp-cicd status&#39;.
+<a id="__codelineno-92-6" name="__codelineno-92-6" href="#__codelineno-92-6"></a>
+<a id="__codelineno-92-7" name="__codelineno-92-7" href="#__codelineno-92-7"></a>  This resource will be managed by the deployment on the next deploy.
+<a id="__codelineno-92-8" name="__codelineno-92-8" href="#__codelineno-92-8"></a>  Changes to udp.yml will be applied to the existing item.
 </code></pre></div>
 <blockquote>
 <p><strong>Important</strong></p>
@@ -5981,7 +6032,7 @@
 <h3 id="75-import">7.5 import<a class="headerlink" href="#75-import" title="Permanent link">&para;</a></h3>
 <p>Import existing resources into udp-cicd management from a Terraform state file or a live Fabric workspace.</p>
 <h4 id="syntax_20">Syntax<a class="headerlink" href="#syntax_20" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a>udp-cicd import [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a>udp-cicd import [OPTIONS]
 </code></pre></div>
 <h4 id="options_17">Options<a class="headerlink" href="#options_17" title="Permanent link">&para;</a></h4>
 <table>
@@ -6031,23 +6082,23 @@
 </blockquote>
 <h4 id="examples_20">Examples<a class="headerlink" href="#examples_20" title="Permanent link">&para;</a></h4>
 <p><strong>Import from Terraform state:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>--from-terraform<span class="w"> </span>./terraform.tfstate<span class="w"> </span>--target<span class="w"> </span>prod
+<div class="highlight"><pre><span></span><code><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>--from-terraform<span class="w"> </span>./terraform.tfstate<span class="w"> </span>--target<span class="w"> </span>prod
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a>Found 4 Fabric resources in Terraform state
-<a id="__codelineno-94-2" name="__codelineno-94-2" href="#__codelineno-94-2"></a>  lakehouse            bronze_lakehouse
-<a id="__codelineno-94-3" name="__codelineno-94-3" href="#__codelineno-94-3"></a>  lakehouse            gold_lakehouse
-<a id="__codelineno-94-4" name="__codelineno-94-4" href="#__codelineno-94-4"></a>  notebook             ingest_notebook
-<a id="__codelineno-94-5" name="__codelineno-94-5" href="#__codelineno-94-5"></a>  datapipeline         daily_pipeline
-<a id="__codelineno-94-6" name="__codelineno-94-6" href="#__codelineno-94-6"></a>
-<a id="__codelineno-94-7" name="__codelineno-94-7" href="#__codelineno-94-7"></a>Imported 4 resources to udp-cicd state.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a>Found 4 Fabric resources in Terraform state
+<a id="__codelineno-95-2" name="__codelineno-95-2" href="#__codelineno-95-2"></a>  lakehouse            bronze_lakehouse
+<a id="__codelineno-95-3" name="__codelineno-95-3" href="#__codelineno-95-3"></a>  lakehouse            gold_lakehouse
+<a id="__codelineno-95-4" name="__codelineno-95-4" href="#__codelineno-95-4"></a>  notebook             ingest_notebook
+<a id="__codelineno-95-5" name="__codelineno-95-5" href="#__codelineno-95-5"></a>  datapipeline         daily_pipeline
+<a id="__codelineno-95-6" name="__codelineno-95-6" href="#__codelineno-95-6"></a>
+<a id="__codelineno-95-7" name="__codelineno-95-7" href="#__codelineno-95-7"></a>Imported 4 resources to udp-cicd state.
 </code></pre></div>
 <p><strong>Import from a live workspace:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Workspace&quot;</span><span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-96-1" name="__codelineno-96-1" href="#__codelineno-96-1"></a>udp-cicd<span class="w"> </span>import<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;My Workspace&quot;</span><span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-96-1" name="__codelineno-96-1" href="#__codelineno-96-1"></a>Found 6 items in workspace &#39;My Workspace&#39;
-<a id="__codelineno-96-2" name="__codelineno-96-2" href="#__codelineno-96-2"></a>Imported 6 resources to udp-cicd state.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a>Found 6 items in workspace &#39;My Workspace&#39;
+<a id="__codelineno-97-2" name="__codelineno-97-2" href="#__codelineno-97-2"></a>Imported 6 resources to udp-cicd state.
 </code></pre></div>
 <blockquote>
 <p><strong>Tip</strong></p>
@@ -6064,7 +6115,7 @@
 <h3 id="81-admin-plan">8.1 admin plan<a class="headerlink" href="#81-admin-plan" title="Permanent link">&para;</a></h3>
 <p>Preview the difference between the tenant settings declared under <code>admin.tenant_settings</code> and the live tenant. Read-only — makes no changes.</p>
 <h4 id="syntax_21">Syntax<a class="headerlink" href="#syntax_21" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a>udp-cicd admin plan [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-98-1" name="__codelineno-98-1" href="#__codelineno-98-1"></a>udp-cicd admin plan [OPTIONS]
 </code></pre></div>
 <h4 id="options_18">Options<a class="headerlink" href="#options_18" title="Permanent link">&para;</a></h4>
 <table>
@@ -6088,24 +6139,24 @@
 </tbody>
 </table>
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-98-1" name="__codelineno-98-1" href="#__codelineno-98-1"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>plan
+<div class="highlight"><pre><span></span><code><a id="__codelineno-99-1" name="__codelineno-99-1" href="#__codelineno-99-1"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>plan
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-99-1" name="__codelineno-99-1" href="#__codelineno-99-1"></a>Tenant Settings Plan
-<a id="__codelineno-99-2" name="__codelineno-99-2" href="#__codelineno-99-2"></a>
-<a id="__codelineno-99-3" name="__codelineno-99-3" href="#__codelineno-99-3"></a>  ~  PublishToWeb  Publish to web
-<a id="__codelineno-99-4" name="__codelineno-99-4" href="#__codelineno-99-4"></a>      enabled: enabled -&gt; disabled
-<a id="__codelineno-99-5" name="__codelineno-99-5" href="#__codelineno-99-5"></a>  =  DevelopmentTenantSettings  no change
-<a id="__codelineno-99-6" name="__codelineno-99-6" href="#__codelineno-99-6"></a>  !  PublishToWebb  (unknown setting)
-<a id="__codelineno-99-7" name="__codelineno-99-7" href="#__codelineno-99-7"></a>      setting not found in this tenant — check the settingName
-<a id="__codelineno-99-8" name="__codelineno-99-8" href="#__codelineno-99-8"></a>
-<a id="__codelineno-99-9" name="__codelineno-99-9" href="#__codelineno-99-9"></a>  Summary: 1 to update, 1 unchanged, 1 unknown
+<div class="highlight"><pre><span></span><code><a id="__codelineno-100-1" name="__codelineno-100-1" href="#__codelineno-100-1"></a>Tenant Settings Plan
+<a id="__codelineno-100-2" name="__codelineno-100-2" href="#__codelineno-100-2"></a>
+<a id="__codelineno-100-3" name="__codelineno-100-3" href="#__codelineno-100-3"></a>  ~  PublishToWeb  Publish to web
+<a id="__codelineno-100-4" name="__codelineno-100-4" href="#__codelineno-100-4"></a>      enabled: enabled -&gt; disabled
+<a id="__codelineno-100-5" name="__codelineno-100-5" href="#__codelineno-100-5"></a>  =  DevelopmentTenantSettings  no change
+<a id="__codelineno-100-6" name="__codelineno-100-6" href="#__codelineno-100-6"></a>  !  PublishToWebb  (unknown setting)
+<a id="__codelineno-100-7" name="__codelineno-100-7" href="#__codelineno-100-7"></a>      setting not found in this tenant — check the settingName
+<a id="__codelineno-100-8" name="__codelineno-100-8" href="#__codelineno-100-8"></a>
+<a id="__codelineno-100-9" name="__codelineno-100-9" href="#__codelineno-100-9"></a>  Summary: 1 to update, 1 unchanged, 1 unknown
 </code></pre></div>
 <p>Markers: <code>~</code> change, <code>=</code> no change, <code>!</code> unknown settingName.</p>
 <h3 id="82-admin-apply">8.2 admin apply<a class="headerlink" href="#82-admin-apply" title="Permanent link">&para;</a></h3>
 <p>Apply the declared tenant settings to the tenant. Prompts for confirmation because the changes are organization-wide.</p>
 <h4 id="syntax_22">Syntax<a class="headerlink" href="#syntax_22" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-100-1" name="__codelineno-100-1" href="#__codelineno-100-1"></a>udp-cicd admin apply [OPTIONS]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-101-1" name="__codelineno-101-1" href="#__codelineno-101-1"></a>udp-cicd admin apply [OPTIONS]
 </code></pre></div>
 <h4 id="options_19">Options<a class="headerlink" href="#options_19" title="Permanent link">&para;</a></h4>
 <table>
@@ -6144,30 +6195,30 @@
 </table>
 <p><code>admin apply</code> refuses to run while any declared <code>settingName</code> is <strong>unknown</strong>, so a typo cannot silently no-op.</p>
 <h4 id="examples_21">Examples<a class="headerlink" href="#examples_21" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-101-1" name="__codelineno-101-1" href="#__codelineno-101-1"></a><span class="c1"># Preview, then apply with confirmation</span>
-<a id="__codelineno-101-2" name="__codelineno-101-2" href="#__codelineno-101-2"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply
-<a id="__codelineno-101-3" name="__codelineno-101-3" href="#__codelineno-101-3"></a>
-<a id="__codelineno-101-4" name="__codelineno-101-4" href="#__codelineno-101-4"></a><span class="c1"># Non-interactive (CI)</span>
-<a id="__codelineno-101-5" name="__codelineno-101-5" href="#__codelineno-101-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
-<a id="__codelineno-101-6" name="__codelineno-101-6" href="#__codelineno-101-6"></a>
-<a id="__codelineno-101-7" name="__codelineno-101-7" href="#__codelineno-101-7"></a><span class="c1"># Preview without writing</span>
-<a id="__codelineno-101-8" name="__codelineno-101-8" href="#__codelineno-101-8"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>--dry-run
+<div class="highlight"><pre><span></span><code><a id="__codelineno-102-1" name="__codelineno-102-1" href="#__codelineno-102-1"></a><span class="c1"># Preview, then apply with confirmation</span>
+<a id="__codelineno-102-2" name="__codelineno-102-2" href="#__codelineno-102-2"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply
+<a id="__codelineno-102-3" name="__codelineno-102-3" href="#__codelineno-102-3"></a>
+<a id="__codelineno-102-4" name="__codelineno-102-4" href="#__codelineno-102-4"></a><span class="c1"># Non-interactive (CI)</span>
+<a id="__codelineno-102-5" name="__codelineno-102-5" href="#__codelineno-102-5"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>-y
+<a id="__codelineno-102-6" name="__codelineno-102-6" href="#__codelineno-102-6"></a>
+<a id="__codelineno-102-7" name="__codelineno-102-7" href="#__codelineno-102-7"></a><span class="c1"># Preview without writing</span>
+<a id="__codelineno-102-8" name="__codelineno-102-8" href="#__codelineno-102-8"></a>udp-cicd<span class="w"> </span>admin<span class="w"> </span>apply<span class="w"> </span>--dry-run
 </code></pre></div>
 <p><strong>Example output:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-102-1" name="__codelineno-102-1" href="#__codelineno-102-1"></a>Tenant Settings Plan
-<a id="__codelineno-102-2" name="__codelineno-102-2" href="#__codelineno-102-2"></a>
-<a id="__codelineno-102-3" name="__codelineno-102-3" href="#__codelineno-102-3"></a>  ~  PublishToWeb  Publish to web
-<a id="__codelineno-102-4" name="__codelineno-102-4" href="#__codelineno-102-4"></a>      enabled: enabled -&gt; disabled
-<a id="__codelineno-102-5" name="__codelineno-102-5" href="#__codelineno-102-5"></a>
-<a id="__codelineno-102-6" name="__codelineno-102-6" href="#__codelineno-102-6"></a>  Summary: 1 to update, 0 unchanged
-<a id="__codelineno-102-7" name="__codelineno-102-7" href="#__codelineno-102-7"></a>
-<a id="__codelineno-102-8" name="__codelineno-102-8" href="#__codelineno-102-8"></a>WARNING: These changes apply tenant-wide and affect every user in the organization.
-<a id="__codelineno-102-9" name="__codelineno-102-9" href="#__codelineno-102-9"></a>Apply these tenant setting changes? [y/n]: y
-<a id="__codelineno-102-10" name="__codelineno-102-10" href="#__codelineno-102-10"></a>
-<a id="__codelineno-102-11" name="__codelineno-102-11" href="#__codelineno-102-11"></a>  ~ Updated: PublishToWeb
-<a id="__codelineno-102-12" name="__codelineno-102-12" href="#__codelineno-102-12"></a>
-<a id="__codelineno-102-13" name="__codelineno-102-13" href="#__codelineno-102-13"></a>Apply complete. Updated: 1 setting(s).
-<a id="__codelineno-102-14" name="__codelineno-102-14" href="#__codelineno-102-14"></a>Note: tenant setting changes can take up to 15 minutes to take effect.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-103-1" name="__codelineno-103-1" href="#__codelineno-103-1"></a>Tenant Settings Plan
+<a id="__codelineno-103-2" name="__codelineno-103-2" href="#__codelineno-103-2"></a>
+<a id="__codelineno-103-3" name="__codelineno-103-3" href="#__codelineno-103-3"></a>  ~  PublishToWeb  Publish to web
+<a id="__codelineno-103-4" name="__codelineno-103-4" href="#__codelineno-103-4"></a>      enabled: enabled -&gt; disabled
+<a id="__codelineno-103-5" name="__codelineno-103-5" href="#__codelineno-103-5"></a>
+<a id="__codelineno-103-6" name="__codelineno-103-6" href="#__codelineno-103-6"></a>  Summary: 1 to update, 0 unchanged
+<a id="__codelineno-103-7" name="__codelineno-103-7" href="#__codelineno-103-7"></a>
+<a id="__codelineno-103-8" name="__codelineno-103-8" href="#__codelineno-103-8"></a>WARNING: These changes apply tenant-wide and affect every user in the organization.
+<a id="__codelineno-103-9" name="__codelineno-103-9" href="#__codelineno-103-9"></a>Apply these tenant setting changes? [y/n]: y
+<a id="__codelineno-103-10" name="__codelineno-103-10" href="#__codelineno-103-10"></a>
+<a id="__codelineno-103-11" name="__codelineno-103-11" href="#__codelineno-103-11"></a>  ~ Updated: PublishToWeb
+<a id="__codelineno-103-12" name="__codelineno-103-12" href="#__codelineno-103-12"></a>
+<a id="__codelineno-103-13" name="__codelineno-103-13" href="#__codelineno-103-13"></a>Apply complete. Updated: 1 setting(s).
+<a id="__codelineno-103-14" name="__codelineno-103-14" href="#__codelineno-103-14"></a>Note: tenant setting changes can take up to 15 minutes to take effect.
 </code></pre></div>
 <hr />
 <h2 id="9-exit-codes">9. Exit codes<a class="headerlink" href="#9-exit-codes" title="Permanent link">&para;</a></h2>
