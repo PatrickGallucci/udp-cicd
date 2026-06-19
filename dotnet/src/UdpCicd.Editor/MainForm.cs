@@ -106,6 +106,8 @@ public sealed class MainForm : Form
         edit.DropDownItems.Add(new ToolStripMenuItem("&Remove Selected", null, (_, _) => RemoveSelected()) { ShortcutKeys = Keys.Delete });
 
         var tools = new ToolStripMenuItem("&Tools");
+        tools.DropDownItems.Add(new ToolStripMenuItem("&Import from deployed environment…", null, (_, _) => ImportFromDeployed()) { ShortcutKeys = Keys.Control | Keys.I });
+        tools.DropDownItems.Add(new ToolStripSeparator());
         tools.DropDownItems.Add(new ToolStripMenuItem("&Validate", null, (_, _) => ValidateDeployment()) { ShortcutKeys = Keys.F5 });
         tools.DropDownItems.Add(new ToolStripMenuItem("View &YAML", null, (_, _) => ViewYaml()));
         tools.DropDownItems.Add(new ToolStripSeparator());
@@ -141,6 +143,11 @@ public sealed class MainForm : Form
         split.Panel1.Controls.Add(_tree);
         split.Panel2.Controls.Add(_grid);
         Controls.Add(split);
+    }
+
+    private void InitializeComponent()
+    {
+
     }
 
     private void BuildStatus()
@@ -785,6 +792,39 @@ public sealed class MainForm : Form
         }
         sb.Append("\nSet on workspace.folders_by_type. A per-item 'folder' override still takes precedence.");
         MessageBox.Show(this, sb.ToString(), "Group by type", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private void ImportFromDeployed()
+    {
+        using var dlg = new ImportDialog(_def.Workspace.Name);
+        if (dlg.ShowDialog(this) != DialogResult.OK || dlg.Selected.Count == 0)
+        {
+            return;
+        }
+
+        int added = 0, skipped = 0;
+        foreach (var resource in dlg.Selected)
+        {
+            var dict = DictFor(resource.FieldName);
+            if (dict.Contains(resource.Key))
+            {
+                skipped++;
+                continue;
+            }
+            dict[resource.Key] = resource.Model;
+            added++;
+        }
+
+        if (added > 0)
+        {
+            MarkDirty();
+            RebuildTree();
+        }
+
+        var msg = $"Imported {added} resource(s)."
+            + (skipped > 0 ? $"\nSkipped {skipped} already present in this deployment." : "");
+        SetStatus($"Imported {added}, skipped {skipped}.");
+        MessageBox.Show(this, msg, "Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void ShowAbout()

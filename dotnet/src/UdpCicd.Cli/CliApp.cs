@@ -473,8 +473,16 @@ internal static partial class CliApp
     {
         var workspace = new Option<string>("--workspace", "-w") { Description = "Workspace name or ID to scan", Required = true };
         var output = new Option<string>("--output", "-o") { Description = "Output directory", DefaultValueFactory = _ => "." };
+        var includeEntra = new Option<bool>("--include-entra") { Description = "Also import deployed Microsoft Entra groups and app registrations" };
+        var includeAzure = new Option<bool>("--include-azure") { Description = "Also import deployed Azure resources (via the az CLI)" };
+        var subscription = new Option<string>("--subscription") { Description = "Azure subscription to scan (defaults to the az CLI's active one)" };
+        var resourceGroup = new Option<string>("--resource-group", "-g") { Description = "Limit Azure discovery to a single resource group" };
+        var location = new Option<string>("--location") { Description = "Default Azure region to record in the azure: block" };
 
-        var cmd = new Command("generate", "Generate a udp.yml from an existing workspace.") { workspace, output };
+        var cmd = new Command("generate", "Generate a udp.yml from an existing workspace (optionally importing Entra and Azure).")
+        {
+            workspace, output, includeEntra, includeAzure, subscription, resourceGroup, location,
+        };
 
         cmd.SetAction(pr =>
         {
@@ -487,7 +495,12 @@ internal static partial class CliApp
                     workspaceName: isGuid ? null : ws,
                     workspaceId: isGuid ? ws : null,
                     outputDir: pr.GetValue(output),
-                    console: Ansi);
+                    console: Ansi,
+                    includeEntra: pr.GetValue(includeEntra),
+                    includeAzure: pr.GetValue(includeAzure),
+                    subscription: pr.GetValue(subscription),
+                    resourceGroup: pr.GetValue(resourceGroup),
+                    azureLocation: pr.GetValue(location));
                 return 0;
             }
             catch (Exception e)

@@ -14,7 +14,20 @@
       "Bash(echo \"CI_EXIT:$?\")",
       "Bash(git fetch *)",
       "Bash(git tag *)",
-      "Bash(echo \"RELEASE_EXIT:$?\")"
+      "Bash(echo \"RELEASE_EXIT:$?\")",
+      "Bash(python -c \"import json; json.load\\(open\\('udp.schema.json'\\)\\); json.load\\(open\\('dotnet/src/UdpCicd.Core/Assets/udp.schema.json'\\)\\); print\\('BOTH SCHEMAS VALID JSON'\\)\")",
+      "Bash(mkdocs build *)",
+      "Bash(git commit *)",
+      "WebFetch(domain:github.com)",
+      "Bash(cd \"c:/Users/pgallucci/OneDrive - Microsoft/Documents/GitHub/udp-cicd/dotnet\" && dotnet build src/UdpCicd.Cli/UdpCicd.Cli.csproj -nologo -clp:ErrorsOnly 2>&1 | grep -iE \"error|Build succeeded|FAILED\" | head && echo \"=== list templates ===\" && dotnet run --project src/UdpCicd.Cli/UdpCicd.Cli.csproj --no-build -- list 2>&1 | grep -iE \"realtime|medallion|blank|all-resource\" | head && echo \"=== scaffold + validate ===\" && rm -rf /tmp/rtg && dotnet run --project src/UdpCicd.Cli/UdpCicd.Cli.csproj --no-build -- init --template realtime-governance --name rtg-test --output /tmp/rtg 2>&1 | tail -3)",
+      "Bash(ls -1 docs)",
+      "Bash(ls -1 .github/workflows)",
+      "Bash(ls -1R dotnet/.github)",
+      "Bash(ls -1 scripts)",
+      "Bash(ls -1 dotnet/*.props dotnet/*.sln)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

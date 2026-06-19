@@ -49,6 +49,13 @@ with **Delete**.
 
 ## Tools
 
+- **Tools ▸ Import from deployed environment…** (`Ctrl+I`) connects to the live
+  **Fabric** workspace, **Microsoft Entra**, and/or **Azure** subscription, lists
+  what is currently deployed, and lets you pick which resources to reverse-generate
+  into the open `udp.yml`. Filter the list, check the resources you want, and
+  **Import Selected** adds them (skipping keys already present). It uses the same
+  discovery engine as `udp-cicd generate`, with the same credentials (`AZURE_*`
+  env vars / `az login` / `DefaultAzureCredential`).
 - **Tools ▸ Validate** (`F5`) runs the same cross-reference and naming checks as
   `udp-cicd validate`.
 - **Tools ▸ View YAML** previews exactly what will be written.

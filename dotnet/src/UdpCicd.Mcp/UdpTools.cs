@@ -477,10 +477,14 @@ public static class UdpTools
     });
 
     [McpServerTool(Name = "udp_generate")]
-    [Description("Generate a udp.yml from an existing Fabric workspace.")]
+    [Description("Generate a udp.yml from an existing Fabric workspace, optionally importing deployed Entra and Azure resources.")]
     public static string Generate(
         [Description("Workspace name or ID")] string workspace,
-        [Description("Output directory")] string output_dir = ".") => Guard(() =>
+        [Description("Output directory")] string output_dir = ".",
+        [Description("Also import deployed Microsoft Entra groups and app registrations")] bool include_entra = false,
+        [Description("Also import deployed Azure resources (via the az CLI)")] bool include_azure = false,
+        [Description("Azure subscription to scan (blank = az CLI default)")] string? subscription = null,
+        [Description("Limit Azure discovery to a single resource group")] string? resource_group = null) => Guard(() =>
     {
         var client = NewClient();
         string wsId;
@@ -500,7 +504,10 @@ public static class UdpTools
 
         try
         {
-            ReverseGenerator.GenerateDeploymentFromWorkspace(client, workspaceId: wsId, outputDir: output_dir, console: QuietConsole());
+            ReverseGenerator.GenerateDeploymentFromWorkspace(client, workspaceId: wsId, outputDir: output_dir,
+                console: QuietConsole(),
+                includeEntra: include_entra, includeAzure: include_azure,
+                subscription: subscription, resourceGroup: resource_group);
             return Format(new Dictionary<string, object?> { ["status"] = "generated", ["output_dir"] = output_dir });
         }
         catch (Exception e)

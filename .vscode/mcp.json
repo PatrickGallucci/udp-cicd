@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"@microsoft/fabric-mcp": {
+			"command": "npx",
+			"args": [
+				"@microsoft/fabric-mcp@1.0.0",
+				"server",
+				"start"
+			],
+			"type": "stdio"
+		}
+	},
+	"inputs": []
+}

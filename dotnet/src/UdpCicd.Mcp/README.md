@@ -63,7 +63,7 @@ Restart your IDE after adding the configuration.
 | `udp_list_workspaces` | List accessible Fabric workspaces |
 | `udp_list_capacities` | List Fabric capacities with IDs, SKUs, and regions |
 | `udp_export` | Export item definitions from a deployed workspace to local files |
-| `udp_generate` | Generate a `udp.yml` from an existing workspace |
+| `udp_generate` | Generate a `udp.yml` from an existing workspace (optionally importing deployed Entra/Azure resources via `include_entra` / `include_azure`) |
 
 ## Example
 

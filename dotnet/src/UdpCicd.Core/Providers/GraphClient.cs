@@ -162,4 +162,47 @@ public sealed partial class GraphClient
         "ServicePrincipal" => ResolveServicePrincipal(value),
         _ => ResolveGroup(value),
     };
+
+    // -- discovery (reverse-generation) --------------------------------------
+
+    /// <summary>
+    /// List all security/M365 groups in the tenant, with the fields needed to
+    /// reverse-generate an <c>entra_groups</c> entry. Read-only; follows paging.
+    /// </summary>
+    public List<JsonNode> ListGroups() =>
+        ListAll("/groups", "id,displayName,description,securityEnabled,mailEnabled,mailNickname,isAssignableToRole");
+
+    /// <summary>
+    /// List all application registrations in the tenant, with the fields needed to
+    /// reverse-generate an <c>entra_apps</c> entry. Read-only; follows paging.
+    /// </summary>
+    public List<JsonNode> ListApplications() =>
+        ListAll("/applications", "id,displayName,signInAudience,identifierUris,web,notes");
+
+    /// <summary>GET a collection following <c>@odata.nextLink</c> paging to the end.</summary>
+    private List<JsonNode> ListAll(string path, string select)
+    {
+        var results = new List<JsonNode>();
+        var node = Request("GET", path, new Dictionary<string, string>
+        {
+            ["$select"] = select,
+            ["$top"] = "999",
+        });
+        while (node is not null)
+        {
+            if (node["value"] is JsonArray arr)
+            {
+                results.AddRange(arr.Where(n => n is not null).Select(n => n!));
+            }
+            var next = node["@odata.nextLink"]?.GetValue<string>();
+            if (string.IsNullOrEmpty(next))
+            {
+                break;
+            }
+            // nextLink is an absolute URL on the same host; strip the base so it
+            // flows through the same retry/auth path as the first page.
+            node = Request("GET", next.StartsWith(GraphApiBase) ? next[GraphApiBase.Length..] : next);
+        }
+        return results;
+    }
 }

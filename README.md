@@ -145,7 +145,7 @@ udp-cicd deploy --target dev
 udp-cicd generate --workspace "My Existing Workspace"
 ```
 
-Scans the workspace and produces a `udp.yml` you can customize — the fastest on-ramp for existing projects.
+Scans the workspace and produces a `udp.yml` you can customize — the fastest on-ramp for existing projects. Add `--include-entra` and/or `--include-azure` to reverse-engineer the whole multi-platform footprint (deployed Entra groups/apps and Azure resources) in one pass.
 
 ### 2.6 Quickstart: From Scratch
 
@@ -208,7 +208,7 @@ Deployment Plan: udp-analytics
 | `udp-cicd plan` | Preview changes (dry-run diff against workspace state) |
 | `udp-cicd deploy` | Deploy to a target workspace |
 | `udp-cicd destroy` | Tear down deployment resources |
-| `udp-cicd generate` | Generate `udp.yml` from an existing workspace |
+| `udp-cicd generate` | Generate `udp.yml` from an existing workspace (`--include-entra` / `--include-azure` also import deployed Entra & Azure resources) |
 | `udp-cicd run <resource>` | Run a notebook or pipeline |
 | `udp-cicd drift` | Detect drift between deployed state and live workspace |
 | `udp-cicd bind` | Bind an existing workspace item |

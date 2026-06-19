@@ -53,6 +53,11 @@ public sealed class InputDialog : Form
         }
         return null;
     }
+
+    private void InitializeComponent()
+    {
+
+    }
 }
 
 /// <summary>Pick a resource type and key when adding a new resource. The type

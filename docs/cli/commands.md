@@ -1194,7 +1194,7 @@ udp-cicd export --target dev -r ingest_notebook -o ./exported
 
 ### 7.3 generate
 
-Generate a `udp.yml` deployment definition by scanning an existing Fabric workspace.
+Generate a `udp.yml` deployment definition by scanning an existing Fabric workspace. Optionally reverse-engineer the whole **multi-platform** footprint in one pass by also importing deployed **Microsoft Entra** directory objects and **Azure** resources.
 
 #### Syntax
 
@@ -1208,6 +1208,15 @@ udp-cicd generate [OPTIONS]
 |---|---|---|---|---|
 | `--workspace` | `-w` | String | **Required** | Workspace name or GUID to scan. |
 | `--output` | `-o` | String | `.` | Output directory for the generated `udp.yml` and item definitions. |
+| `--include-entra` | | Flag | `false` | Also import deployed Microsoft Entra security groups and app registrations (via Microsoft Graph) as `entra_groups` / `entra_apps`. |
+| `--include-azure` | | Flag | `false` | Also import deployed Azure resources (via the `az` CLI), mapped to their `azure_*` field by ARM type. Unrecognized ARM types are skipped. |
+| `--subscription` | | String | *(az CLI default)* | Azure subscription to scan. Only applies with `--include-azure`. |
+| `--resource-group` | `-g` | String | *(all)* | Limit Azure discovery to a single resource group. Only applies with `--include-azure`. |
+| `--location` | | String | *(none)* | Default Azure region to record in the generated `azure:` block. Only applies with `--include-azure`. |
+
+> **Note**
+>
+> Entra and Azure discovery use the same credentials as the rest of the CLI (the `AZURE_*` service-principal variables, otherwise `DefaultAzureCredential`); Azure discovery additionally requires the `az` CLI to be installed and signed in. Imported keys are kept verbatim because for these platforms the key **is** the resource's deployed name (the Entra display name, the Azure resource name).
 
 #### Examples
 
@@ -1223,6 +1232,15 @@ udp-cicd generate -w "My Existing Workspace" -o ./generated
 udp-cicd generate -w "abc12345-def6-7890-abcd-ef1234567890" -o ./generated
 ```
 
+**Reverse-engineer the whole multi-platform footprint:**
+
+```bash
+udp-cicd generate -w "My Existing Workspace" \
+  --include-entra \
+  --include-azure --subscription "Prod Sub" -g rg-analytics --location eastus \
+  -o ./generated
+```
+
 **Example output:**
 
 ```
@@ -1234,6 +1252,12 @@ Scanning workspace: My Existing Workspace (abc12345-...)
   + Notebook:  etl_step1
   + Notebook:  etl_step2
   + Pipeline:  nightly_run
+Scanning Microsoft Entra (groups, app registrations)…
+  Imported entra_groups: 3 item(s)
+  Imported entra_apps: 1 item(s)
+Scanning Azure resources…
+  Imported azure_key_vaults: 1 item(s)
+  Imported azure_storage_accounts: 2 item(s)
 
 Generated:
   ./generated/udp.yml
@@ -1243,7 +1267,7 @@ Generated:
 
 > **Tip**
 >
-> Use `generate` to bootstrap a deployment definition for an existing workspace, then customize the generated `udp.yml` to add variables, targets, security roles, and policies.
+> Use `generate` to bootstrap a deployment definition for an existing workspace, then customize the generated `udp.yml` to add variables, targets, security roles, and policies. The same discovery engine backs the Editor's **Tools ▸ Import from deployed environment…** (`Ctrl+I`) — see the [Editor guide](../guide/editor.md#tools).
 
 ---
 

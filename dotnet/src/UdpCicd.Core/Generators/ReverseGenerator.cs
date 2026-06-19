@@ -23,9 +23,19 @@ public static class ReverseGenerator
         name.ToLowerInvariant().Replace(" ", "-").Replace("_", "-");
 
     /// <summary>Generate a udp.yml structure from a workspace, exporting item definitions to disk.</summary>
+    /// <remarks>
+    /// Fabric workspace items are always scanned. Set <paramref name="includeEntra"/>
+    /// and/or <paramref name="includeAzure"/> to also import the Entra directory
+    /// objects and Azure resources currently deployed, so a single <c>generate</c>
+    /// reverse-engineers the whole multi-platform footprint. Azure discovery can be
+    /// narrowed with <paramref name="subscription"/> and <paramref name="resourceGroup"/>.
+    /// </remarks>
     public static Dictionary<string, object?> GenerateDeploymentFromWorkspace(
         FabricClient client, string? workspaceName = null, string? workspaceId = null,
-        string? outputDir = null, IAnsiConsole? console = null)
+        string? outputDir = null, IAnsiConsole? console = null,
+        bool includeEntra = false, bool includeAzure = false,
+        string? subscription = null, string? resourceGroup = null, string? azureLocation = null,
+        GraphClient? graph = null, AzureCli? az = null)
     {
         console ??= AnsiConsole.Console;
         outputDir ??= Directory.GetCurrentDirectory();
@@ -195,6 +205,35 @@ public static class ReverseGenerator
             }
         }
 
+        // Optionally fold in the Entra and Azure resources currently deployed, so
+        // `generate` can reverse-engineer the whole multi-platform footprint.
+        if (includeEntra)
+        {
+            console.MarkupLine("Scanning Microsoft Entra (groups, app registrations)…");
+            graph ??= new GraphClient();
+            MergeDiscovered(resourcesOut, ReverseDiscovery.DiscoverEntra(graph), console);
+        }
+        if (includeAzure)
+        {
+            console.MarkupLine("Scanning Azure resources…");
+            az ??= new AzureCli();
+            MergeDiscovered(resourcesOut, ReverseDiscovery.DiscoverAzure(az, subscription, resourceGroup), console);
+
+            var azureBlock = new Dictionary<string, object?>();
+            if (!string.IsNullOrEmpty(subscription))
+            {
+                azureBlock["subscription"] = subscription;
+            }
+            if (!string.IsNullOrEmpty(azureLocation))
+            {
+                azureBlock["location"] = azureLocation;
+            }
+            if (azureBlock.Count > 0)
+            {
+                deploymentData["azure"] = azureBlock;
+            }
+        }
+
         var outputFile = Path.Combine(outputDir, "udp.yml");
         File.WriteAllText(outputFile, YamlFactory.CreateGenericSerializer().Serialize(deploymentData));
 
@@ -208,6 +247,30 @@ public static class ReverseGenerator
         console.MarkupLine("  4. Deploy to a target: udp-cicd deploy -t dev");
 
         return deploymentData;
+    }
+
+    /// <summary>
+    /// Fold discovered (Entra/Azure) resources into the reverse-generated
+    /// <c>resources</c> map, grouped by snake_case field name. Keys are kept verbatim
+    /// — for these platforms the key IS the resource's deployed name (Entra display
+    /// name, Azure resource name), so it must not be sanitized like a Fabric item.
+    /// </summary>
+    private static void MergeDiscovered(Dictionary<string, object?> resourcesOut,
+        IEnumerable<DiscoveredResource> discovered, IAnsiConsole console)
+    {
+        foreach (var group in discovered.GroupBy(d => d.FieldName).OrderBy(g => g.Key, StringComparer.Ordinal))
+        {
+            var entries = new Dictionary<string, object?>();
+            foreach (var item in group)
+            {
+                entries[item.Key] = ReverseDiscovery.ToYamlObject(item.Model);
+            }
+            if (entries.Count > 0)
+            {
+                resourcesOut[group.Key] = entries;
+                console.MarkupLine($"  Imported {Markup.Escape(group.Key)}: {entries.Count} item(s)");
+            }
+        }
     }
 
     private static void TryExport(FabricClient client, string wsId, string itemId, string outputDir,

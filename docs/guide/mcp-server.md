@@ -97,7 +97,7 @@ The server exposes 14 tools:
 | `udp_list_workspaces` | List workspaces | "Show me all Fabric workspaces" |
 | `udp_list_capacities` | List capacities | "What Fabric capacities do I have?" |
 | `udp_export` | Export items from a workspace | "Export the prod workspace items" |
-| `udp_generate` | Generate udp.yml from a workspace | "Generate a project from my existing workspace" |
+| `udp_generate` | Generate udp.yml from a workspace (optionally importing deployed Entra/Azure resources via `include_entra` / `include_azure`) | "Generate a project from my existing workspace, including its Entra groups and Azure resources" |
 
 ---
 

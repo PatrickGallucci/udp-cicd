@@ -26,7 +26,7 @@ udp-cicd ships three complementary commands for bringing existing resources unde
 | Command | Use when | Scope |
 |---|---|---|
 | [`udp-cicd import --from-terraform`](../cli/commands.md#import) | You already manage Fabric with Terraform and want to migrate in bulk. | Reads `terraform.tfstate`, extracts all `fabric_*` resources, and seeds udp-cicd state. |
-| [`udp-cicd generate`](../cli/commands.md#generate) | You have a workspace but no declaration yet and want to reverse-engineer a `udp.yml`. | Scans a live workspace and writes `udp.yml` plus item content (notebook source, etc.). |
+| [`udp-cicd generate`](../cli/commands.md#generate) | You have a workspace but no declaration yet and want to reverse-engineer a `udp.yml`. | Scans a live workspace and writes `udp.yml` plus item content (notebook source, etc.). Add `--include-entra` / `--include-azure` to also import deployed Entra and Azure resources, so a Terraform estate spanning Fabric + Entra + Azure reverse-engineers in one pass. |
 | [`udp-cicd bind`](../cli/commands.md#bind) | You wrote the declaration by hand and want to attach it to an existing item without recreating it. | Per-resource; binds one entry in `udp.yml` to one live item by ID. |
 
 > **Compared to Databricks Asset Bundles**

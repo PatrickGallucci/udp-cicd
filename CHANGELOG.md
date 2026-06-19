@@ -4,6 +4,30 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-06-18
+
+### Added
+
+- **Multi-platform reverse import** — `generate` can now reverse-engineer the
+  whole deployed footprint, not just Fabric workspace items:
+  - **`udp-cicd generate`** gained `--include-entra` (imports deployed Microsoft
+    Entra security groups and app registrations via Microsoft Graph) and
+    `--include-azure` (imports deployed Azure resources via the `az` CLI, mapped
+    to their `azure_*` field by ARM type). Azure discovery can be scoped with
+    `--subscription` and `--resource-group`, and `--location` records the default
+    region in the generated `azure:` block.
+  - **`udp_generate` MCP tool** gained matching `include_entra`, `include_azure`,
+    `subscription`, and `resource_group` parameters.
+  - **Editor — Tools ▸ Import from deployed environment…** (`Ctrl+I`): a new
+    dialog connects to the live Fabric workspace, Entra, and/or Azure
+    subscription, lists what is deployed, and lets you check which resources to
+    reverse-generate into the open `udp.yml` (skipping keys already present).
+  - New shared **`ReverseDiscovery`** engine powers all three surfaces, so the
+    CLI, MCP server, and Editor produce byte-for-byte identical imported models.
+- **`09-tenant-settings` example** expanded to exercise every tenant-settings
+  field — all delegation overrides and all five property types (`FreeText`,
+  `Url`, `Boolean`, `MailEnabledSecurityGroup`, `Integer`).
+
 ## [1.12.0] - 2026-06-15
 
 ### Changed
