@@ -1099,6 +1099,34 @@
   
   
     <li class="md-nav__item">
+      <a href="guide/ontology-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology Builder (Windows)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="guide/migrate-from-terraform/" class="md-nav__link">
         
   
@@ -1733,7 +1761,7 @@
 <blockquote>
 <p><strong>Public Preview</strong></p>
 </blockquote>
-<p>Unified Data Platform Deployment (<code>udp-cicd</code>) is a declarative deployment tool for Microsoft Fabric projects, distributed as a .NET global tool. This page describes the deployment model, the gap the tool fills relative to existing tooling, and its principal capabilities.</p>
+<p>Unified Data Platform Deployment (<code>udp-cicd</code>) is a declarative deployment tool for Microsoft Fabric, Microsoft Entra, and Azure resources, distributed primarily as .NET global tools. This page describes the deployment model, the gap the tool fills relative to existing tooling, and its principal capabilities.</p>
 <hr />
 <h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
 <p>Define an entire Fabric project in a single <code>udp.yml</code> file: lakehouses, notebooks, pipelines, semantic models, Data Agents, security roles, and environment targets. Validate, plan, and deploy with a single command.</p>
@@ -1743,6 +1771,9 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <p>Installation requires the .NET SDK 9.0 or later. See <a href="getting-started/installation/">Installation</a> for prerequisites and authentication setup.</p>
+<p>Download the <a href="assets/udp-cicd-product-brief.docx">product and operations brief</a>
+or the <a href="assets/udp-cicd-release-overview.pptx">v1.14.0 release overview</a> for
+offline sharing.</p>
 <hr />
 <h2 id="2-scope-and-positioning">2. Scope and positioning<a class="headerlink" href="#2-scope-and-positioning" title="Permanent link">&para;</a></h2>
 <p>Existing tools cover adjacent needs. The Fabric CLI can export and import items, <code>fabric-cicd</code> can deploy across workspaces, and Terraform or Bicep can provision infrastructure. None of them describe the project itself:</p>
@@ -1824,6 +1855,14 @@
 <td>GitHub Actions and Azure DevOps templates included</td>
 </tr>
 <tr>
+<td>Deployment assurance</td>
+<td>A black-box harness exercises all 14 repository examples through local, GitHub Actions, or Azure DevOps runs</td>
+</tr>
+<tr>
+<td>Ontology Builder</td>
+<td>A Windows application imports a Fabric semantic model, generates editable ontology metadata, and publishes a Fabric Ontology item</td>
+</tr>
+<tr>
 <td>Policy enforcement</td>
 <td>Configurable pre-deploy validation rules</td>
 </tr>
@@ -1833,6 +1872,9 @@
 </tr>
 </tbody>
 </table>
+<p>Use the <a href="guide/ontology-builder/">Ontology Builder</a> for semantic-model-driven
+ontology authoring. Maintainers can use the <a href="cicd/overview/">CI/CD guides</a> to
+validate and safely exercise the complete example catalogue.</p>
 
 
 

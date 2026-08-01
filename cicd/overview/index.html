@@ -1021,6 +1021,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/ontology-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology Builder (Windows)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/migrate-from-terraform/" class="md-nav__link">
         
   
@@ -1412,6 +1440,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#22-repository-example-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Repository example harness
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1430,10 +1469,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-service-principal-client-secret" class="md-nav__link">
+  <a href="#31-workload-identity-federation-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 Service principal (client secret)
+        3.1 Workload identity federation (recommended)
       
     </span>
   </a>
@@ -1441,10 +1480,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-managed-identity" class="md-nav__link">
+  <a href="#32-service-principal-client-secret-fallback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Managed identity
+        3.2 Service principal (client secret fallback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-managed-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Managed identity
       
     </span>
   </a>
@@ -1821,6 +1871,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#22-repository-example-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Repository example harness
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1839,10 +1900,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-service-principal-client-secret" class="md-nav__link">
+  <a href="#31-workload-identity-federation-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 Service principal (client secret)
+        3.1 Workload identity federation (recommended)
       
     </span>
   </a>
@@ -1850,10 +1911,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-managed-identity" class="md-nav__link">
+  <a href="#32-service-principal-client-secret-fallback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Managed identity
+        3.2 Service principal (client secret fallback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-managed-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Managed identity
       
     </span>
   </a>
@@ -2057,6 +2129,17 @@
 <p>Every pipeline installs the CLI as a .NET global tool before running any command:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd
 </code></pre></div>
+<h3 id="22-repository-example-harness">2.2 Repository example harness<a class="headerlink" href="#22-repository-example-harness" title="Permanent link">&para;</a></h3>
+<p>Maintainers can exercise all 14 checked-in examples with a separate manual
+promotion path:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Preflight -&gt; Validate -&gt; Plan -&gt; Deploy
+</code></pre></div>
+<p>The GitHub workflow is <code>.github/workflows/deployment-examples.yml</code>; the Azure
+DevOps pipeline is <code>cicd/deployment-examples.azure-devops.yml</code>. Both build the
+selected source revision instead of installing the latest published package,
+publish structured evidence, and reserve cloud mutation for protected <code>main</code>.
+The individual example policy still limits catalogue-only and tenant-wide
+scenarios. See the platform pages for setup and safety controls.</p>
 <hr />
 <h2 id="3-authentication-in-cicd">3. Authentication in CI/CD<a class="headerlink" href="#3-authentication-in-cicd" title="Permanent link">&para;</a></h2>
 <p>udp-cicd authenticates to the Fabric API through its <code>FabricAuth</code> component, built on the Azure.Identity library. Credential selection follows this order:</p>
@@ -2082,9 +2165,21 @@
 </tr>
 </tbody>
 </table>
-<p>No interactive browser login is needed in CI/CD. Use a service principal or a managed identity.</p>
-<h3 id="31-service-principal-client-secret">3.1 Service principal (client secret)<a class="headerlink" href="#31-service-principal-client-secret" title="Permanent link">&para;</a></h3>
-<p>The most common approach. Set three environment variables in your CI/CD runner:</p>
+<p>No interactive browser login is needed in CI/CD. Prefer workload identity
+federation or a managed identity so the pipeline does not store a reusable
+credential.</p>
+<h3 id="31-workload-identity-federation-recommended">3.1 Workload identity federation (recommended)<a class="headerlink" href="#31-workload-identity-federation-recommended" title="Permanent link">&para;</a></h3>
+<p>GitHub Actions can request an OpenID Connect token with <code>id-token: write</code> and
+sign in through <code>azure/login</code>. Azure DevOps can use an Azure Resource Manager
+service connection configured for workload identity federation. In both cases,
+restrict the federated credential to the repository or pipeline, protect the
+deployment environment or variable group, and scope Azure RBAC to the dedicated
+deployment resources.</p>
+<p>The manual example pipelines use this pattern. Their unauthenticated
+<code>Preflight</code> and <code>Validate</code> modes cannot access deployment credentials.</p>
+<h3 id="32-service-principal-client-secret-fallback">3.2 Service principal (client secret fallback)<a class="headerlink" href="#32-service-principal-client-secret-fallback" title="Permanent link">&para;</a></h3>
+<p>For a platform that cannot federate, set three protected environment variables
+in the CI/CD runner:</p>
 <table>
 <thead>
 <tr>
@@ -2109,7 +2204,7 @@
 </table>
 <p>When all three variables are set, udp-cicd authenticates with <code>ClientSecretCredential</code>.</p>
 <p>See <a href="../../guide/service-principal/">Service Principal Setup</a> for step-by-step instructions on creating and configuring the service principal.</p>
-<h3 id="32-managed-identity">3.2 Managed identity<a class="headerlink" href="#32-managed-identity" title="Permanent link">&para;</a></h3>
+<h3 id="33-managed-identity">3.3 Managed identity<a class="headerlink" href="#33-managed-identity" title="Permanent link">&para;</a></h3>
 <p>For Azure-hosted CI/CD runners (Azure DevOps Microsoft-hosted agents with managed identity, self-hosted runners on Azure VMs, or GitHub Actions runners on Azure), you can use managed identity instead of a client secret. No environment variables are required. When the service principal variables are not set, udp-cicd falls back to <code>DefaultAzureCredential</code>, which discovers the identity automatically.</p>
 <p>This is the most secure option because there is no secret to rotate or leak.</p>
 <hr />
@@ -2218,12 +2313,15 @@
 </tr>
 </tbody>
 </table>
-<p>Both platforms are fully supported. The GitHub Actions workflows have been proven end-to-end against live Fabric workspaces; the Azure DevOps pipeline covers validate, staging, and production stages with approval gates. Choose whichever your team already uses.</p>
+<p>Both platforms are supported. The platform pages provide ordinary project
+pipeline patterns and the repository-maintainer harness. Choose the platform
+your team already operates, then apply its protected environments, branch
+controls, and least-privilege identity model.</p>
 <hr />
 <h2 id="6-next-steps">6. Next steps<a class="headerlink" href="#6-next-steps" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../github-actions/">GitHub Actions</a> -- Full workflow files for CI, CD, drift checks, and destroy.</li>
-<li><a href="../azure-devops/">Azure DevOps</a> -- Complete pipeline YAML with stages, environments, and variable groups.</li>
+<li><a href="../github-actions/">GitHub Actions</a> -- Project workflow patterns plus the manual 14-example harness.</li>
+<li><a href="../azure-devops/">Azure DevOps</a> -- Secure manual harness setup with workload identity federation and protected resources.</li>
 <li><a href="../../guide/service-principal/">Service Principal Setup</a> -- Create and configure the service principal for CI/CD.</li>
 <li><a href="../../guide/secrets/">Secrets Management</a> -- Handle connection strings and credentials in pipelines.</li>
 </ul>

@@ -1021,6 +1021,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/ontology-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology Builder (Windows)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/migrate-from-terraform/" class="md-nav__link">
         
   
@@ -1407,6 +1435,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#repository-example-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository example harness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-setting-up-secrets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1737,6 +1776,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#repository-example-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository example harness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-setting-up-secrets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1848,8 +1898,58 @@
 <p>This page provides complete, copy-ready workflow files for deploying Unified Data Platform Deployment with GitHub Actions. These workflows have been proven end-to-end against live Fabric workspaces.</p>
 <p>For a working reference repository, see <a href="https://github.com/PatrickGallucci/udp-cicd-example">github.com/PatrickGallucci/udp-cicd-example</a>.</p>
 <hr />
+<h2 id="repository-example-harness">Repository example harness<a class="headerlink" href="#repository-example-harness" title="Permanent link">&para;</a></h2>
+<p>The udp-cicd repository includes a manual-only workflow at
+<code>.github/workflows/deployment-examples.yml</code>. It builds the selected commit and
+drives the shared PowerShell harness across all 14 folders under <code>examples/</code>.
+Use it to validate the shipped catalogue, not as an automatic production
+deployment workflow for a consuming project.</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td>Selects <code>Preflight</code>, <code>Validate</code>, <code>Plan</code>, or <code>Deploy</code></td>
+</tr>
+<tr>
+<td><code>example_ids</code></td>
+<td>Optionally limits the run to comma-separated IDs such as <code>01,04</code></td>
+</tr>
+<tr>
+<td><code>inputs_path</code></td>
+<td>Points to reviewed, repository-relative non-secret input JSON</td>
+</tr>
+<tr>
+<td><code>keep_resources</code></td>
+<td>Retains isolated deployment resources for investigation</td>
+</tr>
+<tr>
+<td><code>allow_tenant_admin_changes</code></td>
+<td>Unlocks the separately guarded example 09 mutation path</td>
+</tr>
+</tbody>
+</table>
+<p><code>Preflight</code> and <code>Validate</code> receive no protected environment or Azure token.
+<code>Plan</code> and <code>Deploy</code> require <code>refs/heads/main</code>, the protected
+<code>deployment-tests</code> environment, and OIDC authentication. Pester is installed
+and run, and the CLI is restored and built, in a separate prerequisite job with
+no OIDC permission or deployment secrets. Plan and deployment jobs consume the
+prebuilt CLI artifact before Azure authentication. The workflow publishes the
+Pester result separately from the run evidence, including when a job fails.</p>
+<p>The implementation and safety contract are documented in
+<code>deployment-tests/README.md</code>. For the matching Azure DevOps setup, see
+<a href="../azure-devops/">Run the deployment examples in Azure DevOps</a>.</p>
+<hr />
 <h2 id="1-setting-up-secrets">1. Setting up secrets<a class="headerlink" href="#1-setting-up-secrets" title="Permanent link">&para;</a></h2>
 <p>Go to your repository on GitHub: <strong>Settings &gt; Secrets and variables &gt; Actions</strong>. Add the following repository secrets:</p>
+<p>The generic application workflows below use a client secret for broad runner
+compatibility. Prefer the OIDC pattern used by the repository example harness
+when your GitHub organization and Azure tenant support federation.</p>
 <table>
 <thead>
 <tr>

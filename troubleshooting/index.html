@@ -1021,6 +1021,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../guide/ontology-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology Builder (Windows)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../guide/migrate-from-terraform/" class="md-nav__link">
         
   
@@ -2711,11 +2739,11 @@
 </tr>
 <tr>
 <td>Secret</td>
-<td>Set the secret when using <code>${secret.MISSING}</code></td>
+<td>Set the secret before <code>plan</code> or <code>deploy</code> when using <code>${secret.MISSING}</code></td>
 </tr>
 </tbody>
 </table>
-<p>In deploy mode, unresolved variables cause a hard failure. In validate mode, use <code>--strict</code> to catch them.</p>
+<p>In deploy mode, unresolved variables cause a hard failure. In validate mode, use <code>--strict</code> to catch unresolved <code>${var.*}</code> and <code>${env.*}</code> references. <code>${secret.*}</code> and <code>${keyvault.*}</code> references remain deferred until plan or deploy, as described in <a href="../guide/secrets/">Secrets Management</a>.</p>
 <hr />
 <h2 id="7-deployment">7. Deployment<a class="headerlink" href="#7-deployment" title="Permanent link">&para;</a></h2>
 <h3 id="71-deployment-locked-by-userhost">7.1 "Deployment locked by user@host"<a class="headerlink" href="#71-deployment-locked-by-userhost" title="Permanent link">&para;</a></h3>

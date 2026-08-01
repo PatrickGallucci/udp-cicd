@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/service-principal/">
+        <link rel="canonical" href="https://PatrickGallucci.github.io/udp-cicd/guide/ontology-builder/">
       
       
-        <link rel="prev" href="../templates/">
+        <link rel="prev" href="../editor/">
       
       
-        <link rel="next" href="../mcp-server/">
+        <link rel="next" href="../migrate-from-terraform/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Service Principal - Unified Data Platform Deployment</title>
+        <title>Ontology Builder (Windows) - Unified Data Platform Deployment</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#service-principal-setup" class="md-skip">
+        <a href="#ontology-builder" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Service Principal
+              Ontology Builder (Windows)
             
           </span>
         </div>
@@ -937,37 +937,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Service Principal
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../service-principal/" class="md-nav__link">
         
   
   
@@ -983,203 +956,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-create-the-app-registration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Create the App Registration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-create-a-client-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Create a Client Secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-create-the-service-principal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Create the Service Principal
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-get-your-tenant-id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Get Your Tenant ID
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-grant-fabric-workspace-access" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Grant Fabric Workspace Access
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="5. Grant Fabric Workspace Access">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#51-option-a-grant-via-fabric-portal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.1 Option A: Grant via Fabric Portal
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#52-option-b-grant-via-udp-cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.2 Option B: Grant via udp-cicd
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#53-option-c-grant-via-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.3 Option C: Grant via API
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-configure-cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Configure CI/CD
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="6. Configure CI/CD">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#61-github-actions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.1 GitHub Actions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#62-azure-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.2 Azure DevOps
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-test-locally" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Test Locally
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-minimum-permissions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Minimum Permissions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9-secret-rotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. Secret Rotation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#10-managed-identity-alternative" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        10. Managed Identity (Alternative)
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1245,10 +1021,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../ontology-builder/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology Builder (Windows)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1264,6 +1067,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-an-ontology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an ontology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generated-value-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generated value types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-source-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local source file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publishing-behavior-and-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing behavior and limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1854,10 +1743,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-create-the-app-registration" class="md-nav__link">
+  <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Create the App Registration
+        Install
       
     </span>
   </a>
@@ -1865,10 +1754,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-create-a-client-secret" class="md-nav__link">
+  <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Create a Client Secret
+        Authentication
       
     </span>
   </a>
@@ -1876,10 +1765,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-create-the-service-principal" class="md-nav__link">
+  <a href="#build-an-ontology" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Create the Service Principal
+        Build an ontology
       
     </span>
   </a>
@@ -1887,10 +1776,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-get-your-tenant-id" class="md-nav__link">
+  <a href="#generated-value-types" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Get Your Tenant ID
+        Generated value types
       
     </span>
   </a>
@@ -1898,99 +1787,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-grant-fabric-workspace-access" class="md-nav__link">
+  <a href="#local-source-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Grant Fabric Workspace Access
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="5. Grant Fabric Workspace Access">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#51-option-a-grant-via-fabric-portal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.1 Option A: Grant via Fabric Portal
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#52-option-b-grant-via-udp-cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.2 Option B: Grant via udp-cicd
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#53-option-c-grant-via-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.3 Option C: Grant via API
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-configure-cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Configure CI/CD
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="6. Configure CI/CD">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#61-github-actions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.1 GitHub Actions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#62-azure-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.2 Azure DevOps
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-test-locally" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Test Locally
+        Local source file
       
     </span>
   </a>
@@ -1998,32 +1798,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-minimum-permissions" class="md-nav__link">
+  <a href="#publishing-behavior-and-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. Minimum Permissions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9-secret-rotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. Secret Rotation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#10-managed-identity-alternative" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        10. Managed Identity (Alternative)
+        Publishing behavior and limits
       
     </span>
   </a>
@@ -2050,161 +1828,121 @@
   
 
 
-<h1 id="service-principal-setup">Service Principal Setup<a class="headerlink" href="#service-principal-setup" title="Permanent link">&para;</a></h1>
-<p>This page describes how to create and configure the service principal (SP) required for CI/CD deployments. The service principal authenticates udp-cicd to the Fabric API without user interaction.</p>
-<p>When the environment variables <code>AZURE_TENANT_ID</code>, <code>AZURE_CLIENT_ID</code>, and <code>AZURE_CLIENT_SECRET</code> are set, udp-cicd authenticates with a <code>ClientSecretCredential</code>. If they are not set, <code>DefaultAzureCredential</code> applies (managed identity, environment, or <code>az login</code>). Setting <code>FABRIC_USE_BROWSER=true</code> forces an <code>InteractiveBrowserCredential</code> for local interactive sign-in.</p>
-<hr />
-<h2 id="1-create-the-app-registration">1. Create the App Registration<a class="headerlink" href="#1-create-the-app-registration" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>az<span class="w"> </span>ad<span class="w"> </span>app<span class="w"> </span>create<span class="w"> </span>--display-name<span class="w"> </span><span class="s2">&quot;sp-udp-cicd&quot;</span>
+<h1 id="ontology-builder">Ontology Builder<a class="headerlink" href="#ontology-builder" title="Permanent link">&para;</a></h1>
+<p>The UDP-CICD Ontology Builder is a Windows desktop application that converts a
+Microsoft Fabric semantic model into an editable Fabric Ontology definition. It
+creates technical names, logical names, descriptions, properties, and
+relationships, then saves the result locally or publishes it to a Fabric
+workspace.</p>
+<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
+<p>Download
+<a href="https://github.com/PatrickGallucci/udp-cicd/releases/latest/download/udp-cicd-ontology-win-x64.zip"><code>udp-cicd-ontology-win-x64.zip</code></a>
+from the latest GitHub release. Extract the archive on a Windows x64 computer
+with the .NET 9 Desktop Runtime and run <code>UdpCicd.Ontology.exe</code>.</p>
+<p>To build from source:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd </span><span class="n">dotnet</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Ontology</span> <span class="n">-c</span> <span class="n">Release</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">dotnet</span> <span class="n">run</span> <span class="p">-</span><span class="n">-project</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Ontology</span>
 </code></pre></div>
-<p>Note the <code>appId</code> from the output. This is your <code>AZURE_CLIENT_ID</code>.</p>
-<hr />
-<h2 id="2-create-a-client-secret">2. Create a Client Secret<a class="headerlink" href="#2-create-a-client-secret" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>az<span class="w"> </span>ad<span class="w"> </span>app<span class="w"> </span>credential<span class="w"> </span>reset<span class="w"> </span>--id<span class="w"> </span>&lt;appId&gt;<span class="w"> </span>--append
-</code></pre></div>
-<p>Copy the <code>password</code>. This is your <code>AZURE_CLIENT_SECRET</code>. You cannot retrieve it later.</p>
-<hr />
-<h2 id="3-create-the-service-principal">3. Create the Service Principal<a class="headerlink" href="#3-create-the-service-principal" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>az<span class="w"> </span>ad<span class="w"> </span>sp<span class="w"> </span>create<span class="w"> </span>--id<span class="w"> </span>&lt;appId&gt;
-</code></pre></div>
-<hr />
-<h2 id="4-get-your-tenant-id">4. Get Your Tenant ID<a class="headerlink" href="#4-get-your-tenant-id" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>az<span class="w"> </span>account<span class="w"> </span>show<span class="w"> </span>--query<span class="w"> </span>tenantId<span class="w"> </span>-o<span class="w"> </span>tsv
-</code></pre></div>
-<p>This is your <code>AZURE_TENANT_ID</code>.</p>
-<hr />
-<h2 id="5-grant-fabric-workspace-access">5. Grant Fabric Workspace Access<a class="headerlink" href="#5-grant-fabric-workspace-access" title="Permanent link">&para;</a></h2>
-<p>The service principal needs the <strong>Contributor</strong> or <strong>Admin</strong> role on each workspace it deploys to.</p>
-<h3 id="51-option-a-grant-via-fabric-portal">5.1 Option A: Grant via Fabric Portal<a class="headerlink" href="#51-option-a-grant-via-fabric-portal" title="Permanent link">&para;</a></h3>
+<p>The application targets <code>net9.0-windows</code> and uses Windows Forms. It is not
+published as a NuGet tool because it is an interactive desktop application.</p>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
+<p>The builder uses the same <code>FabricAuth</code> credential chain as the CLI:</p>
 <ol>
-<li>Open the workspace in app.fabric.microsoft.com</li>
-<li>Settings &gt; Manage access</li>
-<li>Add the service principal by name or app ID</li>
-<li>Set role to <strong>Contributor</strong> (or <strong>Admin</strong> for security role management)</li>
+<li>When <code>AZURE_TENANT_ID</code>, <code>AZURE_CLIENT_ID</code>, and <code>AZURE_CLIENT_SECRET</code> are all
+   present, it uses that service principal.</li>
+<li>Otherwise it uses <code>DefaultAzureCredential</code>, including an active <code>az login</code>
+   session or managed identity.</li>
+<li>Select <strong>Use browser sign-in</strong> in the app to use an interactive browser
+   credential.</li>
 </ol>
-<h3 id="52-option-b-grant-via-udp-cicd">5.2 Option B: Grant via udp-cicd<a class="headerlink" href="#52-option-b-grant-via-udp-cicd" title="Permanent link">&para;</a></h3>
-<p>Add the SP to your udp.yml security roles:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">security</span><span class="p">:</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">roles</span><span class="p">:</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cicd_deployer</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">service_principal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&lt;appId&gt;&quot;</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">      </span><span class="nt">workspace_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
-</code></pre></div>
-<p>Then deploy once with your personal account to grant the SP access.</p>
-<h3 id="53-option-c-grant-via-api">5.3 Option C: Grant via API<a class="headerlink" href="#53-option-c-grant-via-api" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Get the SP object ID</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">SP_OBJECT_ID</span><span class="o">=</span><span class="k">$(</span>az<span class="w"> </span>ad<span class="w"> </span>sp<span class="w"> </span>show<span class="w"> </span>--id<span class="w"> </span>&lt;appId&gt;<span class="w"> </span>--query<span class="w"> </span>id<span class="w"> </span>-o<span class="w"> </span>tsv<span class="k">)</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Grant workspace access (requires existing workspace)</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>az<span class="w"> </span>rest<span class="w"> </span>--method<span class="w"> </span>post<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span>--url<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com/v1/workspaces/&lt;workspaceId&gt;/roleAssignments&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">  </span>--resource<span class="w"> </span><span class="s2">&quot;https://api.fabric.microsoft.com&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;{\&quot;principal\&quot;: {\&quot;id\&quot;: \&quot;</span><span class="nv">$SP_OBJECT_ID</span><span class="s2">\&quot;, \&quot;type\&quot;: \&quot;ServicePrincipal\&quot;}, \&quot;role\&quot;: \&quot;Admin\&quot;}&quot;</span>
-</code></pre></div>
-<hr />
-<h2 id="6-configure-cicd">6. Configure CI/CD<a class="headerlink" href="#6-configure-cicd" title="Permanent link">&para;</a></h2>
-<h3 id="61-github-actions">6.1 GitHub Actions<a class="headerlink" href="#61-github-actions" title="Permanent link">&para;</a></h3>
-<p>Go to repo Settings &gt; Secrets and variables &gt; Actions:</p>
-<table>
-<thead>
-<tr>
-<th>Secret</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>AZURE_TENANT_ID</code></td>
-<td>Tenant GUID</td>
-</tr>
-<tr>
-<td><code>AZURE_CLIENT_ID</code></td>
-<td>App ID</td>
-</tr>
-<tr>
-<td><code>AZURE_CLIENT_SECRET</code></td>
-<td>Client secret</td>
-</tr>
-</tbody>
-</table>
-<h3 id="62-azure-devops">6.2 Azure DevOps<a class="headerlink" href="#62-azure-devops" title="Permanent link">&para;</a></h3>
-<p>Go to Pipelines &gt; Library and create a variable group:</p>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Value</th>
-<th>Secret?</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>AZURE_TENANT_ID</code></td>
-<td>Tenant GUID</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>AZURE_CLIENT_ID</code></td>
-<td>App ID</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>AZURE_CLIENT_SECRET</code></td>
-<td>Client secret</td>
-<td>Yes</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="7-test-locally">7. Test Locally<a class="headerlink" href="#7-test-locally" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
-</code></pre></div>
-<hr />
-<h2 id="8-minimum-permissions">8. Minimum Permissions<a class="headerlink" href="#8-minimum-permissions" title="Permanent link">&para;</a></h2>
-<p>The service principal needs:</p>
-<table>
-<thead>
-<tr>
-<th>Permission</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Fabric workspace Contributor/Admin</td>
-<td>Create, update, delete items</td>
-</tr>
-<tr>
-<td>Fabric API access</td>
-<td>Authenticate to <code>api.fabric.microsoft.com</code></td>
-</tr>
-<tr>
-<td>Microsoft Graph (optional)</td>
-<td>Resolve Entra group display names to GUIDs</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="9-secret-rotation">9. Secret Rotation<a class="headerlink" href="#9-secret-rotation" title="Permanent link">&para;</a></h2>
-<p>Client secrets expire. Set a reminder to rotate before expiry:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Create new secret</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>az<span class="w"> </span>ad<span class="w"> </span>app<span class="w"> </span>credential<span class="w"> </span>reset<span class="w"> </span>--id<span class="w"> </span>&lt;appId&gt;<span class="w"> </span>--append<span class="w"> </span>--end-date<span class="w"> </span><span class="s2">&quot;2027-01-01&quot;</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Update CI/CD secrets with the new value</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Delete the old secret from Azure Portal</span>
-</code></pre></div>
-<hr />
-<h2 id="10-managed-identity-alternative">10. Managed Identity (Alternative)<a class="headerlink" href="#10-managed-identity-alternative" title="Permanent link">&para;</a></h2>
-<p>For Azure-hosted runners, you can use managed identity instead of client secrets:</p>
+<p>Use the least-privileged identity that can read the source semantic model and
+create an Ontology item in the selected target workspace.</p>
+<h2 id="build-an-ontology">Build an ontology<a class="headerlink" href="#build-an-ontology" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Enable managed identity on your Azure VM / App Service / AKS</li>
-<li>Grant the managed identity workspace access (same as SP)</li>
-<li><code>DefaultAzureCredential</code> automatically uses the managed identity; no environment variables are needed</li>
+<li>Select <strong>Source &gt; Load from semantic model</strong> or press <code>Ctrl+L</code>.</li>
+<li>Enter a Fabric workspace name or ID and select <strong>List models</strong>.</li>
+<li>Select a semantic model and choose <strong>Import</strong>.</li>
+<li>Review the generated entities, properties, and relationships in the tree.</li>
+<li>Edit technical names, logical names, descriptions, and value types in the
+   property grid.</li>
+<li>Save the editable source as <code>*.ontology.json</code>.</li>
+<li>Select <strong>Publish &gt; Publish to Fabric</strong> or press <code>Ctrl+P</code> to create a new
+   Ontology item.</li>
 </ol>
-<p>This is the most secure option for production CI/CD.</p>
+<p>The import reads the semantic model definition in TMDL format. It maps each
+table to an entity, each column to a property, and each model relationship to an
+ontology relationship. Dimensional prefixes such as <code>dim_</code> and <code>fact_</code> are
+removed when logical names are generated.</p>
+<p>Fabric requires a relationship to connect two distinct entity types, so the
+builder omits self-referencing semantic-model relationships. Fabric also
+requires a property name to use one value type consistently across the entire
+ontology. When two tables expose the same property name with different types,
+the builder adds the value type to the conflicting technical name, such as
+<code>CodeBigInt</code>, while retaining the original logical name and source column.</p>
+<h2 id="generated-value-types">Generated value types<a class="headerlink" href="#generated-value-types" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Semantic model type</th>
+<th>Ontology value type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>string</code></td>
+<td><code>String</code></td>
+</tr>
+<tr>
+<td><code>int64</code></td>
+<td><code>BigInt</code></td>
+</tr>
+<tr>
+<td><code>double</code>, <code>decimal</code></td>
+<td><code>Double</code></td>
+</tr>
+<tr>
+<td><code>dateTime</code></td>
+<td><code>DateTime</code></td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td><code>Boolean</code></td>
+</tr>
+<tr>
+<td><code>binary</code></td>
+<td><code>Object</code></td>
+</tr>
+<tr>
+<td>Other values</td>
+<td><code>String</code></td>
+</tr>
+</tbody>
+</table>
+<p>Every entity also receives a synthetic <code>DisplayName</code> string property. The
+builder uses that property as the entity display name and identifying part.</p>
+<h2 id="local-source-file">Local source file<a class="headerlink" href="#local-source-file" title="Permanent link">&para;</a></h2>
+<p>The <code>*.ontology.json</code> file is the editable source of truth. It retains generated
+descriptions and source metadata that are not represented directly in every
+part of the Fabric Ontology schema. You can reopen the file later or pass its
+path when starting the app:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dotnet</span> <span class="n">run</span> <span class="p">-</span><span class="n">-project</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Ontology</span> <span class="p">--</span> <span class="n">my-model</span><span class="p">.</span><span class="n">ontology</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+<h2 id="publishing-behavior-and-limits">Publishing behavior and limits<a class="headerlink" href="#publishing-behavior-and-limits" title="Permanent link">&para;</a></h2>
+<p>Publishing creates a new Ontology item with an inline definition containing the
+platform metadata, entity type definitions, and relationship type definitions.
+Before sending the definition, the builder validates imported and edited source
+files against the Fabric contract. It requires canonical positive 64-bit IDs,
+unique IDs, the <code>usertypes</code> namespace, valid technical names and value types,
+valid display-property and relationship references, distinct relationship ends,
+and consistent property types. Asynchronous Fabric operations are polled on the
+Fabric API endpoint and their final result is retrieved before publication is
+reported as successful. The current release does not update an existing item
+and does not create data bindings from ontology entities to Lakehouse or
+Eventhouse tables. Add those bindings in Fabric after publication.</p>
+<p>The Fabric entity schema does not expose a description field for each generated
+entity. Detailed descriptions therefore remain in the local source file, while
+the overall ontology description is written to the Fabric item metadata.</p>
 
 
 

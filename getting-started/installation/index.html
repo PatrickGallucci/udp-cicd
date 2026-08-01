@@ -626,10 +626,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-install-from-source" class="md-nav__link">
+  <a href="#21-install-the-ontology-builder-on-windows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 Install from source
+        2.1 Install the Ontology Builder on Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-install-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Install from source
       
     </span>
   </a>
@@ -1338,6 +1349,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/ontology-builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology Builder (Windows)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/migrate-from-terraform/" class="md-nav__link">
         
   
@@ -1967,10 +2006,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-install-from-source" class="md-nav__link">
+  <a href="#21-install-the-ontology-builder-on-windows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 Install from source
+        2.1 Install the Ontology Builder on Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-install-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Install from source
       
     </span>
   </a>
@@ -2273,34 +2323,51 @@
 <p><strong>Note</strong></p>
 <p>Global tools are installed to <code>~/.dotnet/tools</code> (Linux/macOS) or <code>%USERPROFILE%\.dotnet\tools</code> (Windows). Ensure this directory is on your <code>PATH</code>. The .NET SDK installer normally adds it for you.</p>
 </blockquote>
-<h3 id="21-install-from-source">2.1 Install from source<a class="headerlink" href="#21-install-from-source" title="Permanent link">&para;</a></h3>
+<h3 id="21-install-the-ontology-builder-on-windows">2.1 Install the Ontology Builder on Windows<a class="headerlink" href="#21-install-the-ontology-builder-on-windows" title="Permanent link">&para;</a></h3>
+<p>Each GitHub release includes
+<a href="https://github.com/PatrickGallucci/udp-cicd/releases/latest/download/udp-cicd-ontology-win-x64.zip"><code>udp-cicd-ontology-win-x64.zip</code></a>.
+Extract the archive on a Windows x64 computer with the .NET 9 Desktop Runtime,
+then run <code>UdpCicd.Ontology.exe</code>. The app reads Fabric semantic models, creates
+editable ontology entity and relationship definitions, and publishes Fabric
+Ontology items.</p>
+<p>See <a href="../../guide/ontology-builder/">Ontology Builder</a> for authentication,
+workflow, and current limitations.</p>
+<h3 id="22-install-from-source">2.2 Install from source<a class="headerlink" href="#22-install-from-source" title="Permanent link">&para;</a></h3>
 <p>To build and install from the GitHub repository (for example, to use an unreleased feature):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PatrickGallucci/udp-cicd.git
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">cd</span><span class="w"> </span>udp-cicd/dotnet
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>dotnet<span class="w"> </span>pack<span class="w"> </span>-c<span class="w"> </span>Release
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>--add-source<span class="w"> </span>./src/UdpCicd.Cli/bin/Release<span class="w"> </span>udp-cicd
 </code></pre></div>
-<p>The repository contains the engine (<code>dotnet/src/UdpCicd.Core</code>), the CLI (<code>dotnet/src/UdpCicd.Cli</code>, built on System.CommandLine), the MCP server (<code>dotnet/src/UdpCicd.Mcp</code>), and the test suite (<code>dotnet/tests/UdpCicd.Core.Tests</code>).</p>
+<p>The repository contains the engine (<code>dotnet/src/UdpCicd.Core</code>), the CLI
+(<code>dotnet/src/UdpCicd.Cli</code>, built on System.CommandLine), the MCP server
+(<code>dotnet/src/UdpCicd.Mcp</code>), the Windows manifest editor
+(<code>dotnet/src/UdpCicd.Editor</code>), the Windows Ontology Builder
+(<code>dotnet/src/UdpCicd.Ontology</code>), and the test suite
+(<code>dotnet/tests/UdpCicd.Core.Tests</code>). Build the Ontology Builder from the
+<code>dotnet/</code> directory with:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dotnet</span> <span class="n">build</span> <span class="n">src</span><span class="p">/</span><span class="n">UdpCicd</span><span class="p">.</span><span class="n">Ontology</span> <span class="n">-c</span> <span class="n">Release</span>
+</code></pre></div>
 <hr />
 <h2 id="3-verify-the-installation">3. Verify the installation<a class="headerlink" href="#3-verify-the-installation" title="Permanent link">&para;</a></h2>
 <h3 id="31-check-the-version">3.1 Check the version<a class="headerlink" href="#31-check-the-version" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>udp-cicd<span class="w"> </span>--version
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>udp-cicd<span class="w"> </span>--version
 </code></pre></div>
 <h3 id="32-run-the-diagnostic-check">3.2 Run the diagnostic check<a class="headerlink" href="#32-run-the-diagnostic-check" title="Permanent link">&para;</a></h3>
 <p>The <code>diag</code> command validates the .NET runtime, Azure CLI status, authentication, and Fabric API connectivity in a single step:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>udp-cicd<span class="w"> </span>diag
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-cicd<span class="w"> </span>diag
 </code></pre></div>
 <p><strong>Example output (healthy environment):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>udp-cicd diag
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  ✓ .NET runtime 9.0.0
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  ✓ Azure CLI installed
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  ✓ Azure CLI authenticated
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  ✓ Fabric API reachable
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  ✓ udp.yml found
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  ✓ Deployment validates
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  6 passed, 0 failed
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>udp-cicd diag
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  ✓ .NET runtime 9.0.0
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  ✓ Azure CLI installed
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  ✓ Azure CLI authenticated
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  ✓ Fabric API reachable
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  ✓ udp.yml found
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  ✓ Deployment validates
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>  6 passed, 0 failed
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -2333,11 +2400,11 @@
 </table>
 <h3 id="41-interactive-login-development">4.1 Interactive login (development)<a class="headerlink" href="#41-interactive-login-development" title="Permanent link">&para;</a></h3>
 <p>Use the Azure CLI to sign in interactively. This is the recommended method for local development.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>az<span class="w"> </span>login
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>az<span class="w"> </span>login
 </code></pre></div>
 <p>Then run commands against the development environment:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--target<span class="w"> </span>dev
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>udp-cicd<span class="w"> </span>plan<span class="w"> </span>--target<span class="w"> </span>dev
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>dev
 </code></pre></div>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -2345,12 +2412,12 @@
 </blockquote>
 <h3 id="42-service-principal-cicd">4.2 Service principal (CI/CD)<a class="headerlink" href="#42-service-principal-cicd" title="Permanent link">&para;</a></h3>
 <p>For automated pipelines, use a service principal with the following environment variables:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="s2">&quot;your-tenant-id&quot;</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;your-client-id&quot;</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;your-client-secret&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="s2">&quot;your-tenant-id&quot;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;your-client-id&quot;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;your-client-secret&quot;</span>
 </code></pre></div>
 <p>When all three variables are set, the tool authenticates with <code>ClientSecretCredential</code>. Run commands non-interactively using the <code>--auto-approve</code> flag:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--auto-approve
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>udp-cicd<span class="w"> </span>deploy<span class="w"> </span>--target<span class="w"> </span>prod<span class="w"> </span>--auto-approve
 </code></pre></div>
 <p><strong>To set up a service principal:</strong></p>
 <ol>
@@ -2364,42 +2431,42 @@
 <p>Never commit service principal credentials to source control. Use your CI/CD platform's secret management (for example, GitHub Actions secrets, Azure DevOps variable groups, or Azure Key Vault) to inject these values at runtime.</p>
 </blockquote>
 <h3 id="43-github-actions-example">4.3 GitHub Actions example<a class="headerlink" href="#43-github-actions-example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># .github/workflows/deploy.yml</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy Fabric Deployment</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nt">on</span><span class="p">:</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">push</span><span class="p">:</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nt">jobs</span><span class="p">:</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
-<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
-<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-dotnet@v4</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
-<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">          </span><span class="nt">dotnet-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;9.0.x&#39;</span>
-<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
-<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dotnet tool install --global udp-cicd</span>
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
-<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udp-cicd deploy --target prod --auto-approve</span>
-<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">        </span><span class="nt">env</span><span class="p">:</span>
-<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">          </span><span class="nt">AZURE_TENANT_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.AZURE_TENANT_ID }}</span>
-<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">          </span><span class="nt">AZURE_CLIENT_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.AZURE_CLIENT_ID }}</span>
-<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">          </span><span class="nt">AZURE_CLIENT_SECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.AZURE_CLIENT_SECRET }}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># .github/workflows/deploy.yml</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy Fabric Deployment</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">on</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="nt">jobs</span><span class="p">:</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-dotnet@v4</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">          </span><span class="nt">dotnet-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;9.0.x&#39;</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dotnet tool install --global udp-cicd</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udp-cicd deploy --target prod --auto-approve</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">          </span><span class="nt">AZURE_TENANT_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.AZURE_TENANT_ID }}</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">          </span><span class="nt">AZURE_CLIENT_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.AZURE_CLIENT_ID }}</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">          </span><span class="nt">AZURE_CLIENT_SECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.AZURE_CLIENT_SECRET }}</span>
 </code></pre></div>
 <p>See <a href="../../cicd/github-actions/">GitHub Actions</a> and <a href="../../cicd/azure-devops/">Azure DevOps</a> for complete pipeline templates.</p>
 <hr />
 <h2 id="5-upgrading">5. Upgrading<a class="headerlink" href="#5-upgrading" title="Permanent link">&para;</a></h2>
 <h3 id="51-check-for-updates">5.1 Check for updates<a class="headerlink" href="#51-check-for-updates" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>udp-cicd<span class="w"> </span>check-update
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>udp-cicd<span class="w"> </span>check-update
 </code></pre></div>
 <h3 id="52-upgrade-to-the-latest-version">5.2 Upgrade to the latest version<a class="headerlink" href="#52-upgrade-to-the-latest-version" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>update<span class="w"> </span>--global<span class="w"> </span>udp-cicd
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>update<span class="w"> </span>--global<span class="w"> </span>udp-cicd
 </code></pre></div>
 <h3 id="53-pin-a-specific-version">5.3 Pin a specific version<a class="headerlink" href="#53-pin-a-specific-version" title="Permanent link">&para;</a></h3>
 <p>For reproducible CI/CD pipelines, pin the version when installing:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.0.3
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.14.0
 </code></pre></div>
 <p>Or commit a <a href="https://learn.microsoft.com/dotnet/core/tools/local-tools">tool manifest</a> (<code>.config/dotnet-tools.json</code>) and run <code>dotnet tool restore</code>.</p>
 <hr />
@@ -2407,24 +2474,24 @@
 <h3 id="61-udp-cicd-command-not-found">6.1 <code>udp-cicd: command not found</code><a class="headerlink" href="#61-udp-cicd-command-not-found" title="Permanent link">&para;</a></h3>
 <p><strong>Cause:</strong> The .NET global tools directory is not on the <code>PATH</code>.</p>
 <p><strong>Resolution:</strong> Add it to the shell profile.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># macOS / Linux (~/.zshrc or ~/.bashrc)</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/.dotnet/tools&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># macOS / Linux (~/.zshrc or ~/.bashrc)</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/.dotnet/tools&quot;</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c"># Windows (PowerShell profile)</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">$env:PATH</span> <span class="p">+=</span> <span class="s2">&quot;;$env:USERPROFILE\.dotnet\tools&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c"># Windows (PowerShell profile)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nv">$env:PATH</span> <span class="p">+=</span> <span class="s2">&quot;;$env:USERPROFILE\.dotnet\tools&quot;</span>
 </code></pre></div>
 <h3 id="62-az-login-errors">6.2 <code>az login</code> errors<a class="headerlink" href="#62-az-login-errors" title="Permanent link">&para;</a></h3>
 <p><strong>Cause:</strong> The Azure CLI is not installed or not authenticated.</p>
 <p><strong>Resolution:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>az<span class="w"> </span>--version<span class="w">           </span><span class="c1"># confirm the CLI is installed (see https://aka.ms/installazurecli)</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>az<span class="w"> </span>login<span class="w">               </span><span class="c1"># sign in</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>az<span class="w"> </span>account<span class="w"> </span>show<span class="w"> </span>--query<span class="w"> </span><span class="s1">&#39;{name:name, tenantId:tenantId}&#39;</span><span class="w"> </span>-o<span class="w"> </span>table
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>az<span class="w"> </span>--version<span class="w">           </span><span class="c1"># confirm the CLI is installed (see https://aka.ms/installazurecli)</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>az<span class="w"> </span>login<span class="w">               </span><span class="c1"># sign in</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>az<span class="w"> </span>account<span class="w"> </span>show<span class="w"> </span>--query<span class="w"> </span><span class="s1">&#39;{name:name, tenantId:tenantId}&#39;</span><span class="w"> </span>-o<span class="w"> </span>table
 </code></pre></div>
 <h3 id="63-proxy-or-firewall-issues">6.3 Proxy or firewall issues<a class="headerlink" href="#63-proxy-or-firewall-issues" title="Permanent link">&para;</a></h3>
 <p>If you are behind a corporate proxy, configure NuGet and the Azure CLI:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span>http://proxy.example.com:8080
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>az<span class="w"> </span>login
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span>http://proxy.example.com:8080
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>dotnet<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--global<span class="w"> </span>udp-cicd
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>az<span class="w"> </span>login
 </code></pre></div>
 <p>If your firewall blocks nuget.org, install from a private NuGet feed with <code>--add-source &lt;feed-url&gt;</code>.</p>
 <hr />
