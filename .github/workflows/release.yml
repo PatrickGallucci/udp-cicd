@@ -120,8 +120,8 @@ jobs:
               $reader = [IO.StreamReader]::new($nuspecEntries[0].Open())
               try { [xml] $nuspec = $reader.ReadToEnd() }
               finally { $reader.Dispose() }
-              if ([string]$nuspec.package.metadata.id -ne $expectedPackage.Value
-                  -or [string]$nuspec.package.metadata.version -ne $version) {
+              if (([string]$nuspec.package.metadata.id -ne $expectedPackage.Value) -or
+                  ([string]$nuspec.package.metadata.version -ne $version)) {
                 throw "Package '$packagePath' metadata does not match '$($expectedPackage.Value)' version '$version'."
               }
             }
