@@ -2,7 +2,7 @@
 
 > **Public Preview**
 
-Unified Data Platform Deployment (`udp-cicd`) is a declarative deployment tool for Microsoft Fabric projects, distributed as a .NET global tool. This page describes the deployment model, the gap the tool fills relative to existing tooling, and its principal capabilities.
+Unified Data Platform Deployment (`udp-cicd`) is a declarative deployment tool for Microsoft Fabric, Microsoft Entra, and Azure resources, distributed primarily as .NET global tools. This page describes the deployment model, the gap the tool fills relative to existing tooling, and its principal capabilities.
 
 ---
 
@@ -19,6 +19,10 @@ udp-cicd deploy --target dev
 ```
 
 Installation requires the .NET SDK 9.0 or later. See [Installation](getting-started/installation.md) for prerequisites and authentication setup.
+
+Download the [product and operations brief](assets/udp-cicd-product-brief.docx)
+or the [v1.14.0 release overview](assets/udp-cicd-release-overview.pptx) for
+offline sharing.
 
 ---
 
@@ -51,5 +55,11 @@ Unified Data Platform Deployment fills that gap.
 | Security | Entra ID group, user, and service principal role assignments with Graph API resolution |
 | Secrets | Environment variables and Azure Key Vault integration |
 | CI/CD ready | GitHub Actions and Azure DevOps templates included |
+| Deployment assurance | A black-box harness exercises all 14 repository examples through local, GitHub Actions, or Azure DevOps runs |
+| Ontology Builder | A Windows application imports a Fabric semantic model, generates editable ontology metadata, and publishes a Fabric Ontology item |
 | Policy enforcement | Configurable pre-deploy validation rules |
 | Tenant settings | Declaratively manage org-wide Fabric admin/tenant settings via a gated `admin apply` |
+
+Use the [Ontology Builder](guide/ontology-builder.md) for semantic-model-driven
+ontology authoring. Maintainers can use the [CI/CD guides](cicd/overview.md) to
+validate and safely exercise the complete example catalogue.

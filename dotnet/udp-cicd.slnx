@@ -4,8 +4,10 @@
     <Project Path="src/UdpCicd.Core/UdpCicd.Core.csproj" />
     <Project Path="src/UdpCicd.Editor/UdpCicd.Editor.csproj" />
     <Project Path="src/UdpCicd.Mcp/UdpCicd.Mcp.csproj" />
+    <Project Path="src/UdpCicd.Ontology/UdpCicd.Ontology.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/UdpCicd.Core.Tests/UdpCicd.Core.Tests.csproj" />
+    <Project Path="tests/UdpCicd.Ontology.Tests/UdpCicd.Ontology.Tests.csproj" />
   </Folder>
 </Solution>

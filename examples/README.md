@@ -2,21 +2,25 @@
 
 Working examples you can copy and deploy to your Fabric tenant.
 
+To validate or deploy the complete catalogue through the manual GitHub Actions
+and Azure DevOps pipelines, see the [deployment example test harness](../deployment-tests/README.md).
+
 ## Quick Start
 
 1. Copy any example folder to your working directory
 2. Update `capacity_id` in `udp.yml` with your Fabric capacity GUID
 3. Run:
+
    ```bash
    udp-cicd validate
    udp-cicd plan --target dev
    udp-cicd deploy --target dev
    ```
 
-## Examples
+## Example Catalogue
 
 | # | Example | Description | Complexity |
-|---|---------|-------------|------------|
+| --- | --- | --- | --- |
 | 01 | [Minimal](01-minimal/) | One lakehouse, one notebook | Beginner |
 | 02 | [Medallion Lakehouse](02-medallion-lakehouse/) | Bronze/Silver/Gold ETL with scheduling | Intermediate |
 | 03 | [Real-Time Intelligence](03-real-time-intelligence/) | Eventhouse + Eventstream + KQL | Intermediate |

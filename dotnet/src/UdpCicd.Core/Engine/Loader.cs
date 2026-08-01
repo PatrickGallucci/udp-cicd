@@ -29,6 +29,9 @@ public static partial class Loader
     [GeneratedRegex(@"\$\{([^}]+)\}")]
     private static partial Regex VariablePattern();
 
+    [GeneratedRegex(@"^\$\{(?:secret\.[^}]+|keyvault\.[^.}]+\.[^}]+)\}$")]
+    private static partial Regex DeferredSecretPattern();
+
     private static readonly string[] SearchNames =
         ["udp.yml", "udp.yaml", ".udp/deployment.yml", ".udp/deployment.yaml"];
 
@@ -123,7 +126,12 @@ public static partial class Loader
         var substituted = (Dictionary<string, object?>)SubstituteVariables(data, variables)!;
 
         var dumped = YamlFactory.CreateGenericSerializer().Serialize(substituted);
-        var unresolved = UnresolvedPattern().Matches(dumped).Select(m => m.Value).Distinct().OrderBy(s => s).ToList();
+        var unresolved = UnresolvedPattern().Matches(dumped)
+            .Select(m => m.Value)
+            .Where(value => !DeferredSecretPattern().IsMatch(value))
+            .Distinct()
+            .OrderBy(s => s)
+            .ToList();
         if (unresolved.Count > 0)
         {
             var msg = $"Unresolved variables: {string.Join(", ", unresolved)}";

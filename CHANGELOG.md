@@ -4,6 +4,54 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-07-31
+
+### Added
+
+- **Deployment example test harness** for all 14 examples, with `Preflight`,
+  `Validate`, `Plan`, and `Deploy` modes; isolated resource naming; ownership
+  receipts; fail-closed cleanup; structured evidence; and Pester coverage.
+- **Manual GitHub Actions and Azure DevOps pipelines** that build the triggering
+  commit, use federated Azure authentication for cloud operations, restrict
+  mutation to protected `main`, and publish diagnostic evidence on every run.
+- **UDP-CICD Ontology Builder**, a Windows Forms application that imports a
+  Microsoft Fabric semantic model, generates editable ontology entities,
+  properties, relationships, logical names, and descriptions, and publishes the
+  resulting Ontology item back to Fabric.
+
+### Changed
+
+- Strict manifest loading now defers valid `${secret.*}` and
+  `${keyvault.*.*}` references until plan or deployment while continuing to
+  reject unresolved ordinary variables.
+- Corrected the multi-environment and shortcuts examples so strict validation
+  uses the supported variable, secret, connection type, and authentication
+  fields.
+
+### Fixed
+
+- Fabric long-running operations now poll the trusted Fabric API origin and
+  retrieve the operation result before consuming created items or semantic
+  model definitions.
+- Ontology generation omits unsupported self-relationships, disambiguates
+  cross-entity property names whose value types conflict, and validates edited
+  ontology files before publication.
+
+### Security
+
+- Deployment cleanup now requires provider-native IDs, run markers, and exact
+  child-resource ownership evidence before deleting Fabric, Azure, or Entra
+  resources.
+- Tenant-setting tests capture the live pre-mutation values privately and
+  require exact post-test convergence before reporting success.
+- Release publication is tag-only, verifies the tag against the package
+  version, separates credential-free build and validation from publication,
+  validates package metadata and every release archive, stages a recoverable
+  draft release, and uses the preinstalled GitHub CLI instead of a mutable
+  third-party release action.
+- GitHub deployment jobs consume a prebuilt CLI artifact and perform no package
+  installation, restore, or compilation while OIDC permission is available.
+
 ## [1.13.0] - 2026-06-18
 
 ### Added

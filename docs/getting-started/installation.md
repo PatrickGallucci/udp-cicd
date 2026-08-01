@@ -48,7 +48,19 @@ dotnet tool install --global udp-cicd-mcp
 >
 > Global tools are installed to `~/.dotnet/tools` (Linux/macOS) or `%USERPROFILE%\.dotnet\tools` (Windows). Ensure this directory is on your `PATH`. The .NET SDK installer normally adds it for you.
 
-### 2.1 Install from source
+### 2.1 Install the Ontology Builder on Windows
+
+Each GitHub release includes
+[`udp-cicd-ontology-win-x64.zip`](https://github.com/PatrickGallucci/udp-cicd/releases/latest/download/udp-cicd-ontology-win-x64.zip).
+Extract the archive on a Windows x64 computer with the .NET 9 Desktop Runtime,
+then run `UdpCicd.Ontology.exe`. The app reads Fabric semantic models, creates
+editable ontology entity and relationship definitions, and publishes Fabric
+Ontology items.
+
+See [Ontology Builder](../guide/ontology-builder.md) for authentication,
+workflow, and current limitations.
+
+### 2.2 Install from source
 
 To build and install from the GitHub repository (for example, to use an unreleased feature):
 
@@ -59,7 +71,17 @@ dotnet pack -c Release
 dotnet tool install --global --add-source ./src/UdpCicd.Cli/bin/Release udp-cicd
 ```
 
-The repository contains the engine (`dotnet/src/UdpCicd.Core`), the CLI (`dotnet/src/UdpCicd.Cli`, built on System.CommandLine), the MCP server (`dotnet/src/UdpCicd.Mcp`), and the test suite (`dotnet/tests/UdpCicd.Core.Tests`).
+The repository contains the engine (`dotnet/src/UdpCicd.Core`), the CLI
+(`dotnet/src/UdpCicd.Cli`, built on System.CommandLine), the MCP server
+(`dotnet/src/UdpCicd.Mcp`), the Windows manifest editor
+(`dotnet/src/UdpCicd.Editor`), the Windows Ontology Builder
+(`dotnet/src/UdpCicd.Ontology`), and the test suite
+(`dotnet/tests/UdpCicd.Core.Tests`). Build the Ontology Builder from the
+`dotnet/` directory with:
+
+```powershell
+dotnet build src/UdpCicd.Ontology -c Release
+```
 
 ---
 
@@ -207,7 +229,7 @@ dotnet tool update --global udp-cicd
 For reproducible CI/CD pipelines, pin the version when installing:
 
 ```bash
-dotnet tool install --global udp-cicd --version 1.0.3
+dotnet tool install --global udp-cicd --version 1.14.0
 ```
 
 Or commit a [tool manifest](https://learn.microsoft.com/dotnet/core/tools/local-tools) (`.config/dotnet-tools.json`) and run `dotnet tool restore`.

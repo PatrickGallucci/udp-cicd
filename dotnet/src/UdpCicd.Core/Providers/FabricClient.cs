@@ -14,6 +14,7 @@ namespace UdpCicd.Core.Providers;
 public sealed class FabricClient
 {
     public const string FabricApiBase = "https://api.fabric.microsoft.com/v1";
+    private static readonly Uri FabricApiUri = new(FabricApiBase + "/");
 
     // Type-specific create endpoints (item type -> URL segment).
     private static readonly IReadOnlyDictionary<string, string> TypeEndpoints = new Dictionary<string, string>
@@ -148,8 +149,19 @@ public sealed class FabricClient
                 if (status == 202)
                 {
                     var location = resp.Headers.Location?.ToString();
+                    var operationId = resp.Headers.TryGetValues("x-ms-operation-id", out var operationIds)
+                        ? operationIds.FirstOrDefault()
+                        : null;
+                    var operationUrl = NormalizeOperationUrl(location, operationId)
+                        ?? throw new FabricApiError(status,
+                            "Fabric accepted the request but did not return a safe long-running operation URL.");
                     var retry = resp.Headers.RetryAfter?.Delta?.TotalSeconds.ToString() ?? "5";
-                    return new JsonObject { ["operation_url"] = location, ["retry_after"] = retry };
+                    return new JsonObject
+                    {
+                        ["operation_url"] = operationUrl,
+                        ["operation_id"] = operationId,
+                        ["retry_after"] = retry,
+                    };
                 }
 
                 return string.IsNullOrEmpty(text) ? null : SafeParse(text);
@@ -162,30 +174,157 @@ public sealed class FabricClient
     /// <summary>Poll a long-running operation until completion.</summary>
     public JsonNode? WaitForOperation(string operationUrl, int timeout = 300)
     {
+        var operationUri = ValidateOperationUri(operationUrl);
         var start = DateTime.UtcNow;
+        var transientFailures = 0;
         while ((DateTime.UtcNow - start).TotalSeconds < timeout)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, operationUrl);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            using var resp = _http.Send(request);
-            if (resp.StatusCode == HttpStatusCode.OK)
+            HttpResponseMessage resp;
+            try
             {
-                var text = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var result = SafeParse(text);
-                var statusStr = result?["status"]?.GetValue<string>()?.ToLowerInvariant() ?? "";
-                if (statusStr is "succeeded" or "completed")
-                {
-                    return result;
-                }
-                if (statusStr is "failed" or "cancelled")
-                {
-                    var errMsg = result?["error"]?["message"]?.GetValue<string>() ?? "Unknown error";
-                    throw new FabricApiError((int)resp.StatusCode, $"Operation {statusStr}: {errMsg}");
-                }
+                using var request = new HttpRequestMessage(HttpMethod.Get, operationUri);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+                resp = _http.Send(request);
             }
-            Thread.Sleep(TimeSpan.FromSeconds(5));
+            catch (HttpRequestException e)
+            {
+                transientFailures++;
+                if (transientFailures >= 3)
+                {
+                    throw new FabricApiError(0, e.Message);
+                }
+                SleepForPoll(start, timeout, TimeSpan.FromSeconds(Math.Pow(2, transientFailures - 1)));
+                continue;
+            }
+
+            using (resp)
+            {
+                if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    transientFailures++;
+                    if (transientFailures >= 3)
+                    {
+                        throw new FabricApiError((int)resp.StatusCode,
+                            "Authentication failed while polling the Fabric operation.");
+                    }
+                    _token = Auth.GetToken();
+                    continue;
+                }
+
+                if (resp.StatusCode == HttpStatusCode.TooManyRequests
+                    || (int)resp.StatusCode >= 500)
+                {
+                    transientFailures++;
+                    if (transientFailures >= 3)
+                    {
+                        throw new FabricApiError((int)resp.StatusCode, ReadErrorMessage(resp));
+                    }
+                    var retryDelay = resp.Headers.RetryAfter?.Delta
+                        ?? TimeSpan.FromSeconds(Math.Min(30, Math.Pow(2, transientFailures - 1)));
+                    SleepForPoll(start, timeout, retryDelay);
+                    continue;
+                }
+
+                transientFailures = 0;
+                if (resp.StatusCode == HttpStatusCode.OK)
+                {
+                    var text = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    var result = SafeParse(text);
+                    var statusStr = result?["status"]?.GetValue<string>()?.ToLowerInvariant() ?? "";
+                    if (statusStr is "succeeded" or "completed")
+                    {
+                        return result;
+                    }
+                    if (statusStr is "failed" or "cancelled")
+                    {
+                        var errMsg = result?["error"]?["message"]?.GetValue<string>() ?? "Unknown error";
+                        throw new FabricApiError((int)resp.StatusCode, $"Operation {statusStr}: {errMsg}");
+                    }
+                }
+                else if ((int)resp.StatusCode >= 400)
+                {
+                    throw new FabricApiError((int)resp.StatusCode, ReadErrorMessage(resp));
+                }
+
+                SleepForPoll(start, timeout, resp.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(5));
+            }
         }
         throw new FabricApiError(0, $"Operation timed out after {timeout}s");
+    }
+
+    private static string ReadErrorMessage(HttpResponseMessage response)
+    {
+        var text = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var errorBody = string.IsNullOrEmpty(text) ? null : SafeParse(text);
+        return errorBody?["message"]?.GetValue<string>()
+            ?? errorBody?["error"]?["message"]?.GetValue<string>()
+            ?? text;
+    }
+
+    private static void SleepForPoll(DateTime start, int timeout, TimeSpan requestedDelay)
+    {
+        var remaining = TimeSpan.FromSeconds(timeout) - (DateTime.UtcNow - start);
+        if (remaining <= TimeSpan.Zero)
+        {
+            return;
+        }
+        Thread.Sleep(requestedDelay < remaining ? requestedDelay : remaining);
+    }
+
+    /// <summary>Retrieve the result produced by a completed long-running operation.</summary>
+    public JsonNode? GetOperationResult(string operationUrl)
+    {
+        var operationUri = ValidateOperationUri(operationUrl);
+        var resultPath = ToApiPath(operationUri).TrimEnd('/') + "/result";
+        return Request("GET", resultPath);
+    }
+
+    /// <summary>Poll a long-running operation and retrieve its final result.</summary>
+    public JsonNode? WaitForOperationResult(string operationUrl, int timeout = 300)
+    {
+        WaitForOperation(operationUrl, timeout);
+        return GetOperationResult(operationUrl);
+    }
+
+    private static string? NormalizeOperationUrl(string? location, string? operationId)
+    {
+        if (!string.IsNullOrWhiteSpace(operationId))
+        {
+            return $"{FabricApiBase}/operations/{Uri.EscapeDataString(operationId)}";
+        }
+
+        if (string.IsNullOrWhiteSpace(location)
+            || !Uri.TryCreate(location, UriKind.RelativeOrAbsolute, out var locationUri))
+        {
+            return null;
+        }
+
+        var absoluteUri = locationUri.IsAbsoluteUri ? locationUri : new Uri(FabricApiUri, locationUri);
+        return IsFabricOperationUri(absoluteUri) ? absoluteUri.GetLeftPart(UriPartial.Path) : null;
+    }
+
+    private static Uri ValidateOperationUri(string operationUrl)
+    {
+        if (!Uri.TryCreate(operationUrl, UriKind.Absolute, out var operationUri)
+            || !IsFabricOperationUri(operationUri))
+        {
+            throw new FabricApiError(0,
+                "Fabric long-running operations must use the api.fabric.microsoft.com HTTPS endpoint.");
+        }
+        return operationUri;
+    }
+
+    private static bool IsFabricOperationUri(Uri uri) =>
+        uri.Scheme == Uri.UriSchemeHttps
+        && string.Equals(uri.Host, FabricApiUri.Host, StringComparison.OrdinalIgnoreCase)
+        && uri.IsDefaultPort
+        && string.IsNullOrEmpty(uri.UserInfo)
+        && uri.AbsolutePath.StartsWith("/v1/operations/", StringComparison.Ordinal);
+
+    private static string ToApiPath(Uri uri)
+    {
+        const string versionPrefix = "/v1";
+        return uri.PathAndQuery[versionPrefix.Length..];
     }
 
     // -- workspaces ----------------------------------------------------------
@@ -279,7 +418,7 @@ public sealed class FabricClient
         var opUrl = result?["operation_url"]?.GetValue<string>();
         if (opUrl is not null)
         {
-            return WaitForOperation(opUrl)?.AsObject() ?? [];
+            return WaitForOperationResult(opUrl)?.AsObject() ?? [];
         }
         return result?.AsObject() ?? [];
     }

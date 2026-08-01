@@ -24,6 +24,8 @@ udp-cicd deploy --target prod
 
 [Read the full documentation →](https://PatrickGallucci.github.io/udp-cicd/)
 
+Release collateral: [Product and operations brief (Word)](docs/assets/udp-cicd-product-brief.docx) · [v1.14.0 release overview (PowerPoint)](docs/assets/udp-cicd-release-overview.pptx)
+
 ### 1.1 Purpose and Scope
 
 The project exists to close the **orchestration gap** across a Microsoft data platform. The Fabric CLI can import and export items, `fabric-cicd` can deploy across workspaces, and Terraform/Bicep can provision infrastructure — but none of them describe, in one place:
@@ -48,6 +50,8 @@ The project exists to close the **orchestration gap** across a Microsoft data pl
 | Resource coverage | 46 Fabric item types + Entra groups/apps + **64 Azure service types** |
 | Reverse generation | Scan an existing workspace and produce a `udp.yml` you can customize |
 | AI agent integration | MCP server exposes 14 deployment tools to Claude Code and GitHub Copilot |
+| Deployment assurance | A PowerShell harness validates all 14 examples locally or through manual GitHub Actions and Azure DevOps pipelines |
+| Ontology authoring | A Windows application converts Fabric semantic models into editable, publishable Fabric Ontology items |
 
 
 ### 1.3 System Architecture
@@ -60,6 +64,7 @@ The solution is built on **.NET 9** and divided into functional areas:
 | **CLI Tool** | `dotnet/src/UdpCicd.Cli` | Command-line interface (`System.CommandLine`) for manual and automated runs |
 | **MCP Server** | `dotnet/src/UdpCicd.Mcp` | Model Context Protocol server exposing deployment tools to AI agents |
 | **Editor** | `dotnet/src/UdpCicd.Editor` | WinForms `udp.yml` editor (Windows) |
+| **Ontology Builder** | `dotnet/src/UdpCicd.Ontology` | WinForms semantic-model-to-ontology authoring and publishing tool (Windows) |
 | **Tests** | `dotnet/tests/UdpCicd.Core.Tests` | Unit and integration suite |
 
 > **CLI naming:** The standalone CLI is `udp-cicd`. The MCP companion is `udp-cicd-mcp`.
@@ -90,6 +95,11 @@ dotnet tool install --global udp-cicd
 # MCP server (optional, for AI-assisted authoring)
 dotnet tool install --global udp-cicd-mcp
 ```
+
+The Windows Ontology Builder is distributed as
+[`udp-cicd-ontology-win-x64.zip`](https://github.com/PatrickGallucci/udp-cicd/releases/latest/download/udp-cicd-ontology-win-x64.zip)
+on each GitHub release. It requires the .NET 9 Desktop Runtime. See the
+[Ontology Builder guide](https://PatrickGallucci.github.io/udp-cicd/guide/ontology-builder/).
 
 Verify with `diag`, which checks the .NET runtime, Azure CLI status, and Fabric API connectivity:
 
@@ -451,9 +461,12 @@ dotnet/
 │   │   └── Assets/templates/  # medallion/, blank/, all-resource-types/
 │   ├── UdpCicd.Cli/           # System.CommandLine entry point
 │   ├── UdpCicd.Mcp/           # MCP server (14 tools)
-│   └── UdpCicd.Editor/        # WinForms udp.yml editor (Windows)
+│   ├── UdpCicd.Editor/        # WinForms udp.yml editor (Windows)
+│   └── UdpCicd.Ontology/      # WinForms Fabric Ontology builder (Windows)
 └── tests/
     └── UdpCicd.Core.Tests/    # Unit + integration tests
+
+deployment-tests/              # Black-box harness for all 14 examples
 ```
 
 ---

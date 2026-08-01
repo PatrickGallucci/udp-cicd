@@ -50,6 +50,7 @@ nav:
     - Service Principal: guide/service-principal.md
     - MCP Server: guide/mcp-server.md
     - udp.yml Editor (Windows): guide/editor.md
+    - Ontology Builder (Windows): guide/ontology-builder.md
     - Migrate from Terraform: guide/migrate-from-terraform.md
     - Migrate from fabric-cicd: guide/migrate-from-fabric-cicd.md
   - Reference:

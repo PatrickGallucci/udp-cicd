@@ -109,7 +109,7 @@ lakehouses:
 **Resolution:**
 
 | Item type | Action |
-|---|---|
+| --- | --- |
 | Semantic Models | Export TMDL files from Power BI Desktop or the Fabric portal and place them in the `path` directory. |
 | Reports | Export PBIR files from Power BI Desktop and place them in the `path` directory. |
 | Either | Alternatively, remove the items from `udp.yml` and create them in the portal. |
@@ -160,13 +160,13 @@ lakehouses:
 **Resolution:** Provide a value through one of the following:
 
 | Approach | Example |
-|---|---|
+| --- | --- |
 | Default value | `variables: { missing: { default: "value" } }` |
 | Target override | `targets: { dev: { variables: { missing: "value" } } }` |
 | Environment variable | Set the variable when using `${env.MISSING}` |
-| Secret | Set the secret when using `${secret.MISSING}` |
+| Secret | Set the secret before `plan` or `deploy` when using `${secret.MISSING}` |
 
-In deploy mode, unresolved variables cause a hard failure. In validate mode, use `--strict` to catch them.
+In deploy mode, unresolved variables cause a hard failure. In validate mode, use `--strict` to catch unresolved `${var.*}` and `${env.*}` references. `${secret.*}` and `${keyvault.*}` references remain deferred until plan or deploy, as described in [Secrets Management](guide/secrets.md).
 
 ---
 
@@ -211,7 +211,7 @@ The deployment finishes as a partial success (exit code `1`), records what was c
 **Cause:** A pipeline step failed. Common causes:
 
 | Cause | Detail |
-|---|---|
+| --- | --- |
 | Authentication | Secrets not configured or expired |
 | Capacity | Not active, or wrong GUID |
 | Naming | Hyphens in resource names |

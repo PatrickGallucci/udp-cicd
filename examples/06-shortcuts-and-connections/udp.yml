@@ -36,9 +36,9 @@ resources:
 
 connections:
   adls_source:
-    type: azure_data_lake
+    type: adls_gen2
     endpoint: "https://contosodatalake.dfs.core.windows.net"
-    auth_type: service_principal
+    auth_method: service_principal
 
 targets:
   dev:

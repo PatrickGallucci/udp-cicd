@@ -6,9 +6,43 @@ For a working reference repository, see [github.com/PatrickGallucci/udp-cicd-exa
 
 ---
 
+## Repository example harness
+
+The udp-cicd repository includes a manual-only workflow at
+`.github/workflows/deployment-examples.yml`. It builds the selected commit and
+drives the shared PowerShell harness across all 14 folders under `examples/`.
+Use it to validate the shipped catalogue, not as an automatic production
+deployment workflow for a consuming project.
+
+| Input | Purpose |
+| --- | --- |
+| `mode` | Selects `Preflight`, `Validate`, `Plan`, or `Deploy` |
+| `example_ids` | Optionally limits the run to comma-separated IDs such as `01,04` |
+| `inputs_path` | Points to reviewed, repository-relative non-secret input JSON |
+| `keep_resources` | Retains isolated deployment resources for investigation |
+| `allow_tenant_admin_changes` | Unlocks the separately guarded example 09 mutation path |
+
+`Preflight` and `Validate` receive no protected environment or Azure token.
+`Plan` and `Deploy` require `refs/heads/main`, the protected
+`deployment-tests` environment, and OIDC authentication. Pester is installed
+and run, and the CLI is restored and built, in a separate prerequisite job with
+no OIDC permission or deployment secrets. Plan and deployment jobs consume the
+prebuilt CLI artifact before Azure authentication. The workflow publishes the
+Pester result separately from the run evidence, including when a job fails.
+
+The implementation and safety contract are documented in
+`deployment-tests/README.md`. For the matching Azure DevOps setup, see
+[Run the deployment examples in Azure DevOps](azure-devops.md).
+
+---
+
 ## 1. Setting up secrets
 
 Go to your repository on GitHub: **Settings > Secrets and variables > Actions**. Add the following repository secrets:
+
+The generic application workflows below use a client secret for broad runner
+compatibility. Prefer the OIDC pattern used by the repository example harness
+when your GitHub organization and Azure tenant support federation.
 
 | Secret | Description |
 |--------|-------------|

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using Azure.Core;
 using UdpCicd.Core.Providers;
@@ -10,8 +11,10 @@ public class FabricClientTests
     /// <summary>A TokenCredential that returns a fixed dummy token (no network).</summary>
     private sealed class FakeCredential : TokenCredential
     {
+        public int RequestCount { get; private set; }
+
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
-            => new("dummy-token", DateTimeOffset.UtcNow.AddHours(1));
+            => new($"dummy-token-{++RequestCount}", DateTimeOffset.UtcNow.AddHours(1));
 
         public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
             => ValueTask.FromResult(GetToken(requestContext, cancellationToken));
@@ -39,8 +42,8 @@ public class FabricClientTests
     private static HttpResponseMessage Json(HttpStatusCode code, string json) =>
         new(code) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
 
-    private static FabricClient Build(StubHandler handler) =>
-        new(new FabricAuth { Credential = new FakeCredential() }, new HttpClient(handler));
+    private static FabricClient Build(StubHandler handler, FakeCredential? credential = null) =>
+        new(new FabricAuth { Credential = credential ?? new FakeCredential() }, new HttpClient(handler));
 
     [Fact]
     public void ListWorkspaces_ParsesValueArray()
@@ -86,6 +89,118 @@ public class FabricClientTests
         var req = Assert.Single(handler.Requests);
         Assert.EndsWith("/workspaces/ws-1/items", req.Url);
         Assert.Contains("\"type\":\"SomeFutureType\"", req.Body);
+    }
+
+    [Fact]
+    public void AcceptedResponse_UsesOperationIdOnFabricOrigin()
+    {
+        var handler = new StubHandler(_ =>
+        {
+            var response = Json(HttpStatusCode.Accepted, "");
+            response.Headers.Location = new Uri("https://redirect.analysis.windows.net/v1/operations/op-123");
+            response.Headers.TryAddWithoutValidation("x-ms-operation-id", "op-123");
+            return response;
+        });
+        var client = Build(handler);
+
+        var result = client.Request("POST", "/workspaces/ws-1/items", new { displayName = "test" });
+
+        Assert.Equal("op-123", result!["operation_id"]!.GetValue<string>());
+        Assert.Equal(
+            "https://api.fabric.microsoft.com/v1/operations/op-123",
+            result["operation_url"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public void AcceptedResponse_RejectsCrossOriginLocationWithoutOperationId()
+    {
+        var handler = new StubHandler(_ =>
+        {
+            var response = Json(HttpStatusCode.Accepted, "");
+            response.Headers.Location = new Uri("https://example.com/v1/operations/op-123");
+            return response;
+        });
+        var client = Build(handler);
+
+        var error = Assert.Throws<FabricApiError>(() =>
+            client.Request("POST", "/workspaces/ws-1/items", new { displayName = "test" }));
+
+        Assert.Equal(202, error.StatusCode);
+        Assert.Contains("safe long-running operation URL", error.Message);
+    }
+
+    [Fact]
+    public void WaitForOperationResult_PollsThenRetrievesResult()
+    {
+        var handler = new StubHandler(request => request.RequestUri!.AbsolutePath switch
+        {
+            "/v1/operations/op-123" => Json(HttpStatusCode.OK, """{"status":"Succeeded"}"""),
+            "/v1/operations/op-123/result" => Json(HttpStatusCode.OK, """{"id":"item-123"}"""),
+            _ => Json(HttpStatusCode.NotFound, """{"message":"unexpected path"}"""),
+        });
+        var client = Build(handler);
+
+        var result = client.WaitForOperationResult(
+            "https://api.fabric.microsoft.com/v1/operations/op-123");
+
+        Assert.Equal("item-123", result!["id"]!.GetValue<string>());
+        Assert.Collection(handler.Requests,
+            request => Assert.EndsWith("/v1/operations/op-123", request.Url),
+            request => Assert.EndsWith("/v1/operations/op-123/result", request.Url));
+    }
+
+    [Fact]
+    public void WaitForOperation_RateLimitedThenRunning_RetriesUntilSucceeded()
+    {
+        var attempt = 0;
+        var handler = new StubHandler(_ =>
+        {
+            attempt++;
+            var response = attempt switch
+            {
+                1 => Json(HttpStatusCode.TooManyRequests, """{"message":"slow down"}"""),
+                2 => Json(HttpStatusCode.OK, """{"status":"Running"}"""),
+                _ => Json(HttpStatusCode.OK, """{"status":"Succeeded"}"""),
+            };
+            response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.Zero);
+            return response;
+        });
+        var client = Build(handler);
+
+        var result = client.WaitForOperation("https://api.fabric.microsoft.com/v1/operations/op-123", timeout: 5);
+
+        Assert.Equal("Succeeded", result!["status"]!.GetValue<string>());
+        Assert.Equal(3, handler.Requests.Count);
+    }
+
+    [Fact]
+    public void WaitForOperation_UnauthorizedOnce_RefreshesTokenAndRetries()
+    {
+        var attempt = 0;
+        var credential = new FakeCredential();
+        var handler = new StubHandler(_ => ++attempt == 1
+            ? Json(HttpStatusCode.Unauthorized, """{"message":"expired"}""")
+            : Json(HttpStatusCode.OK, """{"status":"Succeeded"}"""));
+        var client = Build(handler, credential);
+
+        var result = client.WaitForOperation("https://api.fabric.microsoft.com/v1/operations/op-123", timeout: 5);
+
+        Assert.Equal("Succeeded", result!["status"]!.GetValue<string>());
+        Assert.Equal(2, credential.RequestCount);
+    }
+
+    [Fact]
+    public void WaitForOperation_NonDefaultPort_RejectsBeforeSendingToken()
+    {
+        var handler = new StubHandler(_ => Json(HttpStatusCode.OK, """{"status":"Succeeded"}"""));
+        var client = Build(handler);
+
+        var error = Assert.Throws<FabricApiError>(() => client.WaitForOperation(
+            "https://api.fabric.microsoft.com:444/v1/operations/op-123",
+            timeout: 1));
+
+        Assert.Contains("HTTPS endpoint", error.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(handler.Requests);
     }
 
     [Fact]

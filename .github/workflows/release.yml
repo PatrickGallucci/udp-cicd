@@ -3,38 +3,224 @@ name: Release
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: dotnet
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          dotnet-version: 9.0.x
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          global-json-file: dotnet/global.json
+
+      - name: Verify release tag matches package version
+        shell: pwsh
+        run: |
+          [xml] $props = Get-Content Directory.Build.props
+          $version = [string]$props.Project.PropertyGroup.Version
+          $expectedTag = "v$version"
+          if ($env:GITHUB_REF_NAME -ne $expectedTag) {
+            throw "Release tag '$env:GITHUB_REF_NAME' does not match package version '$version'. Expected '$expectedTag'."
+          }
+
+      - name: Clean
+        run: dotnet clean udp-cicd.slnx -c Release
+
+      - name: Restore
+        run: dotnet restore udp-cicd.slnx
+
+      - name: Build
+        run: dotnet build udp-cicd.slnx -c Release --no-restore
+
+      - name: Test
+        run: dotnet test udp-cicd.slnx -c Release --no-build --no-restore
 
       - name: Pack
         run: |
-          dotnet pack src/UdpCicd.Cli/UdpCicd.Cli.csproj -c Release -o artifacts
-          dotnet pack src/UdpCicd.Mcp/UdpCicd.Mcp.csproj -c Release -o artifacts
+          dotnet pack src/UdpCicd.Cli/UdpCicd.Cli.csproj -c Release --no-build --no-restore -o artifacts
+          dotnet pack src/UdpCicd.Mcp/UdpCicd.Mcp.csproj -c Release --no-build --no-restore -o artifacts
+
+      - name: Package Ontology Builder
+        shell: pwsh
+        run: |
+          dotnet restore src/UdpCicd.Ontology/UdpCicd.Ontology.csproj -r win-x64
+          dotnet publish src/UdpCicd.Ontology/UdpCicd.Ontology.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained false `
+            --no-restore `
+            -o artifacts/ontology-win-x64
+          Compress-Archive `
+            -Path artifacts/ontology-win-x64/* `
+            -DestinationPath artifacts/udp-cicd-ontology-win-x64.zip `
+            -Force
+
+      - name: Validate release artifacts
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          function Assert-ZipArchive {
+            param(
+              [Parameter(Mandatory)][string] $Path,
+              [Parameter(Mandatory)][AllowEmptyCollection()][string[]] $RequiredEntries
+            )
+            $resolvedPath = (Resolve-Path $Path).Path
+            $archive = [IO.Compression.ZipFile]::OpenRead($resolvedPath)
+            try {
+              foreach ($requiredEntry in $RequiredEntries) {
+                if ($null -eq $archive.GetEntry($requiredEntry)) {
+                  throw "Archive '$Path' is missing '$requiredEntry'."
+                }
+              }
+              foreach ($entry in $archive.Entries) {
+                if ($entry.Name.Length -eq 0) { continue }
+                $stream = $entry.Open()
+                try { $stream.CopyTo([IO.Stream]::Null) }
+                finally { $stream.Dispose() }
+              }
+            }
+            finally {
+              $archive.Dispose()
+            }
+          }
+
+          [xml] $props = Get-Content Directory.Build.props
+          $version = [string]$props.Project.PropertyGroup.Version
+          $expectedPackages = [ordered]@{
+            "udp-cicd.$version.nupkg" = 'udp-cicd'
+            "udp-cicd-mcp.$version.nupkg" = 'udp-cicd-mcp'
+          }
+          $packages = @(Get-ChildItem artifacts -Filter *.nupkg)
+          if ($packages.Count -ne $expectedPackages.Count) {
+            throw "Expected exactly $($expectedPackages.Count) NuGet packages, found $($packages.Count)."
+          }
+
+          foreach ($expectedPackage in $expectedPackages.GetEnumerator()) {
+            $packagePath = Join-Path artifacts $expectedPackage.Key
+            Assert-ZipArchive -Path $packagePath -RequiredEntries @()
+            $archive = [IO.Compression.ZipFile]::OpenRead((Resolve-Path $packagePath).Path)
+            try {
+              $nuspecEntries = @($archive.Entries | Where-Object {
+                $_.FullName.EndsWith('.nuspec', [StringComparison]::OrdinalIgnoreCase)
+              })
+              if ($nuspecEntries.Count -ne 1) {
+                throw "Package '$packagePath' must contain exactly one nuspec file."
+              }
+              $reader = [IO.StreamReader]::new($nuspecEntries[0].Open())
+              try { [xml] $nuspec = $reader.ReadToEnd() }
+              finally { $reader.Dispose() }
+              if ([string]$nuspec.package.metadata.id -ne $expectedPackage.Value
+                  -or [string]$nuspec.package.metadata.version -ne $version) {
+                throw "Package '$packagePath' metadata does not match '$($expectedPackage.Value)' version '$version'."
+              }
+            }
+            finally {
+              $archive.Dispose()
+            }
+          }
+
+          Assert-ZipArchive -Path artifacts/udp-cicd-ontology-win-x64.zip -RequiredEntries @(
+            'UdpCicd.Ontology.exe',
+            'UdpCicd.Ontology.dll',
+            'UdpCicd.Ontology.deps.json',
+            'UdpCicd.Ontology.runtimeconfig.json'
+          )
+          Assert-ZipArchive -Path ../docs/assets/udp-cicd-product-brief.docx -RequiredEntries @(
+            '[Content_Types].xml',
+            'word/document.xml'
+          )
+          Assert-ZipArchive -Path ../docs/assets/udp-cicd-release-overview.pptx -RequiredEntries @(
+            '[Content_Types].xml',
+            'ppt/presentation.xml'
+          )
+
+      - name: Stage release bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-bundle
+          path: |
+            dotnet/artifacts/*.nupkg
+            dotnet/artifacts/*.zip
+            docs/assets/*.docx
+            docs/assets/*.pptx
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Download release bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-bundle
+          path: release-bundle
+
+      - name: Create or refresh draft GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $packages = @(Get-ChildItem release-bundle/dotnet/artifacts -Filter *.nupkg)
+          if ($packages.Count -ne 2) {
+            throw "Expected exactly two NuGet packages, found $($packages.Count)."
+          }
+          $assets = @($packages.FullName)
+          $assets += (Resolve-Path release-bundle/dotnet/artifacts/udp-cicd-ontology-win-x64.zip).Path
+          $assets += (Resolve-Path release-bundle/docs/assets/udp-cicd-product-brief.docx).Path
+          $assets += (Resolve-Path release-bundle/docs/assets/udp-cicd-release-overview.pptx).Path
+
+          $isDraft = gh release view $env:GITHUB_REF_NAME --json isDraft --jq '.isDraft' 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            if ($isDraft.Trim() -ne 'true') {
+              throw "Release '$env:GITHUB_REF_NAME' is already published."
+            }
+            gh release upload $env:GITHUB_REF_NAME @assets --clobber
+          }
+          else {
+            gh release create $env:GITHUB_REF_NAME `
+              --verify-tag `
+              --draft `
+              --generate-notes `
+              --title "UDP-CICD $env:GITHUB_REF_NAME" `
+              @assets
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Push to NuGet.org
-        run: >
-          dotnet nuget push "artifacts/*.nupkg"
-          --api-key "${{ secrets.NUGET_API_KEY }}"
-          --source https://api.nuget.org/v3/index.json
-          --skip-duplicate
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          Get-ChildItem release-bundle/dotnet/artifacts -Filter *.nupkg | ForEach-Object {
+            dotnet nuget push $_.FullName `
+              --api-key $env:NUGET_API_KEY `
+              --source https://api.nuget.org/v3/index.json `
+              --skip-duplicate
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
 
-      - name: Attach package to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dotnet/artifacts/*.nupkg
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit $env:GITHUB_REF_NAME --draft=false --latest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

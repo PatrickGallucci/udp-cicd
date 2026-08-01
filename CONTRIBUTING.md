@@ -20,6 +20,8 @@ The solution contains:
 | `src/UdpCicd.Core` | Models, engine (loader/resolver/planner/deployer/state), providers, generators. |
 | `src/UdpCicd.Cli` | The `udp-cicd` command-line tool (System.CommandLine). |
 | `src/UdpCicd.Mcp` | The `udp-cicd-mcp` MCP server. |
+| `src/UdpCicd.Editor` | Windows Forms editor for `udp.yml`. |
+| `src/UdpCicd.Ontology` | Windows Forms semantic-model-to-ontology builder. |
 | `tests/UdpCicd.Core.Tests` | xUnit tests. |
 
 ## Running Tests
@@ -27,6 +29,13 @@ The solution contains:
 ```bash
 dotnet test                                   # Run all tests
 dotnet test --logger "console;verbosity=detailed"
+```
+
+The repository also has a PowerShell 7 black-box harness for all examples:
+
+```powershell
+Invoke-Pester ./deployment-tests/tests
+pwsh ./deployment-tests/Invoke-DeploymentTestSuite.ps1 -Mode Validate
 ```
 
 ## Code Quality

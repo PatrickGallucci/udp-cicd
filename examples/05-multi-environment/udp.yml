@@ -7,15 +7,15 @@ deployment:
   description: "Enterprise analytics with strict governance policies"
 
 variables:
+  capacity_id:
+    description: "Fabric capacity GUID"
+    default: "REPLACE-WITH-YOUR-CAPACITY-GUID"
   db_host:
     description: "Source database hostname"
     default: "localhost"
   db_name:
     description: "Source database name"
     default: "analytics"
-  slack_webhook:
-    description: "Slack webhook for deploy notifications"
-    default: ""
 
 resources:
   environments:
@@ -68,11 +68,11 @@ policies:
 notifications:
   on_success:
     - type: slack
-      webhook: "${var.slack_webhook}"
+      webhook: "${secret.UDP_TEST_SLACK_WEBHOOK}"
       message: "Deployed {deployment.name} v{deployment.version} to {target}"
   on_failure:
     - type: slack
-      webhook: "${var.slack_webhook}"
+      webhook: "${secret.UDP_TEST_SLACK_WEBHOOK}"
       message: "FAILED: {deployment.name} deploy to {target}"
 
 # Security
@@ -132,8 +132,3 @@ targets:
     deployment_strategy:
       type: canary
       canary_resources: [etl_pipeline]
-
-variables:
-  capacity_id:
-    description: "Fabric capacity GUID"
-    default: "REPLACE-WITH-YOUR-CAPACITY-GUID"

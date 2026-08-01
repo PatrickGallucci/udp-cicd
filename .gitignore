@@ -17,3 +17,7 @@ venv/
 site/
 .agents/
 .claude/
+deployment-tests/.work/
+deployment-test-artifacts/
+deployment-tests/config/inputs.local.json
+dotnet/artifacts/

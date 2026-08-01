@@ -58,6 +58,22 @@ Every pipeline installs the CLI as a .NET global tool before running any command
 dotnet tool install --global udp-cicd
 ```
 
+### 2.2 Repository example harness
+
+Maintainers can exercise all 14 checked-in examples with a separate manual
+promotion path:
+
+```text
+Preflight -> Validate -> Plan -> Deploy
+```
+
+The GitHub workflow is `.github/workflows/deployment-examples.yml`; the Azure
+DevOps pipeline is `cicd/deployment-examples.azure-devops.yml`. Both build the
+selected source revision instead of installing the latest published package,
+publish structured evidence, and reserve cloud mutation for protected `main`.
+The individual example policy still limits catalogue-only and tenant-wide
+scenarios. See the platform pages for setup and safety controls.
+
 ---
 
 ## 3. Authentication in CI/CD
@@ -70,11 +86,26 @@ udp-cicd authenticates to the Fabric API through its `FabricAuth` component, bui
 | `FABRIC_USE_BROWSER=true` | `InteractiveBrowserCredential` (interactive browser sign-in) |
 | Otherwise | `DefaultAzureCredential` (managed identity, Azure CLI session, and other standard sources) |
 
-No interactive browser login is needed in CI/CD. Use a service principal or a managed identity.
+No interactive browser login is needed in CI/CD. Prefer workload identity
+federation or a managed identity so the pipeline does not store a reusable
+credential.
 
-### 3.1 Service principal (client secret)
+### 3.1 Workload identity federation (recommended)
 
-The most common approach. Set three environment variables in your CI/CD runner:
+GitHub Actions can request an OpenID Connect token with `id-token: write` and
+sign in through `azure/login`. Azure DevOps can use an Azure Resource Manager
+service connection configured for workload identity federation. In both cases,
+restrict the federated credential to the repository or pipeline, protect the
+deployment environment or variable group, and scope Azure RBAC to the dedicated
+deployment resources.
+
+The manual example pipelines use this pattern. Their unauthenticated
+`Preflight` and `Validate` modes cannot access deployment credentials.
+
+### 3.2 Service principal (client secret fallback)
+
+For a platform that cannot federate, set three protected environment variables
+in the CI/CD runner:
 
 | Variable | Description |
 |----------|-------------|
@@ -86,7 +117,7 @@ When all three variables are set, udp-cicd authenticates with `ClientSecretCrede
 
 See [Service Principal Setup](../guide/service-principal.md) for step-by-step instructions on creating and configuring the service principal.
 
-### 3.2 Managed identity
+### 3.3 Managed identity
 
 For Azure-hosted CI/CD runners (Azure DevOps Microsoft-hosted agents with managed identity, self-hosted runners on Azure VMs, or GitHub Actions runners on Azure), you can use managed identity instead of a client secret. No environment variables are required. When the service principal variables are not set, udp-cicd falls back to `DefaultAzureCredential`, which discovers the identity automatically.
 
@@ -137,13 +168,16 @@ Reference the environment in your pipeline with `environment: 'production'`. Azu
 | Artifact sharing | `actions/upload-artifact` | Pipeline artifacts |
 | Self-hosted runners | Self-hosted runners | Self-hosted agents |
 
-Both platforms are fully supported. The GitHub Actions workflows have been proven end-to-end against live Fabric workspaces; the Azure DevOps pipeline covers validate, staging, and production stages with approval gates. Choose whichever your team already uses.
+Both platforms are supported. The platform pages provide ordinary project
+pipeline patterns and the repository-maintainer harness. Choose the platform
+your team already operates, then apply its protected environments, branch
+controls, and least-privilege identity model.
 
 ---
 
 ## 6. Next steps
 
-- [GitHub Actions](github-actions.md) -- Full workflow files for CI, CD, drift checks, and destroy.
-- [Azure DevOps](azure-devops.md) -- Complete pipeline YAML with stages, environments, and variable groups.
+- [GitHub Actions](github-actions.md) -- Project workflow patterns plus the manual 14-example harness.
+- [Azure DevOps](azure-devops.md) -- Secure manual harness setup with workload identity federation and protected resources.
 - [Service Principal Setup](../guide/service-principal.md) -- Create and configure the service principal for CI/CD.
 - [Secrets Management](../guide/secrets.md) -- Handle connection strings and credentials in pipelines.
